@@ -2,36 +2,13 @@
 
 
 #include "AnimNotify_PlayAudioOfDialogCue.h"
-#include "TalkableInterface.h"
-#include "DialogComponent.h"
 #include "DialogCue.h"
-#include "Dialog.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 void UAnimNotify_PlayAudioOfDialogCue::Notify(USkeletalMeshComponent* MeshComponent, UAnimSequenceBase* Animation)
 {
-	AActor* Owner = MeshComponent->GetOwner();
-	if (Owner->GetLocalRole() == ENetRole::ROLE_Authority)
+	UDialogCue* CurrentDialogCue = this->GetCurrentDialogCue(MeshComponent);
+	if (IsValid(CurrentDialogCue))
 	{
-		if (Owner->Implements<UTalkableInterface>())
-		{
-			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Owner);
-			if (IsValid(DialogComponent))
-			{
-				UDialogComponent* MasterDialogComponent = DialogComponent->GetMasterDialogComponent();
-				if (IsValid(MasterDialogComponent))
-				{
-					UDialog* CurrentDialog = MasterDialogComponent->GetCurrentDialog();
-					if (IsValid(CurrentDialog))
-					{
-						UDialogCue* CurrentDialogCue = CurrentDialog->GetCurrentDialogCue();
-						if (IsValid(CurrentDialogCue))
-						{
-							CurrentDialogCue->StartAudio();
-						}
-					}
-				}
-			}
-		}
+		CurrentDialogCue->StartAudio();
 	}
 }

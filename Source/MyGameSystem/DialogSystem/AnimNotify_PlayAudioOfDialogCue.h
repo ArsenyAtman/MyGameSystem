@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Animation/AnimNotifies/AnimNotify.h"
+#include "AnimNotify_DialogCue.h"
 #include "AnimNotify_PlayAudioOfDialogCue.generated.h"
 
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_PlayAudioOfDialogCue : public UAnimNotify
+class MYGAMESYSTEM_API UAnimNotify_PlayAudioOfDialogCue : public UAnimNotify_DialogCue
 {
 	GENERATED_BODY()
 

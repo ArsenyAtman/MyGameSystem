@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Animation/AnimNotifies/AnimNotify.h"
+#include "AnimNotify_DialogCue.h"
 #include "AnimNotify_PlayNextDialogCue.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_PlayNextDialogCue : public UAnimNotify
+class MYGAMESYSTEM_API UAnimNotify_PlayNextDialogCue : public UAnimNotify_DialogCue
 {
 	GENERATED_BODY()
 

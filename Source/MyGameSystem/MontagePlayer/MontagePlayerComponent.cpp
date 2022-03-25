@@ -28,19 +28,16 @@ UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageReplicated(UAnimMont
 UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageLocally(UAnimMontage* Montage, float InPlayRate, EMontagePlayReturnType ReturnValueType, float StartTime, bool bStopAllMontages)
 {
 	AActor* Owner = GetOwner();
-	if (IsValid(Owner))
+	if (IsValid(Owner) && Owner->Implements<UMontagePlayableActorInterface>())
 	{
-		if (Owner->Implements<UMontagePlayableActorInterface>())
+		USkeletalMeshComponent* SkeletalMeshComponent = IMontagePlayableActorInterface::Execute_GetSkeletalMeshForMontagePlaying(Owner);
+		if (IsValid(SkeletalMeshComponent))
 		{
-			USkeletalMeshComponent* SkeletalMeshComponent = IMontagePlayableActorInterface::Execute_GetSkeletalMeshForMontagePlaying(Owner);
-			if (IsValid(SkeletalMeshComponent))
+			UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
+			if (IsValid(AnimInstance))
 			{
-				UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
-				if (IsValid(AnimInstance))
-				{
-					AnimInstance->Montage_Play(Montage, InPlayRate, ReturnValueType, StartTime, bStopAllMontages);
-					return AnimInstance;
-				}
+				AnimInstance->Montage_Play(Montage, InPlayRate, ReturnValueType, StartTime, bStopAllMontages);
+				return AnimInstance;
 			}
 		}
 	}
@@ -60,18 +57,15 @@ void UMontagePlayerComponent::StopAnimationMontage_Implementation(class UAnimMon
 	if (IsValid(Montage))
 	{
 		AActor* Owner = GetOwner();
-		if (IsValid(Owner))
+		if (IsValid(Owner) && Owner->Implements<UMontagePlayableActorInterface>())
 		{
-			if (Owner->Implements<UMontagePlayableActorInterface>())
+			USkeletalMeshComponent* SkeletalMeshComponent = IMontagePlayableActorInterface::Execute_GetSkeletalMeshForMontagePlaying(Owner);
+			if (IsValid(SkeletalMeshComponent))
 			{
-				USkeletalMeshComponent* SkeletalMeshComponent = IMontagePlayableActorInterface::Execute_GetSkeletalMeshForMontagePlaying(Owner);
-				if (IsValid(SkeletalMeshComponent))
+				UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
+				if (IsValid(AnimInstance))
 				{
-					UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
-					if (IsValid(AnimInstance))
-					{
-						AnimInstance->Montage_Stop(Montage->GetDefaultBlendOutTime(), Montage);
-					}
+					AnimInstance->Montage_Stop(Montage->GetDefaultBlendOutTime(), Montage);
 				}
 			}
 		}

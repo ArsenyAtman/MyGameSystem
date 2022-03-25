@@ -42,15 +42,14 @@ void UDialogComponent::BeginDialogue(APawn* Initiator, const TArray<AActor*>& Ad
 		{
 			TArray<AActor*> Interlocutors = AdditionalInterlocutors;
 
-			MasterDialogComponent = this;
+			//MasterDialogComponent = this;
 			CurrentDialog = NewObject<UDialog>(this, DialogClass);
-
 			if (IsValid(CurrentDialog))
 			{
 				Interlocutors.Add(this->GetOwner());
 				Interlocutors.Add(Initiator);
 
-				CurrentDialog->Begin(this, Interlocutors);
+				CurrentDialog->Begin(this, this->GetOwner(), Initiator, Interlocutors);
 
 				OnDialogStarted.Broadcast();
 			}

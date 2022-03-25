@@ -17,7 +17,7 @@ class MYGAMESYSTEM_API UDialog : public UObject
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void Begin(class UDialogComponent* OwnDialogComponent, TArray<class AActor*> DialogInterlocutors);
+	void Begin(class UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, TArray<class AActor*> OtherInterlocutors);
 
 	UFUNCTION(BlueprintCallable)
 	void OnDialogUnitPassed(class UObject* DialogUnit, TSubclassOf<UObject> NextDialogUnitClass);
@@ -35,12 +35,13 @@ public:
 	TArray<class UDialogueVoice*> GetInterlocutorsVoices(); //was FORCEINLINE
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE TArray<class AActor*> GetInterlocutors() { return Interlocutors; }
+	FORCEINLINE TArray<class AActor*> GetInterlocutors() { return DialogInterlocutors; }
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE class AActor* GetInitiator() { return Interlocutors[1]; }
+	FORCEINLINE class AActor* GetDialogMaster() { return DialogMaster; }
 
-	// GetDialogMaster
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE class AActor* GetDialogInitiator() { return DialogInitiator; }
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UDialogComponent* GetOwningDialogComponent() { return OwningDialogComponent; }
@@ -67,9 +68,10 @@ protected:
 
 private:
 
-	// Initiator
+	TArray<class AActor*> DialogInterlocutors;
 
-	// DialogMaster
+	class AActor* DialogInitiator = nullptr;
+	class AActor* DialogMaster = nullptr;
 
 	class UDialogComponent* OwningDialogComponent;
 

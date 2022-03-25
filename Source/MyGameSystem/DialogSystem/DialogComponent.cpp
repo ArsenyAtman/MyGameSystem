@@ -148,6 +148,8 @@ void UDialogComponent::UnitPassed(class UObject* DialogUnit)
 	}
 }
 
+/*
+
 UAnimInstance* UDialogComponent::PlayAnimationMontageReplicated(UAnimMontage* Montage, UDialogueVoice* Voice)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
@@ -171,6 +173,8 @@ UAnimInstance* UDialogComponent::PlayAnimationMontageReplicated(UAnimMontage* Mo
 	return nullptr;
 }
 
+*/
+
 UAudioComponent* UDialogComponent::PlayDialogueWaveReplicated(UDialogueWave* DialogueWave, UDialogueVoice* Voice)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
@@ -193,6 +197,8 @@ UAudioComponent* UDialogComponent::PlayDialogueWaveReplicated(UDialogueWave* Dia
 	return nullptr;
 }
 
+/*
+
 void UDialogComponent::PlayAnimationMontageOnClients_Implementation(UAnimMontage* Montage, USkeletalMeshComponent* SkeletalMesh)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_AutonomousProxy || GetOwnerRole() == ENetRole::ROLE_SimulatedProxy)
@@ -204,6 +210,8 @@ void UDialogComponent::PlayAnimationMontageOnClients_Implementation(UAnimMontage
 		}
 	}
 }
+
+*/
 
 void UDialogComponent::PlayDialogueWaveOnClients_Implementation(UDialogueWave* DialogueWave, FDialogueContext Context, USceneComponent* Component, FName Point, FVector Location)
 {

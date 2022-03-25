@@ -11,6 +11,8 @@
 #include "Sound/DialogueWave.h"
 #include "Sound/DialogueVoice.h"
 #include "Sound/SoundCue.h"
+#include "MyGameSystem/MontagePlayer/MontagePlayerComponent.h"
+#include "MyGameSystem/MontagePlayer/MontagePlayableActorInterface.h"
 #include "AnimNotify_PlayAudioOfDialogCue.h"
 
 void UDialogCue::Activate_Implementation(class UDialog* OwnDialog)
@@ -104,6 +106,7 @@ void UDialogCue::PlayAnimation_Implementation()
 {
 	if (IsValid(Animation))
 	{
+		/*
 		UDialogComponent* DialogComponent = OwningDialog->GetOwningDialogComponent();//->GetMasterDialogComponent();
 		if (IsValid(DialogComponent))
 		{
@@ -117,10 +120,23 @@ void UDialogCue::PlayAnimation_Implementation()
 				AnimationPlayed(nullptr, true);
 			}
 		}
+		*/
+
+		AActor* CueOwner = OwningDialog->GetOwnerOfVoice(this->Voice);
+		if (IsValid(CueOwner) && CueOwner->Implements<UMontagePlayableActorInterface>() && Animation)
+		{
+			UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(CueOwner);
+			PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(Animation);
+			if (IsValid(PlayingAnimInstance))
+			{
+				PlayingAnimInstance->OnMontageEnded.AddDynamic(this, &UDialogCue::AnimationPlayed);
+			}
+		}
 	}
-	else
+
+	if (!IsValid(PlayingAnimInstance))
 	{
-		AnimationPlayed(nullptr, true);
+		this->AnimationPlayed(nullptr, true);
 	}
 
 	if (!HasAudioStartAnimNotify(Animation))

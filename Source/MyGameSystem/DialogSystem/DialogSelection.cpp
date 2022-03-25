@@ -34,34 +34,28 @@ void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions()
 {
 	TArray<TSubclassOf<UDialogCue>> AvailableOptions;
-	for (TSubclassOf<UDialogCue> Cue : CueOptions)
+	for (TSubclassOf<UDialogCue>& Cue : CueOptions)
 	{
 		UDialogCue* CueObject = Cast<UDialogCue>(Cue.GetDefaultObject());
-		if (CueObject)
+		if (IsValid(CueObject) && CueObject->CheckAvailabilityCondition(OwningDialog))
 		{
-			if (CueObject->CheckAvailabilityCondition(OwningDialog))
-			{
-				AvailableOptions.Add(Cue);
-			}
+			AvailableOptions.Add(Cue);
 		}
 	}
 	return AvailableOptions;
-} 
+}
 
 FDialogSelectionStruct UDialogSelection::GetSelectionInfo()
 {
 	TArray<FDialogCueStruct> OptionsInfo = TArray<FDialogCueStruct>();
-	for (TSubclassOf<UDialogCue> CueClass : CueOptions)
+	for (TSubclassOf<UDialogCue>& CueClass : CueOptions)
 	{
 		if (IsValid(CueClass))
 		{
 			UDialogCue* Cue = Cast<UDialogCue>(CueClass->GetDefaultObject());
-			if (Cue)
+			if (IsValid(Cue) && Cue->CheckAvailabilityCondition(OwningDialog))
 			{
-				if (Cue->CheckAvailabilityCondition(OwningDialog))
-				{
-					OptionsInfo.Add(Cue->GetCueInfo());
-				}
+				OptionsInfo.Add(Cue->GetCueInfo());
 			}
 		}
 	}

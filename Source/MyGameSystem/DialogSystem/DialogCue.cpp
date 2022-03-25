@@ -40,11 +40,13 @@ void UDialogCue::PlayNextDialogCue()
 		PlayingAudioComponent->OnAudioFinished.RemoveDynamic(this, &UDialogCue::AudioPlayed);
 		PlayingAudioComponent = nullptr;
 	}
+
 	if (IsValid(PlayingAnimInstance))
 	{
 		PlayingAnimInstance->OnMontageEnded.RemoveDynamic(this, &UDialogCue::AnimationPlayed);
 		PlayingAnimInstance = nullptr;
 	}
+
 	EndCue();
 }
 
@@ -158,7 +160,7 @@ bool UDialogCue::HasAudioStartAnimNotify(UAnimMontage* Montage)
 	{
 		TArray<FAnimNotifyEventReference> Notifies;
 		Montage->GetAnimNotifies(0, Montage->GetPlayLength(), false, Notifies);
-		for (FAnimNotifyEventReference Notify : Notifies)
+		for (FAnimNotifyEventReference& Notify : Notifies)
 		{
 			if (Cast<UAnimNotify_PlayAudioOfDialogCue>(Notify.GetNotify()->Notify))
 			{

@@ -46,15 +46,9 @@ void UStatsComponent::ApplyEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(Effect))
+		if (IsValid(Effect) && Effect->GetOuter() == this && Effect->GetRelatedStatsComponent() == nullptr)
 		{
-			if (Effect->GetOuter() == this)
-			{
-				if (Effect->GetRelatedStatsComponent() == nullptr)
-				{
-					Effect->Activate(this);
-				}
-			}
+			Effect->Activate(this);
 		}
 	}
 }
@@ -168,5 +162,5 @@ void UStatsComponent::UpdateEffectsInfo()
 	{
 		OnEffectsUpdated.Broadcast();
 	}
-	
+
 }

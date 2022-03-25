@@ -112,14 +112,6 @@ void UDialogComponent::RemoveNote(FString NoteToRemove)
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		Notepad.RemoveSingle(NoteToRemove);
-		/*for (int i = 0; i < Notepad.Num(); i++)
-		{
-			FText Note = Notepad[i];
-			if (Note.EqualTo(NoteToRemove))
-			{
-				Notepad.RemoveAt(i);
-			}
-		}*/
 	}
 }
 
@@ -128,18 +120,21 @@ void UDialogComponent::UnitStarted(class UObject* DialogUnit)
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		UDialogSelection* Selection = Cast<UDialogSelection>(DialogUnit);
-		UDialogCue* Cue = Cast<UDialogCue>(DialogUnit);
 		if (IsValid(Selection))
 		{
 			CurrentDialogCueInfo = FDialogCueStruct();
 			CurrentDialogSelectionInfo = Selection->GetSelectionInfo();
 			OnDialogSelectionStarted.Broadcast();
+			return;
 		}
-		else if (IsValid(Cue))
+
+		UDialogCue* Cue = Cast<UDialogCue>(DialogUnit);
+		if (IsValid(Cue))
 		{
 			CurrentDialogCueInfo = Cue->GetCueInfo();
 			CurrentDialogSelectionInfo = FDialogSelectionStruct();
 			OnDialogCueStarted.Broadcast();
+			return;
 		}
 	}
 }
@@ -159,20 +154,17 @@ UAnimInstance* UDialogComponent::PlayAnimationMontageReplicated(UAnimMontage* Mo
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		AActor* Actor = CurrentDialog->GetOwnerOfVoice(Voice);
-		if (IsValid(Actor))
+		if (IsValid(Actor) && Actor->Implements<UTalkableInterface>())
 		{
-			if (Actor->Implements<UTalkableInterface>())
+			USkeletalMeshComponent* MeshToAnimate = ITalkableInterface::Execute_GetSkeletalMeshForDialog(Actor);
+			if (IsValid(MeshToAnimate))
 			{
-				USkeletalMeshComponent* MeshToAnimate = ITalkableInterface::Execute_GetSkeletalMeshForDialog(Actor);
-				if (IsValid(MeshToAnimate))
+				UAnimInstance* PlayingAnimInstance = MeshToAnimate->GetAnimInstance();
+				if (IsValid(PlayingAnimInstance))
 				{
-					UAnimInstance* PlayingAnimInstance = MeshToAnimate->GetAnimInstance();
-					if (IsValid(PlayingAnimInstance))
-					{
-						PlayingAnimInstance->Montage_Play(Montage);
-						PlayAnimationMontageOnClients(Montage, MeshToAnimate);
-						return PlayingAnimInstance;
-					}
+					PlayingAnimInstance->Montage_Play(Montage);
+					PlayAnimationMontageOnClients(Montage, MeshToAnimate);
+					return PlayingAnimInstance;
 				}
 			}
 		}
@@ -185,21 +177,18 @@ UAudioComponent* UDialogComponent::PlayDialogueWaveReplicated(UDialogueWave* Dia
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		AActor* Actor = CurrentDialog->GetOwnerOfVoice(Voice);
-		if (IsValid(Actor))
+		if (IsValid(Actor) && Actor->Implements<UTalkableInterface>())
 		{
-			if (Actor->Implements<UTalkableInterface>())
-			{
-				FDialogueContext Context;
-				Context.Speaker = Voice;
-				TArray<UDialogueVoice*> Interlocutors = CurrentDialog->GetInterlocutorsVoices();
-				Interlocutors.RemoveAt(Interlocutors.Find(Voice));
-				Context.Targets = Interlocutors;
-				USceneComponent* AttachComponent = ITalkableInterface::Execute_GetMouthComponent(Actor);
-				FName AttachPoint = ITalkableInterface::Execute_GetMouthPoint(Actor);
-				FVector RelativeLocation = ITalkableInterface::Execute_GetMouthRelativeLocation(Actor);
-				PlayDialogueWaveOnClients(DialogueWave, Context, AttachComponent, AttachPoint, RelativeLocation);
-				return UGameplayStatics::SpawnDialogueAttached(DialogueWave, Context, AttachComponent, AttachPoint, RelativeLocation, EAttachLocation::SnapToTarget, false, 1.0f, 1.0f, 0.0f, Attenuation);
-			}
+			FDialogueContext Context;
+			Context.Speaker = Voice;
+			TArray<UDialogueVoice*> Interlocutors = CurrentDialog->GetInterlocutorsVoices();
+			Interlocutors.RemoveAt(Interlocutors.Find(Voice));
+			Context.Targets = Interlocutors;
+			USceneComponent* AttachComponent = ITalkableInterface::Execute_GetMouthComponent(Actor);
+			FName AttachPoint = ITalkableInterface::Execute_GetMouthPoint(Actor);
+			FVector RelativeLocation = ITalkableInterface::Execute_GetMouthRelativeLocation(Actor);
+			PlayDialogueWaveOnClients(DialogueWave, Context, AttachComponent, AttachPoint, RelativeLocation);
+			return UGameplayStatics::SpawnDialogueAttached(DialogueWave, Context, AttachComponent, AttachPoint, RelativeLocation, EAttachLocation::SnapToTarget, false, 1.0f, 1.0f, 0.0f, Attenuation);
 		}
 	}
 	return nullptr;

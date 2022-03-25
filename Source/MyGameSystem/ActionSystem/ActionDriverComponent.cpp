@@ -28,21 +28,18 @@ void UActionDriverComponent::StartAction(UActorAction* Action)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(Action))
+		if (IsValid(Action) && Action->GetOuter() == this)
 		{
-			if (Action->GetOuter() == this)
+			if (IsValid(GetCurrentAction()))
 			{
-				if (IsValid(GetCurrentAction()))
-				{
-					GetCurrentAction()->NewActionTriedToStart(Action);
-				}
-				else
-				{
-					SetCurrentAction(Action);
-					GetCurrentAction()->StartAction();
-					GetCurrentAction()->GetEventStarted();
-					ActionStarted(GetCurrentActionClass());
-				}
+				GetCurrentAction()->NewActionTriedToStart(Action);
+			}
+			else
+			{
+				SetCurrentAction(Action);
+				GetCurrentAction()->StartAction();
+				GetCurrentAction()->GetEventStarted();
+				ActionStarted(GetCurrentActionClass());
 			}
 		}
 	}

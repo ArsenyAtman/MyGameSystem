@@ -10,11 +10,12 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 	{
 		Algo::Reverse(DialogCueOptions);
 	}
-	for (int i = 0; i < DialogCueOptions.Num(); i++)
+
+	for (TSubclassOf<UObject>& DialogCueClass : DialogCueOptions)
 	{
-		if (IsValid(DialogCueOptions[i]))
+		if (IsValid(DialogCueClass))
 		{
-			UDialogCue* DialogCueObject = Cast<UDialogCue>(DialogCueOptions[i]->GetDefaultObject());
+			UDialogCue* DialogCueObject = Cast<UDialogCue>(DialogCueClass->GetDefaultObject());
 			if (IsValid(DialogCueObject))
 			{
 				bool bConditionResult = DialogCueObject->CheckAvailabilityCondition(OwnDialog);
@@ -25,13 +26,13 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 
 				if (bConditionResult)
 				{
-					OwnDialog->OnDialogUnitPassed(this, DialogCueOptions[i]);
+					OwnDialog->OnDialogUnitPassed(this, DialogCueClass);
 					return;
 				}
 			}
 			else
 			{
-				OwnDialog->OnDialogUnitPassed(this, DialogCueOptions[i]);
+				OwnDialog->OnDialogUnitPassed(this, DialogCueClass);
 				return;
 			}
 		}

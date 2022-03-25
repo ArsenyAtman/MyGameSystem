@@ -10,16 +10,13 @@ void UStageList::Activate_Implementation(UQuest* RelatedQuest)
 
 	for (UClass* ObjectiveClass : InitialObjectives)
 	{
-		if (IsValid(ObjectiveClass))
+		if (IsValid(ObjectiveClass) && ObjectiveClass->IsChildOf(UObjective::StaticClass()))
 		{
-			if (ObjectiveClass->IsChildOf(UObjective::StaticClass()))
+			UObjective* NewObjective = NewObject<UObjective>(this, ObjectiveClass);
+			if (IsValid(NewObjective))
 			{
-				UObjective* NewObjective = NewObject<UObjective>(this, ObjectiveClass);
-				if (IsValid(NewObjective))
-				{
-					ActiveObjectives.Add(NewObjective);
-					NewObjective->Activate(this);
-				}
+				ActiveObjectives.Add(NewObjective);
+				NewObjective->Activate(this);
 			}
 		}
 	}

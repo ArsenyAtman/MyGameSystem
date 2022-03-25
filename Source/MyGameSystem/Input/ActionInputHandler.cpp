@@ -6,15 +6,12 @@
 
 void UActionInputHandler::Bind_Implementation(APlayerController* PlayerController, UObject* Object)
 {
-	if (IsValid(PlayerController) && IsValid(Object))
+	if (IsValid(PlayerController) && IsValid(Object) && IsValid(PlayerController->InputComponent) && IsValid(Object->FindFunction(RelatedFunctionName)))
 	{
-		if (IsValid(PlayerController->InputComponent) && IsValid(Object->FindFunction(RelatedFunctionName)))
-		{
-			this->Unbind();
-			InputActionBinding = PlayerController->InputComponent->BindAction(InputMappingName, KeyEvent, this, &UActionInputHandler::HandleActionInput);
-			RelatedPlayerController = PlayerController;
-			ActionDelegate.BindUFunction(Object, RelatedFunctionName);
-		}
+		this->Unbind();
+		InputActionBinding = PlayerController->InputComponent->BindAction(InputMappingName, KeyEvent, this, &UActionInputHandler::HandleActionInput);
+		RelatedPlayerController = PlayerController;
+		ActionDelegate.BindUFunction(Object, RelatedFunctionName);
 	}
 }
 
@@ -34,11 +31,8 @@ void UActionInputHandler::Unbind_Implementation()
 		ActionDelegate.Unbind();
 	}
 
-	if (IsValid(RelatedPlayerController))
+	if (IsValid(RelatedPlayerController) && IsValid(RelatedPlayerController->InputComponent))
 	{
-		if (IsValid(RelatedPlayerController->InputComponent))
-		{
-			RelatedPlayerController->InputComponent->RemoveActionBindingForHandle(InputActionBinding.GetHandle());
-		}
+		RelatedPlayerController->InputComponent->RemoveActionBindingForHandle(InputActionBinding.GetHandle());
 	}
 }

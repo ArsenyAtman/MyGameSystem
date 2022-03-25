@@ -11,18 +11,12 @@ UActorAction* UAnimNotify_ActorAction::GetActorAction(USkeletalMeshComponent* Me
 	if (IsValid(MeshComponent))
 	{
 		AActor* Owner = MeshComponent->GetOwner();
-		if (IsValid(Owner))
+		if (IsValid(Owner) && Owner->GetLocalRole() == ENetRole::ROLE_Authority && Owner->Implements<UActionDrivenActorInterface>())
 		{
-			if (Owner->GetLocalRole() == ENetRole::ROLE_Authority)
+			UActionDriverComponent* ActionDriver = IActionDrivenActorInterface::Execute_GetActionDriverComponent(Owner);
+			if (IsValid(ActionDriver))
 			{
-				if (Owner->Implements<UActionDrivenActorInterface>())
-				{
-					UActionDriverComponent* ActionDriver = IActionDrivenActorInterface::Execute_GetActionDriverComponent(Owner);
-					if (IsValid(ActionDriver))
-					{
-						return ActionDriver->GetCurrentAction();
-					}
-				}
+				return ActionDriver->GetCurrentAction();
 			}
 		}
 	}

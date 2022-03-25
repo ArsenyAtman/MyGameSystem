@@ -16,19 +16,16 @@ bool FDialogCueStruct::operator != (const FDialogCueStruct& CueInfo)//1, const F
 
 bool FDialogSelectionStruct::operator == (const FDialogSelectionStruct& SelectionInfo)//, const FDialogSelectionStruct& SelectionInfo2)
 {
-	if (this->bWithTimer == SelectionInfo.bWithTimer && this->Time == SelectionInfo.Time)
+	if (this->bWithTimer == SelectionInfo.bWithTimer && this->Time == SelectionInfo.Time && this->Options.Num() == SelectionInfo.Options.Num())
 	{
-		if (this->Options.Num() == SelectionInfo.Options.Num())
+		for (int i = this->Options.Num() - 1; i >= 0; --i)
 		{
-			for (int i = 0; i < this->Options.Num(); i++)
+			if (this->Options[i] != SelectionInfo.Options[i])
 			{
-				if (this->Options[i] != SelectionInfo.Options[i])
-				{
-					return false;
-				}
+				return false;
 			}
-			return true;
 		}
+		return true;
 	}
 	return false;
 }

@@ -9,21 +9,18 @@
 void UActorAction_MontageDriven::OnActionStarted_Implementation()
 {
 	AActor* ControlledActor = GetControlledActor();
-	if (IsValid(ControlledActor))
+	if (IsValid(ControlledActor) && ControlledActor->Implements<UMontagePlayableActorInterface>())
 	{
-		if (ControlledActor->Implements<UMontagePlayableActorInterface>())
+		UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(ControlledActor);
+		if (IsValid(MontagePlayer))
 		{
-			UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(ControlledActor);
-			if (IsValid(MontagePlayer))
+			PlayingAnimMontage = GetAnimationMontageToPlay();
+			if (IsValid(PlayingAnimMontage))
 			{
-				PlayingAnimMontage = GetAnimationMontageToPlay();
-				if (IsValid(PlayingAnimMontage))
-				{
-					PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(PlayingAnimMontage);
-					PlayingAnimInstance->OnMontageEnded.AddDynamic(this, &UActorAction_MontageDriven::AnimationPlayed);
+				PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(PlayingAnimMontage);
+				PlayingAnimInstance->OnMontageEnded.AddDynamic(this, &UActorAction_MontageDriven::AnimationPlayed);
 
-					return;
-				}
+				return;
 			}
 		}
 	}
@@ -39,15 +36,12 @@ void UActorAction_MontageDriven::OnActionEnded_Implementation()
 		if (IsValid(PlayingAnimMontage))
 		{
 			AActor* ControlledActor = GetControlledActor();
-			if (IsValid(ControlledActor))
+			if (IsValid(ControlledActor) && ControlledActor->Implements<UMontagePlayableActorInterface>())
 			{
-				if (ControlledActor->Implements<UMontagePlayableActorInterface>())
+				UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(ControlledActor);
+				if (IsValid(MontagePlayer))
 				{
-					UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(ControlledActor);
-					if (IsValid(MontagePlayer))
-					{
-						MontagePlayer->StopAnimationMontage(PlayingAnimMontage);
-					}
+					MontagePlayer->StopAnimationMontage(PlayingAnimMontage);
 				}
 			}
 		}

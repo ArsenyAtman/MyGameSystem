@@ -81,7 +81,7 @@ TArray<FItemStruct> UInventoryComponent::GetItemsOfSlots() const
 int UInventoryComponent::GetItemsCountOfClass(UItem* ItemClass) const
 {
 	int ItemsCount = 0;
-	for (FItemStruct ItemInInventory : Items)
+	for (const FItemStruct& ItemInInventory : Items)
 	{
 		if (IsValid(ItemInInventory.Item))
 		{
@@ -97,7 +97,7 @@ int UInventoryComponent::GetItemsCountOfClass(UItem* ItemClass) const
 int UInventoryComponent::GetItemsCountOfType(TSubclassOf<UItemType> ItemType) const
 {
 	int ItemsCount = 0;
-	for (FItemStruct ItemInInventory : Items)
+	for (const FItemStruct& ItemInInventory : Items)
 	{
 		if (IsValid(ItemInInventory.Item))
 		{
@@ -114,7 +114,7 @@ bool UInventoryComponent::RemoveItemOfClass(UItem* ItemClass)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		for (int i = 0; i < InventorySize; i++)
+		for (int i = 0; i < InventorySize; ++i)
 		{
 			if (IsValid(Items[i].Item))
 			{
@@ -134,7 +134,7 @@ bool UInventoryComponent::RemoveItemOfType(TSubclassOf<UItemType> ItemType)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		for (int i = 0; i < InventorySize; i++)
+		for (int i = 0; i < InventorySize; ++i)
 		{
 			if (IsValid(Items[i].Item))
 			{
@@ -183,7 +183,7 @@ bool UInventoryComponent::AddItem_Implementation(FItemStruct Item, int InPlace)
 		{
 			if (IsValid(Item.Item))
 			{
-				for (int i = 0; i < InventorySize; i++)
+				for (int i = 0; i < InventorySize; ++i)
 				{
 					if (!IsValid(Items[i].Item))
 					{
@@ -357,7 +357,7 @@ TArray<USlotComponent*> UInventoryComponent::FindAllSlots()
 		{
 			TArray<UActorComponent*> FoundComponents;
 			Character->GetComponents(USlotComponent::StaticClass(), FoundComponents, true);
-			for (int i = 0; i < FoundComponents.Num(); i++)
+			for (int i = 0; i < FoundComponents.Num(); ++i)
 			{
 				USlotComponent* Slot = Cast<USlotComponent>(FoundComponents[i]);
 				if (IsValid(Slot))
@@ -374,7 +374,7 @@ void UInventoryComponent::InitializeItems()
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		for (int i = 0; i < InventorySize; i++)
+		for (int i = 0; i < InventorySize; ++i)
 		{
 			if (!Items.IsValidIndex(i))
 			{
@@ -430,7 +430,7 @@ int UInventoryComponent::GetItemsCount()
 {
 	int Count = 0;
 
-	for (FItemStruct Item : Items)
+	for (FItemStruct& Item : Items)
 	{
 		if (IsValid(Item.Item))
 		{

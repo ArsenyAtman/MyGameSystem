@@ -165,14 +165,11 @@ void UInteractionComponent::SetActorForInteraction(class AActor* Actor)
 
 AActor* UInteractionComponent::GetActorForInteraction()
 {
-	if (IsValid(ActorForInteraction))
+	if (IsValid(ActorForInteraction) && ActorForInteraction->Implements<UInteractableActorInterface>())
 	{
-		if (ActorForInteraction->Implements<UInteractableActorInterface>())
+		if (IInteractableActorInterface::Execute_CanInteract(ActorForInteraction, GetOwner()))
 		{
-			if (IInteractableActorInterface::Execute_CanInteract(ActorForInteraction, GetOwner()))
-			{
-				return ActorForInteraction;
-			}
+			return ActorForInteraction;
 		}
 	}
 

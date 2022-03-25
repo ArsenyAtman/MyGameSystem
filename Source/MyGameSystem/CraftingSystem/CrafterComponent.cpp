@@ -173,7 +173,7 @@ TArray<UItem*> UCrafterComponent::GetItems()
 			UInventoryComponent* Inventory = ICraftActorInterface::Execute_GetCraftInventoryComponent(this->GetOwner());
 			if (IsValid(Inventory))
 			{
-				for (FItemStruct Item : IItemContainerInterface::Execute_GetItems(Inventory))
+				for (FItemStruct& Item : IItemContainerInterface::Execute_GetItems(Inventory))
 				{
 					if (IsValid(Item.Item))
 					{
@@ -195,7 +195,7 @@ TArray<UItem*> UCrafterComponent::GetItems()
 					UInventoryComponent* Inventory = ICraftActorInterface::Execute_GetCraftInventoryComponent(Workbench->GetOwner());
 					if (IsValid(Inventory))
 					{
-						for (FItemStruct Item : IItemContainerInterface::Execute_GetItems(Inventory))
+						for (FItemStruct& Item : IItemContainerInterface::Execute_GetItems(Inventory))
 						{
 							if (IsValid(Item.Item))
 							{

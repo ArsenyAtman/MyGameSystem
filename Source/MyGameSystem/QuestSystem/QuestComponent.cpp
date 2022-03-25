@@ -34,16 +34,13 @@ void UQuestComponent::AddQuest(TSubclassOf<UQuest> QuestClass)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(QuestClass))
+		if (IsValid(QuestClass) && CheckQuestOnDuplication(QuestClass))
 		{
-			if (CheckQuestOnDuplication(QuestClass))
-			{
-				UQuest* NewQuest = NewObject<UQuest>(this, QuestClass);
-				ActiveQuests.Add(NewQuest);
-				NewQuest->Activate(this);
-				UpdateInfos();
-				QuestAddedMessage(NewQuest->GetQuestInfo());
-			}
+			UQuest* NewQuest = NewObject<UQuest>(this, QuestClass);
+			ActiveQuests.Add(NewQuest);
+			NewQuest->Activate(this);
+			UpdateInfos();
+			QuestAddedMessage(NewQuest->GetQuestInfo());
 		}
 	}
 }
@@ -150,21 +147,15 @@ void UQuestComponent::MarkActors_Implementation(TSubclassOf<AActor> MarkerClass,
 
 void UQuestComponent::UnmarkActors_Implementation(TSubclassOf<AActor> MarkerClass, const TArray<AActor*>& ActorsToUnmark)
 {
-	for (AActor* Marker : Markers)
+	for (int i = Markers.Num() - 1; i >= 0; --i)
 	{
-		if (IsValid(Marker))
+		auto Marker = Markers[i];
+		if (IsValid(Marker) && (!IsValid(Marker->GetAttachParentActor()) || (Marker->GetClass() == MarkerClass && ActorsToUnmark.Find(Marker->GetAttachParentActor()) != INDEX_NONE)))
 		{
-			if (!IsValid(Marker->GetAttachParentActor()) || (Marker->GetClass() == MarkerClass && ActorsToUnmark.Find(Marker->GetAttachParentActor()) != INDEX_NONE))
-			{
-				Marker->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
-				Marker->Destroy();
-				Markers.Remove(Marker);
-			}
+			Marker->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
+			Marker->Destroy();
 		}
-		else
-		{
-			Markers.Remove(Marker);
-		}
+		Markers.Remove(Marker);
 	}
 }
 

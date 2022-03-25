@@ -71,11 +71,11 @@ void UWorkbenchComponent::Craft(URecipeDataAsset* Recipe)
 				{
 					int DeltaCount = 0;
 
-					for (FCraftItemStruct ItemForCraft : Recipe->RequiredItems)
+					for (FCraftItemStruct& ItemForCraft : Recipe->RequiredItems)
 					{
 						DeltaCount -= ItemForCraft.Count;
 					}
-					for (FCraftItemStruct ItemForCraft : Recipe->CraftedItems)
+					for (FCraftItemStruct& ItemForCraft : Recipe->CraftedItems)
 					{
 						DeltaCount += ItemForCraft.Count;
 					}
@@ -94,7 +94,7 @@ void UWorkbenchComponent::Craft(URecipeDataAsset* Recipe)
 						return;
 					}
 
-					for (FCraftItemStruct ItemForCraft : Recipe->RequiredItems)
+					for (FCraftItemStruct& ItemForCraft : Recipe->RequiredItems)
 					{
 						//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(GetCountOfItemsInInventory(CrafterInventory, ItemForCraft.Item) + GetCountOfItemsInInventory(OwnInventory, ItemForCraft.Item)), true, true, FLinearColor::Blue);
 						if (GetCountOfItemsInInventory(CrafterInventory, ItemForCraft.Item) + GetCountOfItemsInInventory(OwnInventory, ItemForCraft.Item) < ItemForCraft.Count)
@@ -104,13 +104,13 @@ void UWorkbenchComponent::Craft(URecipeDataAsset* Recipe)
 						}
 					}
 
-					for (FCraftItemStruct ItemForCraft : Recipe->RequiredItems)
+					for (FCraftItemStruct& ItemForCraft : Recipe->RequiredItems)
 					{
 						int CountOfTakenItems = ExtractItemsFromInventory(CrafterInventory, ItemForCraft.Item, ItemForCraft.Count);
 						ExtractItemsFromInventory(OwnInventory, ItemForCraft.Item, ItemForCraft.Count - CountOfTakenItems);
 					}
 
-					for (FCraftItemStruct ItemForCraft : Recipe->CraftedItems)
+					for (FCraftItemStruct& ItemForCraft : Recipe->CraftedItems)
 					{
 						int CountOfItemsToPlaceLeft = ItemForCraft.Count;
 						CountOfItemsToPlaceLeft -= AddItemsToInventory(CrafterInventory, ItemForCraft.Item, CountOfItemsToPlaceLeft);
@@ -147,7 +147,7 @@ int UWorkbenchComponent::GetCountOfItemsInInventory(UInventoryComponent* Invento
 	int Count = 0;
 	if (IsValid(Inventory) && IsValid(Item))
 	{
-		for (FItemStruct ItemStruct : IItemContainerInterface::Execute_GetItems(Inventory))
+		for (FItemStruct& ItemStruct : IItemContainerInterface::Execute_GetItems(Inventory))
 		{
 			if (ItemStruct.Item == Item)
 			{

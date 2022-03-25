@@ -30,7 +30,7 @@ void AObjectivesManager::Tick(float DeltaTime)
 TArray<AActor*> AObjectivesManager::GetOnLevelObjectives(UObjective* ForObjective)
 {
 	TArray<AActor*> OnLevelObjectives;
-	for (FObjectivesOnLevel OnLevelObjective : Objectives)
+	for (FObjectivesOnLevel& OnLevelObjective : Objectives)
 	{
 		if (OnLevelObjective.ObjectiveClass == ForObjective->GetClass())
 		{

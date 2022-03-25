@@ -5,6 +5,8 @@
 #include "TalkableInterface.h"
 #include "DialogComponent.h"
 #include "DialogUnitInterface.h"
+#include "DialogCue.h"
+#include "DialogSelection.h"
 #include "Sound/DialogueWave.h"
 #include "Sound/DialogueVoice.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -15,13 +17,10 @@ void UDialog::Begin(UDialogComponent* OwnDialogComponent, TArray<class AActor*> 
 	Interlocutors = DialogInterlocutors;
 	BeginDialogForInterlocutors(OwningDialogComponent);
 	ActiveDialogUnit = NewObject<UObject>(this, InitialDialogUnit);
-	if (IsValid(ActiveDialogUnit))
+	if (IsValid(ActiveDialogUnit) && ActiveDialogUnit->Implements<UDialogUnitInterface>())
 	{
-		if (ActiveDialogUnit->Implements<UDialogUnitInterface>())
-		{
-			IDialogUnitInterface::Execute_Activate(ActiveDialogUnit, this);
-			UnitStartedForInterlocutors(ActiveDialogUnit);
-		}
+		IDialogUnitInterface::Execute_Activate(ActiveDialogUnit, this);
+		UnitStartedForInterlocutors(ActiveDialogUnit);
 	}
 }
 
@@ -35,13 +34,10 @@ void UDialog::OnDialogUnitPassed(UObject* DialogUnit, TSubclassOf<UObject> NextD
 		if (IsValid(NextDialogUnitClass))
 		{
 			ActiveDialogUnit = NewObject<UObject>(this, NextDialogUnitClass);
-			if (IsValid(ActiveDialogUnit))
+			if (IsValid(ActiveDialogUnit) && ActiveDialogUnit->Implements<UDialogUnitInterface>())
 			{
-				if (ActiveDialogUnit->Implements<UDialogUnitInterface>())
-				{
-					IDialogUnitInterface::Execute_Activate(ActiveDialogUnit, this);
-					UnitStartedForInterlocutors(ActiveDialogUnit);
-				}
+				IDialogUnitInterface::Execute_Activate(ActiveDialogUnit, this);
+				UnitStartedForInterlocutors(ActiveDialogUnit);
 			}
 		}
 		else
@@ -56,17 +52,14 @@ AActor* UDialog::GetOwnerOfVoice(UDialogueVoice* Voice)
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{
-		if (IsValid(Interlocutor))
+		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
-			if (Interlocutor->Implements<UTalkableInterface>())
+			UDialogComponent* InterlocutorDialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
+			if (IsValid(InterlocutorDialogComponent))
 			{
-				UDialogComponent* InterlocutorsDialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-				if (IsValid(InterlocutorsDialogComponent))
+				if (Voice == InterlocutorDialogComponent->GetSpeakerVoice())
 				{
-					if (Voice == InterlocutorsDialogComponent->GetSpeakerVoice())
-					{
-						return Interlocutor;
-					}
+					return Interlocutor;
 				}
 			}
 		}
@@ -89,15 +82,12 @@ TArray<UDialogueVoice*> UDialog::GetInterlocutorsVoices()
 	TArray<UDialogueVoice*> Voices;
 	for (AActor* Interlocutor : Interlocutors)
 	{
-		if (IsValid(Interlocutor))
+		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
-			if (Interlocutor->Implements<UTalkableInterface>())
+			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
+			if (IsValid(DialogComponent))
 			{
-				UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-				if (IsValid(DialogComponent))
-				{
-					Voices.Add(DialogComponent->GetSpeakerVoice());
-				}
+				Voices.Add(DialogComponent->GetSpeakerVoice());
 			}
 		}
 	}
@@ -108,15 +98,12 @@ void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponen
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{
-		if (IsValid(Interlocutor))
+		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
-			if (Interlocutor->Implements<UTalkableInterface>())
+			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
+			if (IsValid(DialogComponent))
 			{
-				UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-				if(IsValid(DialogComponent))
-				{
-					DialogComponent->DialogStarted(MasterDialogComponent);
-				}
+				DialogComponent->DialogStarted(MasterDialogComponent);
 			}
 		}
 	}
@@ -126,15 +113,12 @@ void UDialog::EndDialogForInterlocutors()
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{
-		if (IsValid(Interlocutor))
+		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
-			if (Interlocutor->Implements<UTalkableInterface>())
+			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
+			if (IsValid(DialogComponent))
 			{
-				UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-				if (IsValid(DialogComponent))
-				{
-					DialogComponent->DialogEnded();
-				}
+				DialogComponent->DialogEnded();
 			}
 		}
 	}
@@ -144,15 +128,12 @@ void UDialog::UnitStartedForInterlocutors(UObject* DialogUnit)
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{
-		if (IsValid(Interlocutor))
+		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
-			if (Interlocutor->Implements<UTalkableInterface>())
+			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
+			if (IsValid(DialogComponent))
 			{
-				UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-				if (IsValid(DialogComponent))
-				{
-					DialogComponent->UnitStarted(DialogUnit);
-				}
+				DialogComponent->UnitStarted(DialogUnit);
 			}
 		}
 	}
@@ -162,15 +143,12 @@ void UDialog::UnitEndedForInterlocutors(UObject* DialogUnit)
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{
-		if (IsValid(Interlocutor))
+		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
-			if (Interlocutor->Implements<UTalkableInterface>())
+			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
+			if (IsValid(DialogComponent))
 			{
-				UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-				if (IsValid(DialogComponent))
-				{
-					DialogComponent->UnitPassed(DialogUnit);
-				}
+				DialogComponent->UnitPassed(DialogUnit);
 			}
 		}
 	}

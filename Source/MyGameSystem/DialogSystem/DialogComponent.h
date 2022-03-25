@@ -44,8 +44,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class USoundAttenuation* GetAttenuation() { return Attenuation; }
 
-	// GetInitiatorDialogComponent
-
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
@@ -115,8 +113,6 @@ private:
 
 	UPROPERTY();
 	class UDialog* CurrentDialog;
-
-	// InitiatorDialogComponent
 
 	UPROPERTY(ReplicatedUsing = OnRep_MasterDialogComponent)
 	class UDialogComponent* MasterDialogComponent;

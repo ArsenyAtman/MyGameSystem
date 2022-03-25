@@ -11,11 +11,19 @@
 #include "Sound/DialogueVoice.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void UDialog::Begin(UDialogComponent* OwnDialogComponent, TArray<class AActor*> DialogInterlocutors)
+void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, TArray<class AActor*> OtherInterlocutors)
 {
 	OwningDialogComponent = OwnDialogComponent;
-	Interlocutors = DialogInterlocutors;
+
+	DialogMaster = Master;
+	DialogInitiator = Initiator;
+
+	Interlocutors = OtherInterlocutors;
+	Interlocutors.Add(DialogMaster);
+	Interlocutors.Add(DialogInitiator);
+
 	BeginDialogForInterlocutors(OwningDialogComponent);
+
 	ActiveDialogUnit = NewObject<UObject>(this, InitialDialogUnit);
 	if (IsValid(ActiveDialogUnit) && ActiveDialogUnit->Implements<UDialogUnitInterface>())
 	{

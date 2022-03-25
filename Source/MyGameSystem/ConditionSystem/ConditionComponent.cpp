@@ -26,7 +26,7 @@ void UConditionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(GetOwnerRole() == ENetRole::ROLE_Authority)
+	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		if (IsValid(InitialConditionClass))
 		{
@@ -39,12 +39,9 @@ void UConditionComponent::ConditionChange(UCondition* NewCondition)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(NewCondition))
+		if (IsValid(NewCondition) && NewCondition->GetOuter() == this)
 		{
-			if (NewCondition->GetOuter() == this)
-			{
-				SetCurrentCondition(NewCondition);
-			}
+			SetCurrentCondition(NewCondition);
 		}
 	}
 }

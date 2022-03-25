@@ -6,15 +6,12 @@
 
 void UAxisInputHandler::Bind_Implementation(APlayerController* PlayerController, UObject* Object)
 {
-	if (IsValid(PlayerController) && IsValid(Object))
+	if (IsValid(PlayerController) && IsValid(Object) && IsValid(PlayerController->InputComponent) && IsValid(Object->FindFunction(RelatedFunctionName)))
 	{
-		if (IsValid(PlayerController->InputComponent) && IsValid(Object->FindFunction(RelatedFunctionName)))
-		{
-			this->Unbind();
-			InputAxisBinding = PlayerController->InputComponent->BindAxis(InputMappingName, this, &UAxisInputHandler::HandleAxisInput);
-			RelatedPlayerController = PlayerController;
-			AxisDelegate.BindUFunction(Object, RelatedFunctionName);
-		}
+		this->Unbind();
+		InputAxisBinding = PlayerController->InputComponent->BindAxis(InputMappingName, this, &UAxisInputHandler::HandleAxisInput);
+		RelatedPlayerController = PlayerController;
+		AxisDelegate.BindUFunction(Object, RelatedFunctionName);
 	}
 }
 
@@ -33,22 +30,15 @@ void UAxisInputHandler::Unbind_Implementation()
 		AxisDelegate.Unbind();
 	}
 
-	if (IsValid(RelatedPlayerController))
-	{
-		if (IsValid(RelatedPlayerController->InputComponent))
+	if (IsValid(RelatedPlayerController) && IsValid(RelatedPlayerController->InputComponent))
 		{
-			for (int i = 0; i < RelatedPlayerController->InputComponent->AxisBindings.Num(); )
+			for (int i = RelatedPlayerController->InputComponent->AxisBindings.Num() - 1; i >= 0; --i)
 			{
 				FInputAxisBinding Binding = RelatedPlayerController->InputComponent->AxisBindings[i];
 				if (Binding.AxisName == InputAxisBinding.AxisName && Binding.AxisDelegate.GetDelegateForManualSet().GetHandle() == InputAxisBinding.AxisDelegate.GetDelegateForManualSet().GetHandle())
 				{
 					RelatedPlayerController->InputComponent->AxisBindings.RemoveAt(i);
 				}
-				else
-				{
-					i++;
-				}
 			}
 		}
-	}
 }

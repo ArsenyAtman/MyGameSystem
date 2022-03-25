@@ -134,7 +134,7 @@ TArray<FTradeOfferStruct> UTradeComponent::GetSellOffers(bool bCheckAvailability
 			UInventoryComponent* Inventory = ITradeActorInterface::Execute_GetTradeInventoryComponent(GetOwner());
 			if (IsValid(Inventory) && IsValid(PartnerTrader->GetPurchasePriceList()))
 			{
-				for (FTradeOfferStruct Offer : GetTradeOffers(PartnerTrader->GetPurchasePriceList()))
+				for (FTradeOfferStruct& Offer : GetTradeOffers(PartnerTrader->GetPurchasePriceList()))
 				{
 					if (Inventory->GetItemsCountOfClass(Offer.Item) > 0 || !bCheckAvailability)
 					{
@@ -159,7 +159,7 @@ TArray<FTradeOfferStruct> UTradeComponent::GetPurchaseOffers(bool bCheckAvailabi
 			UInventoryComponent* Inventory = ITradeActorInterface::Execute_GetTradeInventoryComponent(PartnerTrader->GetOwner());
 			if (IsValid(Inventory) && IsValid(PartnerTrader->GetSellPriceList()))
 			{
-				for (FTradeOfferStruct Offer : GetTradeOffers(PartnerTrader->GetSellPriceList()))
+				for (FTradeOfferStruct& Offer : GetTradeOffers(PartnerTrader->GetSellPriceList()))
 				{
 					if (Inventory->GetItemsCountOfClass(Offer.Item) > 0 || !bCheckAvailability)
 					{
@@ -236,7 +236,7 @@ void UTradeComponent::Trade(UItem* Item, int Count, ETradeAction TradeAction)
 
 				if (IsValid(PriceList) && IsValid(Item) && Count >= 0 && IsValid(SellerInventory) && IsValid(SellerWallet) && IsValid(PurchaserInventory) && IsValid(PurchaserWallet))
 				{
-					for (FTradeOfferStruct Offer : GetTradeOffers(PriceList))
+					for (FTradeOfferStruct& Offer : GetTradeOffers(PriceList))
 					{
 						if (Offer.Item == Item)
 						{
@@ -309,7 +309,7 @@ int UTradeComponent::GetCountOfItemsInInventory(UInventoryComponent* Inventory, 
 	int Count = 0;
 	if (IsValid(Inventory) && IsValid(Item))
 	{
-		for (FItemStruct ItemStruct : IItemContainerInterface::Execute_GetItems(Inventory))
+		for (FItemStruct& ItemStruct : IItemContainerInterface::Execute_GetItems(Inventory))
 		{
 			if (ItemStruct.Item == Item)
 			{

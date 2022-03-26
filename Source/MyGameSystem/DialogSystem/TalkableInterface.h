@@ -27,24 +27,4 @@ public:
 	class UDialogComponent* GetDialogComponent();
 	virtual class UDialogComponent* GetDialogComponent_Implementation() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "TalkableInterface")
-	class USkeletalMeshComponent* GetSkeletalMeshForDialog();
-	virtual class USkeletalMeshComponent* GetSkeletalMeshForDialog_Implementation() = 0;
-
-	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	//class UAudioComponent* GetAudioComponent();
-	//virtual class UAudioComponent* GetAudioComponent_Implementation() = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "TalkableInterface")
-	class USceneComponent* GetMouthComponent();
-	virtual class USceneComponent* GetMouthComponent_Implementation() = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "TalkableInterface")
-	FName GetMouthPoint();
-	virtual FName GetMouthPoint_Implementation() { return "None"; }
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "TalkableInterface")
-	FVector GetMouthRelativeLocation();
-	virtual FVector GetMouthRelativeLocation_Implementation() { return FVector(); }
-
 };

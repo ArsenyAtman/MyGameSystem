@@ -70,6 +70,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	bool HasAudioStartAnimNotify(class UAnimMontage* Montage);
 
+	UFUNCTION(BlueprintPure)
+	TArray<class UDialogueVoice*> GetInterlocutorsVoices(TArray<class AActor*> Interlocutors);
+
+	UFUNCTION(BlueprintPure)
+	class AActor* GetOwnerOfVoice(TArray<class AActor*> Interlocutors, class UDialogueVoice* Voice);
+
 	UPROPERTY(EditDefaultsOnly, meta = (MustImplement = "DialogUnitInterface"))
 	TSubclassOf<UObject> NextDialogUnit;
 

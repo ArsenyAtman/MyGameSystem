@@ -11,7 +11,11 @@
 #include "Sound/DialogueWave.h"
 #include "Sound/DialogueVoice.h"
 #include "Sound/SoundCue.h"
+#include "MyGameSystem/MontagePlayer/MontagePlayerComponent.h"
+#include "MyGameSystem/MontagePlayer/MontagePlayableActorInterface.h"
 #include "AnimNotify_PlayAudioOfDialogCue.h"
+#include "MyGameSystem/DialogWavePlayer/DialogWavePlayerComponent.h"
+#include "MyGameSystem/DialogWavePlayer/DialogWavePlayableActorInterface.h"
 
 void UDialogCue::Activate_Implementation(class UDialog* OwnDialog)
 {
@@ -104,23 +108,21 @@ void UDialogCue::PlayAnimation_Implementation()
 {
 	if (IsValid(Animation))
 	{
-		UDialogComponent* DialogComponent = OwningDialog->GetOwningDialogComponent();//->GetMasterDialogComponent();
-		if (IsValid(DialogComponent))
+		AActor* CueOwner = OwningDialog->GetOwnerOfVoice(this->Voice);
+		if (IsValid(CueOwner) && CueOwner->Implements<UMontagePlayableActorInterface>() && Animation)
 		{
-			PlayingAnimInstance = DialogComponent->PlayAnimationMontageReplicated(Animation, Voice);
+			UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(CueOwner);
+			PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(Animation);
 			if (IsValid(PlayingAnimInstance))
 			{
 				PlayingAnimInstance->OnMontageEnded.AddDynamic(this, &UDialogCue::AnimationPlayed);
 			}
-			else
-			{
-				AnimationPlayed(nullptr, true);
-			}
 		}
 	}
-	else
+
+	if (!IsValid(PlayingAnimInstance))
 	{
-		AnimationPlayed(nullptr, true);
+		this->AnimationPlayed(nullptr, true);
 	}
 
 	if (!HasAudioStartAnimNotify(Animation))
@@ -169,6 +171,40 @@ bool UDialogCue::HasAudioStartAnimNotify(UAnimMontage* Montage)
 		}
 	}
 	return false;
+}
+
+TArray<UDialogueVoice*> GetInterlocutorsVoices(TArray<AActor*> Interlocutors)
+{
+	TArray<UDialogueVoice*> Voices;
+
+	for (AActor* Interlocutor : Interlocutors)
+	{
+		if (IsValid(Interlocutor) && Interlocutor->Implements<UDialogWavePlayableActorInterface>())
+		{
+			UDialogWavePlayerComponent* DialogPlayer = IDialogWavePlayableActorInterface::Execute_GetDialogWavePlayerComponent(Interlocutor);
+			if (IsValid(DialogPlayer) && IsValid(DialogPlayer->GetSpeakerVoice()))
+			{
+				Voices.Add(DialogPlayer->GetSpeakerVoice());
+			}
+		}
+	}
+
+	return Voices;
+}
+
+AActor* GetOwnerOfVoice(TArray<AActor*> Interlocutors, UDialogueVoice* SpeakerVoice)
+{
+	for (AActor* Interlocutor : Interlocutors)
+	{
+		if (IsValid(Interlocutor) && Interlocutor->Implements<UDialogWavePlayableActorInterface>())
+		{
+			UDialogWavePlayerComponent* DialogPlayer = IDialogWavePlayableActorInterface::Execute_GetDialogWavePlayerComponent(Interlocutor);
+			if (IsValid(DialogPlayer) && DialogPlayer->GetSpeakerVoice() == SpeakerVoice)
+			{
+				return Interlocutor;
+			}
+		}
+	}
 }
 
 FDialogCueStruct UDialogCue::GetCueInfo()

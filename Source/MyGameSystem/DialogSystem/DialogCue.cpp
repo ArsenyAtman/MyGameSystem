@@ -176,7 +176,7 @@ bool UDialogCue::HasAudioStartAnimNotify(UAnimMontage* Montage)
 	return false;
 }
 
-TArray<UDialogueVoice*> GetInterlocutorsVoices(TArray<AActor*> Interlocutors)
+TArray<UDialogueVoice*> UDialogCue::GetInterlocutorsVoices(TArray<AActor*> Interlocutors)
 {
 	TArray<UDialogueVoice*> Voices;
 
@@ -195,7 +195,7 @@ TArray<UDialogueVoice*> GetInterlocutorsVoices(TArray<AActor*> Interlocutors)
 	return Voices;
 }
 
-AActor* GetOwnerOfVoice(TArray<AActor*> Interlocutors, UDialogueVoice* SpeakerVoice)
+AActor* UDialogCue::GetOwnerOfVoice(TArray<AActor*> Interlocutors, UDialogueVoice* SpeakerVoice)
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{

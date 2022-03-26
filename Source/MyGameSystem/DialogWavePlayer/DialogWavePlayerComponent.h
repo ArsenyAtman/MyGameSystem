@@ -15,11 +15,17 @@ public:
 	// Sets default values for this component's properties
 	UDialogWavePlayerComponent();
 	
+	// Without interlocutors (pick Context.Targets from DialogueWave.ContextMappings) ?
+
 	UFUNCTION(BlueprintCallable, Category = "MontagePlayerComponent")
 	class UAudioComponent* PlayDialogWaveReplicated(class UDialogueWave* DialogWave, const TArray<class UDialogueVoice*>& Interlocutors, bool bStopWhenAttachedToDestroyed = false, float VolumeMultiplier = 1.0f, float PitchMultiplier = 1.0f, float StartTime = 0.0f, bool bAutoDestroy = true);
 	
+	// Without interlocutors (pick Context.Targets from DialogueWave.ContextMappings) ?
+
 	UFUNCTION(BlueprintCallable, Category = "MontagePlayerComponent")
 	class UAudioComponent* PlayDialogWaveLocally(class UDialogueWave* DialogWave, const TArray<class UDialogueVoice*>& Interlocutors, bool bStopWhenAttachedToDestroyed = false, float VolumeMultiplier = 1.0f, float PitchMultiplier = 1.0f, float StartTime = 0.0f, bool bAutoDestroy = true);
+
+	// Without interlocutors (pick Context.Targets from DialogueWave.ContextMappings) ?
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
 	void PlayDialogWaveOnClients(class UDialogueWave* DialogWave, const TArray<class UDialogueVoice*>& Interlocutors, bool bStopWhenAttachedToDestroyed = false, float VolumeMultiplier = 1.0f, float PitchMultiplier = 1.0f, float StartTime = 0.0f, bool bAutoDestroy = true);
@@ -29,6 +35,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	bool IsPlaying();
+
+	UFUNCTION(BlueprintPure)
+	class UDialogueVoice* GetSpeakerVoice() { return SpeakerVoice; }
 	
 protected:
 

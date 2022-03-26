@@ -35,6 +35,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	bool IsPlaying();
+
+	UFUNCTION(BlueprintPure)
+	class UDialogueVoice* GetSpeakerVoice() { return SpeakerVoice; }
 	
 protected:
 

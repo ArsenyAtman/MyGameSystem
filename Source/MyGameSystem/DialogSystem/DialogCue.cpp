@@ -79,9 +79,9 @@ void UDialogCue::PlayAudio_Implementation()
 			UDialogWavePlayerComponent* DialogPlayer = IDialogWavePlayableActorInterface::Execute_GetDialogWavePlayerComponent(CueOwner);
 			if (IsValid(DialogPlayer))
 			{
-				TArray<UDialogueVoice*> Interlocutors = GetInterlocutorsVoices(OwningDialog->GetInterlocutors());
-				Interlocutors.Remove(Voice);
-				PlayingAudioComponent = DialogPlayer->PlayDialogWaveReplicated(Sound, Interlocutors);
+				TArray<UDialogueVoice*> InterlocutorsVoices = GetInterlocutorsVoices(OwningDialog->GetInterlocutors());
+				InterlocutorsVoices.Remove(Voice);
+				PlayingAudioComponent = DialogPlayer->PlayDialogWaveReplicated(Sound, InterlocutorsVoices);
 				if (IsValid(PlayingAudioComponent))
 				{
 					PlayingAudioComponent->OnAudioFinished.AddDynamic(this, &UDialogCue::AudioPlayed);

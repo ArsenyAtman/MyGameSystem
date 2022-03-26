@@ -19,12 +19,6 @@ public:
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
 	UFUNCTION(BlueprintCallable)
-	void StartAudio();
-
-	UFUNCTION(BlueprintCallable)
-	void StartAnimation();
-
-	UFUNCTION(BlueprintCallable)
 	void PlayNextDialogCue();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
@@ -41,64 +35,31 @@ protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnCueBeginned();
-	void OnCueBeginned_Implementation();
+	virtual void OnCueBeginned_Implementation();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void OnCueEnded();
-	void OnCueEnded_Implementation();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void PlayAudio();
-	virtual void PlayAudio_Implementation();
-
-	UFUNCTION(BlueprintCallable)
-	void AudioPlayed();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void PlayAnimation();
-	virtual void PlayAnimation_Implementation();
-
-	UFUNCTION(BlueprintCallable)
-	void AnimationPlayed(class UAnimMontage* AnimMontage, bool bInterrupted);
-
-	UFUNCTION(BlueprintCallable)
-	void CheckTransitionCondition();
+	virtual void OnCueEnded_Implementation();
 
 	UFUNCTION(BlueprintCallable)
 	void EndCue();
-	
-	UFUNCTION(BlueprintCallable)
-	bool HasAudioStartAnimNotify(class UAnimMontage* Montage);
 
-	UFUNCTION(BlueprintPure)
-	TArray<class UDialogueVoice*> GetInterlocutorsVoices(TArray<class AActor*> Interlocutors);
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+	FText GetSpeakerName();
+	virtual FText GetSpeakerName_Implementation() { return FText(); }
 
-	UFUNCTION(BlueprintPure)
-	class AActor* GetOwnerOfVoice(TArray<class AActor*> Interlocutors, class UDialogueVoice* Voice);
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+	FText GetCueText();
+	virtual FText GetCueText_Implementation() { return FText(); }
 
 	UPROPERTY(EditDefaultsOnly, meta = (MustImplement = "DialogUnitInterface"))
 	TSubclassOf<UObject> NextDialogUnit;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UAnimMontage* Animation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueVoice* Voice;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueWave* Sound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EDialogCueType DialogCueType;
 
 private:
 
-	UAudioComponent* PlayingAudioComponent;
-	UAnimInstance* PlayingAnimInstance;
-
 	class UDialog* OwningDialog;
 
-	bool bIsAudioPlayed = false;
-	bool bIsAnimationPlayed = false;
-	
 };

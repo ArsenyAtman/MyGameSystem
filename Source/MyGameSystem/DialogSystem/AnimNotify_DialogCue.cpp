@@ -5,10 +5,10 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "TalkableInterface.h"
 #include "DialogComponent.h"
-#include "DialogCue.h"
+#include "DialogCue_AnimationAndSound.h"
 #include "Dialog.h"
 
-UDialogCue* UAnimNotify_DialogCue::GetCurrentDialogCue(USkeletalMeshComponent* MeshComponent)
+UDialogCue_AnimationAndSound* UAnimNotify_DialogCue::GetCurrentDialogCue(USkeletalMeshComponent* MeshComponent)
 {
 	AActor* Owner = MeshComponent->GetOwner();
 	if (IsValid(Owner) && Owner->GetLocalRole() == ENetRole::ROLE_Authority && Owner->Implements<UTalkableInterface>())
@@ -22,7 +22,7 @@ UDialogCue* UAnimNotify_DialogCue::GetCurrentDialogCue(USkeletalMeshComponent* M
 				UDialog* CurrentDialog = MasterDialogComponent->GetCurrentDialog();
 				if (IsValid(CurrentDialog))
 				{
-					return CurrentDialog->GetCurrentDialogCue();
+					return Cast<UDialogCue_AnimationAndSound>(CurrentDialog->GetCurrentDialogCue());
 				}
 			}
 		}

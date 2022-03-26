@@ -16,6 +16,6 @@ class MYGAMESYSTEM_API UAnimNotify_DialogCue : public UAnimNotify
 
 protected:
 
-	virtual class UDialogCue* GetCurrentDialogCue(class USkeletalMeshComponent* MeshComponent);
+	virtual class UDialogCue_AnimationAndSound* GetCurrentDialogCue(class USkeletalMeshComponent* MeshComponent);
 	
 };

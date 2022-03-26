@@ -7,15 +7,21 @@
 #include "DialogUnitInterface.h"
 #include "DialogCue.h"
 #include "DialogSelection.h"
-#include "Sound/DialogueWave.h"
-#include "Sound/DialogueVoice.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void UDialog::Begin(UDialogComponent* OwnDialogComponent, TArray<class AActor*> DialogInterlocutors)
+void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, TArray<class AActor*> OtherInterlocutors)
 {
 	OwningDialogComponent = OwnDialogComponent;
-	Interlocutors = DialogInterlocutors;
+
+	DialogMaster = Master;
+	DialogInitiator = Initiator;
+
+	Interlocutors = OtherInterlocutors;
+	Interlocutors.Add(DialogMaster);
+	Interlocutors.Add(DialogInitiator);
+
 	BeginDialogForInterlocutors(OwningDialogComponent);
+
 	ActiveDialogUnit = NewObject<UObject>(this, InitialDialogUnit);
 	if (IsValid(ActiveDialogUnit) && ActiveDialogUnit->Implements<UDialogUnitInterface>())
 	{
@@ -48,25 +54,6 @@ void UDialog::OnDialogUnitPassed(UObject* DialogUnit, TSubclassOf<UObject> NextD
 	}
 }
 
-AActor* UDialog::GetOwnerOfVoice(UDialogueVoice* Voice)
-{
-	for (AActor* Interlocutor : Interlocutors)
-	{
-		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
-		{
-			UDialogComponent* InterlocutorDialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-			if (IsValid(InterlocutorDialogComponent))
-			{
-				if (Voice == InterlocutorDialogComponent->GetSpeakerVoice())
-				{
-					return Interlocutor;
-				}
-			}
-		}
-	}
-	return nullptr;
-}
-
 UDialogCue* UDialog::GetCurrentDialogCue()
 {
 	return Cast<UDialogCue>(ActiveDialogUnit);
@@ -75,23 +62,6 @@ UDialogCue* UDialog::GetCurrentDialogCue()
 UDialogSelection* UDialog::GetCurrentDialogSelection()
 {
 	return Cast<UDialogSelection>(ActiveDialogUnit);
-}
-
-TArray<UDialogueVoice*> UDialog::GetInterlocutorsVoices()
-{
-	TArray<UDialogueVoice*> Voices;
-	for (AActor* Interlocutor : Interlocutors)
-	{
-		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
-		{
-			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-			if (IsValid(DialogComponent))
-			{
-				Voices.Add(DialogComponent->GetSpeakerVoice());
-			}
-		}
-	}
-	return Voices;
 }
 
 void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponent)

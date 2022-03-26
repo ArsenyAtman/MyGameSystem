@@ -44,8 +44,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class USoundAttenuation* GetAttenuation() { return Attenuation; }
 
-	// GetInitiatorDialogComponent
-
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
@@ -88,12 +86,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UnitPassed(class UObject* DialogUnit);
 
-	UFUNCTION(BlueprintCallable)
-	class UAnimInstance* PlayAnimationMontageReplicated(class UAnimMontage* Montage, class UDialogueVoice* Voice);
-
-	UFUNCTION(BlueprintCallable)
-	class UAudioComponent* PlayDialogueWaveReplicated(class UDialogueWave* DialogueWave, class UDialogueVoice* Voice);
-
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -105,18 +97,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UDialog> DialogClass;
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void PlayAnimationMontageOnClients(class UAnimMontage* Montage, class USkeletalMeshComponent* SkeletalMesh);
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void PlayDialogueWaveOnClients(class UDialogueWave* DialogueWave, struct FDialogueContext Context, class USceneComponent* Component, FName Point, FVector Location);
-
 private:
 
 	UPROPERTY();
 	class UDialog* CurrentDialog;
-
-	// InitiatorDialogComponent
 
 	UPROPERTY(ReplicatedUsing = OnRep_MasterDialogComponent)
 	class UDialogComponent* MasterDialogComponent;

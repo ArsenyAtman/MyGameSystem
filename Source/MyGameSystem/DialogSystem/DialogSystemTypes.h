@@ -19,23 +19,23 @@ struct FDialogCueStruct
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UDialogueVoice* DialogueVoice;
+	FText SpeakerName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UDialogueWave* DialogueWave;
+	FText CueText;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EDialogCueType DialogCueType;
 
-	FDialogCueStruct(class UDialogueVoice* Voice = nullptr, class UDialogueWave* Wave = nullptr, EDialogCueType Type = EDialogCueType::Usual)
+	FDialogCueStruct(FText Speaker = FText(), FText Cue = FText(), EDialogCueType Type = EDialogCueType::Usual)
 	{
-		DialogueVoice = Voice;
-		DialogueWave = Wave;
+		SpeakerName = Speaker;
+		CueText = Cue;
 		DialogCueType = Type;
 	}
 
-	bool operator == (const FDialogCueStruct& CueInfo); //was FORCEINLINE
-	bool operator != (const FDialogCueStruct& CueInfo); //was FORCEINLINE
+	bool operator == (const FDialogCueStruct& CueInfo);
+	bool operator != (const FDialogCueStruct& CueInfo);
 };
 
 USTRUCT(BlueprintType, Blueprintable)

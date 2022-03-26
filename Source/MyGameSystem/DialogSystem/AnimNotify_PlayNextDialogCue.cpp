@@ -2,11 +2,11 @@
 
 
 #include "AnimNotify_PlayNextDialogCue.h"
-#include "DialogCue.h"
+#include "DialogCue_AnimationAndSound.h"
 
 void UAnimNotify_PlayNextDialogCue::Notify(USkeletalMeshComponent* MeshComponent, UAnimSequenceBase* Animation)
 {
-	UDialogCue* CurrentDialogCue = GetCurrentDialogCue(MeshComponent);
+	UDialogCue_AnimationAndSound* CurrentDialogCue = GetCurrentDialogCue(MeshComponent);
 	if (IsValid(CurrentDialogCue))
 	{
 		CurrentDialogCue->PlayNextDialogCue();

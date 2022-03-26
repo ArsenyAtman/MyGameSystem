@@ -23,16 +23,10 @@ public:
 	void OnDialogUnitPassed(class UObject* DialogUnit, TSubclassOf<UObject> NextDialogUnitClass);
 
 	UFUNCTION(BlueprintPure)
-	class AActor* GetOwnerOfVoice(class UDialogueVoice* Voice);
-
-	UFUNCTION(BlueprintPure)
 	class UDialogCue* GetCurrentDialogCue(); //was FORCEINLINE
 
 	UFUNCTION(BlueprintPure)
 	class UDialogSelection* GetCurrentDialogSelection(); //was FORCEINLINE
-
-	UFUNCTION(BlueprintPure)
-	TArray<class UDialogueVoice*> GetInterlocutorsVoices(); //was FORCEINLINE
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE TArray<class AActor*> GetInterlocutors() { return DialogInterlocutors; }

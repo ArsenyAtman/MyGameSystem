@@ -208,6 +208,8 @@ AActor* GetOwnerOfVoice(TArray<AActor*> Interlocutors, UDialogueVoice* SpeakerVo
 			}
 		}
 	}
+
+	return nullptr;
 }
 
 FDialogCueStruct UDialogCue::GetCueInfo()

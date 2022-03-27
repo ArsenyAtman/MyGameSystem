@@ -28,9 +28,7 @@ void UDialogComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME_CONDITION(UDialogComponent, MasterDialogComponent, COND_OwnerOnly);
 
-	DOREPLIFETIME_CONDITION(UDialogComponent, CurrentDialogCueInfo, COND_OwnerOnly);
-
-	DOREPLIFETIME_CONDITION(UDialogComponent, CurrentDialogSelectionInfo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UDialogComponent, CurrentDialogUnitInfo, COND_OwnerOnly);
 
 }
 
@@ -114,36 +112,24 @@ void UDialogComponent::RemoveNote(FString NoteToRemove)
 	}
 }
 
-void UDialogComponent::UnitStarted(class UObject* DialogUnit)
+void UDialogComponent::UnitStarted(UDialogUnit* DialogUnit)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		UDialogSelection* Selection = Cast<UDialogSelection>(DialogUnit);
-		if (IsValid(Selection))
+		if (IsValid(DialogUnit))
 		{
-			CurrentDialogCueInfo = nullptr;
-			CurrentDialogSelectionInfo = Selection->GetSelectionInfo();
-			OnDialogSelectionStarted.Broadcast();
-			return;
-		}
-
-		UDialogCue* Cue = Cast<UDialogCue>(DialogUnit);
-		if (IsValid(Cue))
-		{
-			CurrentDialogCueInfo = Cue->GetCueInfo();
-			CurrentDialogSelectionInfo = nullptr;
-			OnDialogCueStarted.Broadcast();
+			CurrentDialogUnitInfo = DialogUnit->GetDialogUnitInfo();
+			OnDialogUnitStarted.Broadcast();
 			return;
 		}
 	}
 }
 
-void UDialogComponent::UnitPassed(class UObject* DialogUnit)
+void UDialogComponent::UnitPassed(UDialogUnit* DialogUnit)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		CurrentDialogCueInfo = nullptr;
-		CurrentDialogSelectionInfo = nullptr;
+		CurrentDialogUnitInfo = nullptr;
 		OnDialogUnitEnded.Broadcast();
 	}
 }
@@ -161,23 +147,11 @@ void UDialogComponent::OnRep_MasterDialogComponent()
 }
 
 
-void UDialogComponent::OnRep_CurrentDialogCueInfo()
+void UDialogComponent::OnRep_CurrentDialogUnitInfo()
 {
-	if (IsValid(CurrentDialogCueInfo))
+	if (IsValid(CurrentDialogUnitInfo))
 	{
-		OnDialogCueStarted.Broadcast();
-	}
-	else
-	{
-		OnDialogUnitEnded.Broadcast();
-	}
-}
-
-void UDialogComponent::OnRep_CurrentDialogSelectionInfo()
-{
-	if (IsValid(CurrentDialogSelectionInfo))
-	{
-		OnDialogSelectionStarted.Broadcast();
+		OnDialogUnitStarted.Broadcast();
 	}
 	else
 	{

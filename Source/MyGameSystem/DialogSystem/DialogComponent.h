@@ -48,10 +48,7 @@ public:
 	FORCEINLINE class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialogCueInfo* GetCurrentDialogCueInfo() { return CurrentDialogCueInfo; }
-
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialogSelectionInfo* GetCurrentDialogSelectionInfo() { return CurrentDialogSelectionInfo; }
+	FORCEINLINE class UDialogUnitInfo* GetCurrentDialogUnitInfo() { return CurrentDialogUnitInfo; }
 
 	UFUNCTION(BlueprintCallable)
 	void SetDialogClass(TSubclassOf<UDialog> NewDialogClass) { DialogClass = NewDialogClass; }
@@ -66,10 +63,7 @@ public:
 	FORCEINLINE TArray<FString> GetNotes() { return Notepad; }
 
 	UPROPERTY(BlueprintAssignable)
-	FDialogConditionDelegate OnDialogCueStarted;
-
-	UPROPERTY(BlueprintAssignable)
-	FDialogConditionDelegate OnDialogSelectionStarted;
+	FDialogConditionDelegate OnDialogUnitStarted;
 
 	UPROPERTY(BlueprintAssignable)
 	FDialogConditionDelegate OnDialogUnitEnded;
@@ -81,10 +75,10 @@ public:
 	FDialogConditionDelegate OnDialogEnded;
 
 	UFUNCTION(BlueprintCallable)
-	void UnitStarted(class UObject* DialogUnit);
+	void UnitStarted(class UDialogUnit* DialogUnit);
 
 	UFUNCTION(BlueprintCallable)
-	void UnitPassed(class UObject* DialogUnit);
+	void UnitPassed(class UDialogUnit* DialogUnit);
 
 protected:
 
@@ -108,17 +102,11 @@ private:
 	UFUNCTION()
 	void OnRep_MasterDialogComponent();
 
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentDialogCueInfo)
-	class UDialogCueInfo* CurrentDialogCueInfo;
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentDialogUnitInfo)
+	class UDialogUnitInfo* CurrentDialogUnitInfo;
 
 	UFUNCTION()
-	void OnRep_CurrentDialogCueInfo();
-
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentDialogSelectionInfo)
-	class UDialogSelectionInfo* CurrentDialogSelectionInfo;
-
-	UFUNCTION()
-	void OnRep_CurrentDialogSelectionInfo();
+	void OnRep_CurrentDialogUnitInfo();
 
 	UPROPERTY()
 	TArray<FString> Notepad;

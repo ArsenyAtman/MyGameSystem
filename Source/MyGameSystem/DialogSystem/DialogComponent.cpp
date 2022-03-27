@@ -66,7 +66,7 @@ void UDialogComponent::SelectDialogCue_Implementation(int CueIndex)
 			UDialog* CurrentDialogOfMaster = MasterDialogComponent->GetCurrentDialog();
 			if (IsValid(CurrentDialogOfMaster))
 			{
-				UDialogSelection* ActiveSelection = CurrentDialogOfMaster->GetCurrentDialogSelection();
+				UDialogSelection* ActiveSelection = Cast<UDialogSelection>(CurrentDialogOfMaster->GetCurrentDialogUnit());
 				if (IsValid(ActiveSelection))
 				{
 					ActiveSelection->SelectNextCue(CueIndex);

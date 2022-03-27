@@ -44,10 +44,10 @@ public:
 	void EndDialogForInterlocutors();
 
 	UFUNCTION(BlueprintCallable)
-	void UnitStartedForInterlocutors(class UObject* DialogUnit);
+	void UnitStartedForInterlocutors(class UDialogUnit* DialogUnit);
 
 	UFUNCTION(BlueprintCallable)
-	void UnitEndedForInterlocutors(class UObject* DialogUnit);
+	void UnitEndedForInterlocutors(class UDialogUnit* DialogUnit);
 
 protected:
 

@@ -37,5 +37,5 @@ void UDialogCue::OnCueEnded_Implementation()
 void UDialogCue::EndCue()
 {
 	OnCueEnded();
-	OwningDialog->OnDialogUnitPassed(this, NextDialogUnit);
+	OwningDialog->OnDialogUnitPassed(this, CueInfo->NextDialogUnit);
 }

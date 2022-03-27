@@ -3,14 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "DialogUnitInterface.h"
-#include "Delegates/IDelegateInstance.h"
+#include "DialogUnit.h"
 #include "DialogSystemTypes.h"
 #include "DialogCue.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogCue : public UObject, public IDialogUnitInterface
+class MYGAMESYSTEM_API UDialogCue : public UDialogUnit
 {
 	GENERATED_BODY()
 

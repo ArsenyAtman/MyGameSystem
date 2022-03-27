@@ -39,8 +39,3 @@ void UDialogCue::EndCue()
 	OnCueEnded();
 	OwningDialog->OnDialogUnitPassed(this, NextDialogUnit);
 }
-
-FDialogCueStruct UDialogCue::GetCueInfo()
-{
-	return FDialogCueStruct(GetSpeakerName(), GetCueText(), DialogCueType);
-}

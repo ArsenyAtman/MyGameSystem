@@ -40,8 +40,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
 
-	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Info")
-	class UDialogCueInfo_AnimationAndSound* GetExpandedCueInfo();
+	virtual class UDialogCueInfo_AnimationAndSound* GetDialogUnitInfo_Implementation() override;
 
 protected:
 
@@ -62,9 +61,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Animation")
 	void AnimationPlayed(class UAnimMontage* AnimMontage, bool bInterrupted);
 
-	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
-	void CheckTransitionCondition();
-
 	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
 	TArray<class UDialogueVoice*> GetInterlocutorsVoices(TArray<class AActor*> Interlocutors);
 
@@ -75,6 +71,8 @@ protected:
 	bool HasAudioStartAnimNotify(class UAnimMontage* Montage);
 
 private:
+
+	void CheckTransitionCondition();
 
 	UAudioComponent* PlayingAudioComponent;
 	UAnimInstance* PlayingAnimInstance;

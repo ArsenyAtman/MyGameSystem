@@ -43,10 +43,12 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Info")
-	class UDialogSelectionInfo* SelectionInfo;
+	// ...
 
 private:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Info", meta = (AllowPrivateAccess = true))
+	class UDialogSelectionInfo* SelectionInfo;
 
 	FTimerHandle SelectionEndTimer;
 

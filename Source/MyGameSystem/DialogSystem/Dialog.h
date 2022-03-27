@@ -26,7 +26,7 @@ public:
 	FORCEINLINE class UDialogUnit* GetCurrentDialogUnit() {return ActiveDialogUnit; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
-	FORCEINLINE TArray<class AActor*> GetInterlocutors() { return DialogInterlocutors; }
+	FORCEINLINE TArray<class AActor*> GetInterlocutors() { return Interlocutors; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
 	FORCEINLINE class AActor* GetDialogMaster() { return DialogMaster; }
@@ -51,15 +51,13 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetInterlocutors, meta = (MustImplement = "TalkableInterface"), Category = "Dialog|Interlocutors")
-	TArray<class AActor*> Interlocutors;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dialog|InitialDialogUnit")
 	TSubclassOf<UDialogUnit> InitialDialogUnit;
 
 private:
 
-	TArray<class AActor*> DialogInterlocutors;
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetInterlocutors)
+	TArray<class AActor*> Interlocutors;
 
 	UPROPERTY(BlueprintGetter = GetDialogInitiator)
 	class AActor* DialogInitiator = nullptr;

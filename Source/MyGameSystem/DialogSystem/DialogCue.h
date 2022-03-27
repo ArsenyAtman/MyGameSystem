@@ -62,10 +62,14 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal")
 	void EndCue();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Info")
-	class UDialogCueInfo* CueInfo;
+protected:
+
+	// ...
 
 private:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Info", meta = (AllowPrivateAccess = true))
+	class UDialogCueInfo* CueInfo;
 
 	UPROPERTY(BlueprintGetter = GetOwningDialog)
 	class UDialog* OwningDialog;

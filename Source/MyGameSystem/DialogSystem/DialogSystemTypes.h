@@ -14,8 +14,15 @@ enum class EDialogCueType : uint8
 	Important	UMETA(DisplayName = "Important")
 };
 
+UCLASS(BlueprintType, Blueprintable, Abstract)
+class MYGAMESYSTEM_API UDialogUnitInfo : public UDataAsset
+{
+	GENERATED_BODY()
+
+};
+
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogCueInfo : public UDataAsset
+class MYGAMESYSTEM_API UDialogCueInfo : public UDialogUnitInfo
 {
 	GENERATED_BODY()
 
@@ -47,7 +54,7 @@ public:
 };
 
 UCLASS(BlueprintType, Blueprintable)
-class UDialogSelectionInfo : public UDataAsset
+class UDialogSelectionInfo : public UDialogUnitInfo
 {
 	GENERATED_BODY()
 

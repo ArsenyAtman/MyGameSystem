@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DialogSelection.h"
+#include "DialogUnit.h"
 #include "DialogAutoSelection.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MYGAMESYSTEM_API UDialogAutoSelection : public UObject, public IDialogUnitInterface
+class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogUnit
 {
 	GENERATED_BODY()
 

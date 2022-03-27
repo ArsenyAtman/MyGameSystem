@@ -3,13 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "DialogCue.h"
-#include "DialogUnitInterface.h"
+#include "DialogUnit.h"
 #include "DialogSelection.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogSelection : public UObject, public IDialogUnitInterface
+class MYGAMESYSTEM_API UDialogSelection : public UDialogUnit
 {
 	GENERATED_BODY()
 
@@ -22,7 +20,7 @@ public:
 	virtual void SelectNextCue_Implementation(int CueIndex);
 
 	UFUNCTION(BlueprintPure)
-	TArray<TSubclassOf<UDialogCue>> GetAvailableOptions();
+	TArray<TSubclassOf<class UDialogCue>> GetAvailableOptions();
 
 	UFUNCTION(BlueprintPure)
 	class UDialogSelectionInfo* GetSelectionInfo() { return SelectionInfo; }

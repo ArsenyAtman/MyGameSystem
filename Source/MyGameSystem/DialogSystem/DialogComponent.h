@@ -48,10 +48,10 @@ public:
 	FORCEINLINE class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE struct FDialogCueStruct GetCurrentDialogCueInfo() { return CurrentDialogCueInfo; }
+	FORCEINLINE class UDialogCueInfo* GetCurrentDialogCueInfo() { return CurrentDialogCueInfo; }
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE struct FDialogSelectionStruct GetCurrentDialogSelectionInfo() { return CurrentDialogSelectionInfo; }
+	FORCEINLINE class UDialogSelectionInfo* GetCurrentDialogSelectionInfo() { return CurrentDialogSelectionInfo; }
 
 	UFUNCTION(BlueprintCallable)
 	void SetDialogClass(TSubclassOf<UDialog> NewDialogClass) { DialogClass = NewDialogClass; }
@@ -109,13 +109,13 @@ private:
 	void OnRep_MasterDialogComponent();
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentDialogCueInfo)
-	struct FDialogCueStruct CurrentDialogCueInfo;
+	class UDialogCueInfo* CurrentDialogCueInfo;
 
 	UFUNCTION()
 	void OnRep_CurrentDialogCueInfo();
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentDialogSelectionInfo)
-	struct FDialogSelectionStruct CurrentDialogSelectionInfo;
+	class UDialogSelectionInfo* CurrentDialogSelectionInfo;
 
 	UFUNCTION()
 	void OnRep_CurrentDialogSelectionInfo();

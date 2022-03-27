@@ -6,9 +6,24 @@
 #include "DialogUnit.h"
 #include "DialogAutoSelection.generated.h"
 
-/**
- * 
- */
+UCLASS(BlueprintType, Blueprintable)
+class UDialogAutoSelectionInfo : public UDialogUnitInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSubclassOf<class UDialogCue>> CueOptions;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bCheckFromEnd = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bSelectFalseCondition = false;
+
+};
+
 UCLASS()
 class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogUnit
 {

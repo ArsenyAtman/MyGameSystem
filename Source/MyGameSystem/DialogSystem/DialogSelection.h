@@ -7,6 +7,23 @@
 #include "DialogSelection.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
+class UDialogSelectionInfo : public UDialogUnitInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
+	TArray<TSubclassOf<class UDialogCue>> Options;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bWithTimer = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float Time = -1.0f;
+};
+
+UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UDialogSelection : public UDialogUnit
 {
 	GENERATED_BODY()

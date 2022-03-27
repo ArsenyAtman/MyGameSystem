@@ -4,8 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "DialogSystemTypes.h"
 #include "DialogUnit.generated.h"
+
+UCLASS(BlueprintType, Blueprintable, Abstract)
+class MYGAMESYSTEM_API UDialogUnitInfo : public UDataAsset
+{
+	GENERATED_BODY()
+
+};
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
 class MYGAMESYSTEM_API UDialogUnit : public UObject

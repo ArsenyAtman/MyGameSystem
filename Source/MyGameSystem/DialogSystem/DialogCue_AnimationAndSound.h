@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartAnimation();
 
+	UFUNCTION(BlueprintPure)
+	class UDialogCueInfo_AnimationAndSound* GetExpandedCueInfo();
+
 protected:
 
 	virtual void OnCueBeginned_Implementation() override;
@@ -50,17 +53,8 @@ protected:
 	UFUNCTION(BlueprintPure)
 	class AActor* GetOwnerOfVoice(TArray<class AActor*> Interlocutors, class UDialogueVoice* Voice);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	bool HasAudioStartAnimNotify(class UAnimMontage* Montage);
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UAnimMontage* Animation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueVoice* Voice;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueWave* Sound;
 
 private:
 

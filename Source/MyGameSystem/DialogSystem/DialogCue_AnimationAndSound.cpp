@@ -51,17 +51,17 @@ void UDialogCue_AnimationAndSound::StartAnimation()
 
 void UDialogCue_AnimationAndSound::PlayAudio_Implementation()
 {
-	if (IsValid(Sound))
+	if (IsValid(GetExpandedCueInfo()) && IsValid(GetExpandedCueInfo()->Sound))
 	{
-		AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetInterlocutors(), Voice);
+		AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetInterlocutors(), GetExpandedCueInfo()->Voice);
 		if (IsValid(CueOwner) && CueOwner->Implements<UDialogWavePlayableActorInterface>())
 		{
 			UDialogWavePlayerComponent* DialogPlayer = IDialogWavePlayableActorInterface::Execute_GetDialogWavePlayerComponent(CueOwner);
 			if (IsValid(DialogPlayer))
 			{
 				TArray<UDialogueVoice*> InterlocutorsVoices = GetInterlocutorsVoices(GetOwningDialog()->GetInterlocutors());
-				InterlocutorsVoices.Remove(Voice);
-				PlayingAudioComponent = DialogPlayer->PlayDialogWaveReplicated(Sound, InterlocutorsVoices);
+				InterlocutorsVoices.Remove(GetExpandedCueInfo()->Voice);
+				PlayingAudioComponent = DialogPlayer->PlayDialogWaveReplicated(GetExpandedCueInfo()->Sound, InterlocutorsVoices);
 				if (IsValid(PlayingAudioComponent))
 				{
 					PlayingAudioComponent->OnAudioFinished.AddDynamic(this, &UDialogCue_AnimationAndSound::AudioPlayed);
@@ -89,13 +89,13 @@ void UDialogCue_AnimationAndSound::AudioPlayed()
 
 void UDialogCue_AnimationAndSound::PlayAnimation_Implementation()
 {
-	if (IsValid(Animation))
+	if (IsValid(GetExpandedCueInfo()) && IsValid(GetExpandedCueInfo()->Animation))
 	{
-		AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetInterlocutors(), Voice);
+		AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetInterlocutors(), GetExpandedCueInfo()->Voice);
 		if (IsValid(CueOwner) && CueOwner->Implements<UMontagePlayableActorInterface>())
 		{
 			UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(CueOwner);
-			PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(Animation);
+			PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(GetExpandedCueInfo()->Animation);
 			if (IsValid(PlayingAnimInstance))
 			{
 				PlayingAnimInstance->OnMontageEnded.AddDynamic(this, &UDialogCue_AnimationAndSound::AnimationPlayed);
@@ -108,7 +108,7 @@ void UDialogCue_AnimationAndSound::PlayAnimation_Implementation()
 		this->AnimationPlayed(nullptr, true);
 	}
 
-	if (!HasAudioStartAnimNotify(Animation))
+	if (IsValid(GetExpandedCueInfo()) && !HasAudioStartAnimNotify(GetExpandedCueInfo()->Animation))
 	{
 		PlayAudio();
 	}
@@ -184,4 +184,9 @@ bool UDialogCue_AnimationAndSound::HasAudioStartAnimNotify(UAnimMontage* Montage
 		}
 	}
 	return false;
+}
+
+UDialogCueInfo_AnimationAndSound* UDialogCue_AnimationAndSound::GetExpandedCueInfo()
+{
+	return Cast<UDialogCueInfo_AnimationAndSound>(GetCueInfo());
 }

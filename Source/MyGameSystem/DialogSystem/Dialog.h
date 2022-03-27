@@ -23,10 +23,7 @@ public:
 	void OnDialogUnitPassed(class UObject* DialogUnit, TSubclassOf<UObject> NextDialogUnitClass);
 
 	UFUNCTION(BlueprintPure)
-	class UDialogCue* GetCurrentDialogCue(); //was FORCEINLINE
-
-	UFUNCTION(BlueprintPure)
-	class UDialogSelection* GetCurrentDialogSelection(); //was FORCEINLINE
+	FORCEINLINE class UDialogUnit* GetCurrentDialogUnit() {return ActiveDialogUnit; }
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE TArray<class AActor*> GetInterlocutors() { return DialogInterlocutors; }
@@ -58,7 +55,7 @@ protected:
 	TArray<class AActor*> Interlocutors;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
-	TSubclassOf<UObject> InitialDialogUnit;
+	TSubclassOf<UDialogUnit> InitialDialogUnit;
 
 private:
 
@@ -70,6 +67,6 @@ private:
 	class UDialogComponent* OwningDialogComponent;
 
 	UPROPERTY()
-	class UObject* ActiveDialogUnit;
+	class UDialogUnit* ActiveDialogUnit;
 	
 };

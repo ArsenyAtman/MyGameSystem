@@ -13,7 +13,7 @@ class UDialogSelectionInfo : public UDialogUnitInfo
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSubclassOf<class UDialogCue>> Options;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -34,16 +34,16 @@ public:
 
 	virtual class UDialogSelectionInfo* GetDialogUnitInfo_Implementation() override { return SelectionInfo; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Internal")
 	void SelectNextCue(int CueIndex);
 	virtual void SelectNextCue_Implementation(int CueIndex);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "DialogSelection|Info")
 	TArray<TSubclassOf<class UDialogCue>> GetAvailableOptions();
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Info")
 	class UDialogSelectionInfo* SelectionInfo;
 
 private:

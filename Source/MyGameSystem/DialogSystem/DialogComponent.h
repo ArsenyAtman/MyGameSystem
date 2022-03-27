@@ -21,62 +21,62 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Control")
 	void BeginDialogue(class APawn* Initiator, const TArray<class AActor*>& AdditionalInterlocutors);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "DialogComponent|Control")
 	void SelectDialogCue(int CueIndex);
 
 	// SkipCurrentCue
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Internal")
 	void DialogStarted(class UDialogComponent* NewMasterDialogComponent);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Internal")
 	void DialogEnded();
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	class UDialog* GetCurrentDialog() { return CurrentDialog; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	class UDialogUnitInfo* GetCurrentDialogUnitInfo() { return CurrentDialogUnitInfo; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
 	void SetDialogClass(TSubclassOf<UDialog> NewDialogClass) { DialogClass = NewDialogClass; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
 	void AddNote(FString NoteToAdd);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
 	void RemoveNote(FString NoteToRemove);
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	TArray<FString> GetNotes() { return Notepad; }
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
 	FDialogUnitConditionDelegate OnDialogUnitStarted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
 	FDialogUnitConditionDelegate OnDialogUnitEnded;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
 	FDialogConditionDelegate OnDialogStarted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
 	FDialogConditionDelegate OnDialogEnded;
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "DialogComponent|Internal")
 	void UnitStarted(class UDialogUnitInfo* DialogUnitInfo);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "DialogComponent|Internal")
 	void UnitPassed(class UDialogUnitInfo* DialogUnitInfo);
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogComponent|Dialog")
 	TSubclassOf<UDialog> DialogClass;
 
 private:

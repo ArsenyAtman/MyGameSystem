@@ -34,13 +34,13 @@ class MYGAMESYSTEM_API UDialogCue_AnimationAndSound : public UDialogCue
 
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Audio")
 	void StartAudio();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Info")
 	class UDialogCueInfo_AnimationAndSound* GetExpandedCueInfo();
 
 protected:
@@ -48,30 +48,30 @@ protected:
 	virtual void OnCueBeginned_Implementation() override;
 	virtual void OnCueEnded_Implementation() override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue_AnimationAndSound|Audio")
 	void PlayAudio();
 	virtual void PlayAudio_Implementation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Audio")
 	void AudioPlayed();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue_AnimationAndSound|Animation")
 	void PlayAnimation();
 	virtual void PlayAnimation_Implementation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Animation")
 	void AnimationPlayed(class UAnimMontage* AnimMontage, bool bInterrupted);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void CheckTransitionCondition();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
 	TArray<class UDialogueVoice*> GetInterlocutorsVoices(TArray<class AActor*> Interlocutors);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
 	class AActor* GetOwnerOfVoice(TArray<class AActor*> Interlocutors, class UDialogueVoice* Voice);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Animation")
 	bool HasAudioStartAnimNotify(class UAnimMontage* Montage);
 
 private:

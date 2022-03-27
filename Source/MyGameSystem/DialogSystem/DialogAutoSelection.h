@@ -37,7 +37,7 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|Info")
 	class UDialogAutoSelectionInfo* Info;
 	
 };

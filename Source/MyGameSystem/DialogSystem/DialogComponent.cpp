@@ -121,7 +121,7 @@ void UDialogComponent::UnitStarted(class UObject* DialogUnit)
 		UDialogSelection* Selection = Cast<UDialogSelection>(DialogUnit);
 		if (IsValid(Selection))
 		{
-			CurrentDialogCueInfo = FDialogCueStruct();
+			CurrentDialogCueInfo = nullptr;
 			CurrentDialogSelectionInfo = Selection->GetSelectionInfo();
 			OnDialogSelectionStarted.Broadcast();
 			return;
@@ -131,7 +131,7 @@ void UDialogComponent::UnitStarted(class UObject* DialogUnit)
 		if (IsValid(Cue))
 		{
 			CurrentDialogCueInfo = Cue->GetCueInfo();
-			CurrentDialogSelectionInfo = FDialogSelectionStruct();
+			CurrentDialogSelectionInfo = nullptr;
 			OnDialogCueStarted.Broadcast();
 			return;
 		}
@@ -142,8 +142,8 @@ void UDialogComponent::UnitPassed(class UObject* DialogUnit)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		CurrentDialogCueInfo = FDialogCueStruct();
-		CurrentDialogSelectionInfo = FDialogSelectionStruct();
+		CurrentDialogCueInfo = nullptr;
+		CurrentDialogSelectionInfo = nullptr;
 		OnDialogUnitEnded.Broadcast();
 	}
 }
@@ -163,7 +163,7 @@ void UDialogComponent::OnRep_MasterDialogComponent()
 
 void UDialogComponent::OnRep_CurrentDialogCueInfo()
 {
-	if (CurrentDialogCueInfo != FDialogCueStruct())
+	if (IsValid(CurrentDialogCueInfo))
 	{
 		OnDialogCueStarted.Broadcast();
 	}
@@ -175,7 +175,7 @@ void UDialogComponent::OnRep_CurrentDialogCueInfo()
 
 void UDialogComponent::OnRep_CurrentDialogSelectionInfo()
 {
-	if (CurrentDialogSelectionInfo != FDialogSelectionStruct())
+	if (IsValid(CurrentDialogSelectionInfo))
 	{
 		OnDialogSelectionStarted.Broadcast();
 	}

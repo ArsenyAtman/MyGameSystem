@@ -27,9 +27,6 @@ protected:
 	virtual void OnCueBeginned_Implementation() override;
 	virtual void OnCueEnded_Implementation() override;
 
-	virtual FText GetSpeakerName_Implementation() override;
-	virtual FText GetCueText_Implementation() override;
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void PlayAudio();
 	virtual void PlayAudio_Implementation();

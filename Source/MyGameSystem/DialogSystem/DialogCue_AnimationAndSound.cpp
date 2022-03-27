@@ -39,16 +39,6 @@ void UDialogCue_AnimationAndSound::OnCueEnded_Implementation()
 	Super::OnCueEnded_Implementation();
 }
 
-FText UDialogCue_AnimationAndSound::GetSpeakerName_Implementation()
-{
-	return FText::FromString(Voice->GetName());
-}
-
-FText UDialogCue_AnimationAndSound::GetCueText_Implementation()
-{
-	return FText::FromString(Sound->SpokenText);
-}
-
 void UDialogCue_AnimationAndSound::StartAudio()
 {
 	PlayAudio();

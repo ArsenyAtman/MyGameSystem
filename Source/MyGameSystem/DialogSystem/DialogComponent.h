@@ -44,7 +44,10 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	class UDialogUnitInfo* GetCurrentDialogUnitInfo() { return CurrentDialogUnitInfo; }
 
-	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
+	TSubclassOf<UDialog> GetDialogClass() { return DialogClass; }
+
+	UFUNCTION(BlueprintSetter, Category = "DialogComponent|Dialog")
 	void SetDialogClass(TSubclassOf<UDialog> NewDialogClass) { DialogClass = NewDialogClass; }
 
 	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
@@ -76,10 +79,12 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogComponent|Dialog")
-	TSubclassOf<UDialog> DialogClass;
+	// ...
 
 private:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetDialogClass, BlueprintSetter = SetDialogClass, Category = "DialogComponent|Dialog", meta = (AllowPrivateAccess = true))
+		TSubclassOf<UDialog> DialogClass;
 
 	UPROPERTY(BlueprintGetter = GetCurrentDialog);
 	class UDialog* CurrentDialog;

@@ -6,6 +6,24 @@
 #include "DialogCue.h"
 #include "DialogCue_AnimationAndSound.generated.h"
 
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UDialogCueInfo_AnimationAndSound : public UDialogCueInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UAnimMontage* Animation = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDialogueVoice* Voice = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDialogueWave* Sound = nullptr;
+
+};
+
 /**
  * 
  */
@@ -16,56 +34,45 @@ class MYGAMESYSTEM_API UDialogCue_AnimationAndSound : public UDialogCue
 
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Audio")
 	void StartAudio();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
+
+	virtual class UDialogCueInfo_AnimationAndSound* GetDialogUnitInfo_Implementation() override;
 
 protected:
 
 	virtual void OnCueBeginned_Implementation() override;
 	virtual void OnCueEnded_Implementation() override;
 
-	virtual FText GetSpeakerName_Implementation() override;
-	virtual FText GetCueText_Implementation() override;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue_AnimationAndSound|Audio")
 	void PlayAudio();
 	virtual void PlayAudio_Implementation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Audio")
 	void AudioPlayed();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue_AnimationAndSound|Animation")
 	void PlayAnimation();
 	virtual void PlayAnimation_Implementation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Animation")
 	void AnimationPlayed(class UAnimMontage* AnimMontage, bool bInterrupted);
 
-	UFUNCTION(BlueprintCallable)
-	void CheckTransitionCondition();
-
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
 	TArray<class UDialogueVoice*> GetInterlocutorsVoices(TArray<class AActor*> Interlocutors);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
 	class AActor* GetOwnerOfVoice(TArray<class AActor*> Interlocutors, class UDialogueVoice* Voice);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Animation")
 	bool HasAudioStartAnimNotify(class UAnimMontage* Montage);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UAnimMontage* Animation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueVoice* Voice;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueWave* Sound;
-
 private:
+
+	void CheckTransitionCondition();
 
 	UAudioComponent* PlayingAudioComponent;
 	UAnimInstance* PlayingAnimInstance;

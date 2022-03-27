@@ -3,14 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "DialogUnitInterface.h"
-#include "Delegates/IDelegateInstance.h"
-#include "DialogSystemTypes.h"
+#include "DialogUnit.h"
 #include "DialogCue.generated.h"
 
+UENUM(BlueprintType, Blueprintable)
+enum class EDialogCueType : uint8
+{
+	Usual		UMETA(DisplayName = "Usual"),
+	Additional	UMETA(DisplayName = "Additional"),
+	Important	UMETA(DisplayName = "Important")
+};
+
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogCue : public UObject, public IDialogUnitInterface
+class MYGAMESYSTEM_API UDialogCueInfo : public UDialogUnitInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UDialogUnit> NextDialogUnit = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EDialogCueType DialogCueType = EDialogCueType::Usual;
+};
+
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UDialogCue : public UDialogUnit
 {
 	GENERATED_BODY()
 
@@ -18,48 +37,41 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	UFUNCTION(BlueprintCallable)
+	virtual class UDialogCueInfo* GetDialogUnitInfo_Implementation() override { return CueInfo; }
+
+	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Availability")
 	bool CheckAvailabilityCondition(class UDialog* CheckingDialog);
 	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog);
 
-	UFUNCTION(BlueprintPure)
-	struct FDialogCueStruct GetCueInfo(); //was FORCEINLINE
-
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialog* GetOwningDialog() { return OwningDialog; }
+	UFUNCTION(BlueprintGetter, Category = "DialogCue|Dialog")
+	class UDialog* GetOwningDialog() { return OwningDialog; }
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
 	void OnCueBeginned();
 	virtual void OnCueBeginned_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
 	void OnCueEnded();
 	virtual void OnCueEnded_Implementation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal")
 	void EndCue();
 
-	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
-	FText GetSpeakerName();
-	virtual FText GetSpeakerName_Implementation() { return FText(); }
+protected:
 
-	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
-	FText GetCueText();
-	virtual FText GetCueText_Implementation() { return FText(); }
-
-	UPROPERTY(EditDefaultsOnly, meta = (MustImplement = "DialogUnitInterface"))
-	TSubclassOf<UObject> NextDialogUnit;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EDialogCueType DialogCueType;
+	// ...
 
 private:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Info", meta = (AllowPrivateAccess = true))
+	class UDialogCueInfo* CueInfo;
+
+	UPROPERTY(BlueprintGetter = GetOwningDialog)
 	class UDialog* OwningDialog;
 
 };

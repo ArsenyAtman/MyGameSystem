@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DialogSystemTypes.h"
 #include "Sound/DialogueTypes.h"
 #include "DialogComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDialogConditionDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogUnitConditionDelegate, class UDialogUnitInfo*, DialogUnitInfo);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UDialogComponent : public UActorComponent
@@ -21,106 +21,84 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Control")
 	void BeginDialogue(class APawn* Initiator, const TArray<class AActor*>& AdditionalInterlocutors);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "DialogComponent|Control")
 	void SelectDialogCue(int CueIndex);
 
 	// SkipCurrentCue
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Internal")
 	void DialogStarted(class UDialogComponent* NewMasterDialogComponent);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Internal")
 	void DialogEnded();
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialog* GetCurrentDialog() { return CurrentDialog; }
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
+	class UDialog* GetCurrentDialog() { return CurrentDialog; }
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialogueVoice* GetSpeakerVoice() { return SpeakerVoice; }
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
+	class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class USoundAttenuation* GetAttenuation() { return Attenuation; }
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
+	class UDialogUnitInfo* GetCurrentDialogUnitInfo() { return CurrentDialogUnitInfo; }
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
+	TSubclassOf<UDialog> GetDialogClass() { return DialogClass; }
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE struct FDialogCueStruct GetCurrentDialogCueInfo() { return CurrentDialogCueInfo; }
-
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE struct FDialogSelectionStruct GetCurrentDialogSelectionInfo() { return CurrentDialogSelectionInfo; }
-
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintSetter, Category = "DialogComponent|Dialog")
 	void SetDialogClass(TSubclassOf<UDialog> NewDialogClass) { DialogClass = NewDialogClass; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
 	void AddNote(FString NoteToAdd);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
 	void RemoveNote(FString NoteToRemove);
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE TArray<FString> GetNotes() { return Notepad; }
+	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
+	TArray<FString> GetNotes() { return Notepad; }
 
-	UPROPERTY(BlueprintAssignable)
-	FDialogConditionDelegate OnDialogCueStarted;
+	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
+	FDialogUnitConditionDelegate OnDialogUnitStarted;
 
-	UPROPERTY(BlueprintAssignable)
-	FDialogConditionDelegate OnDialogSelectionStarted;
+	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
+	FDialogUnitConditionDelegate OnDialogUnitEnded;
 
-	UPROPERTY(BlueprintAssignable)
-	FDialogConditionDelegate OnDialogUnitEnded;
-
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
 	FDialogConditionDelegate OnDialogStarted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
 	FDialogConditionDelegate OnDialogEnded;
 
-	UFUNCTION(BlueprintCallable)
-	void UnitStarted(class UObject* DialogUnit);
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "DialogComponent|Internal")
+	void UnitStarted(class UDialogUnitInfo* DialogUnitInfo);
 
-	UFUNCTION(BlueprintCallable)
-	void UnitPassed(class UObject* DialogUnit);
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "DialogComponent|Internal")
+	void UnitPassed(class UDialogUnitInfo* DialogUnitInfo);
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueVoice* SpeakerVoice;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class USoundAttenuation* Attenuation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UDialog> DialogClass;
+	// ...
 
 private:
 
-	UPROPERTY();
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetDialogClass, BlueprintSetter = SetDialogClass, Category = "DialogComponent|Dialog", meta = (AllowPrivateAccess = true))
+		TSubclassOf<UDialog> DialogClass;
+
+	UPROPERTY(BlueprintGetter = GetCurrentDialog);
 	class UDialog* CurrentDialog;
 
-	UPROPERTY(ReplicatedUsing = OnRep_MasterDialogComponent)
+	UPROPERTY(BlueprintGetter = GetMasterDialogComponent, ReplicatedUsing = OnRep_MasterDialogComponent)
 	class UDialogComponent* MasterDialogComponent;
 
 	UFUNCTION()
 	void OnRep_MasterDialogComponent();
 
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentDialogCueInfo)
-	struct FDialogCueStruct CurrentDialogCueInfo;
+	UPROPERTY(BlueprintGetter = GetCurrentDialogUnitInfo)
+	class UDialogUnitInfo* CurrentDialogUnitInfo;
 
-	UFUNCTION()
-	void OnRep_CurrentDialogCueInfo();
-
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentDialogSelectionInfo)
-	struct FDialogSelectionStruct CurrentDialogSelectionInfo;
-
-	UFUNCTION()
-	void OnRep_CurrentDialogSelectionInfo();
-
-	UPROPERTY()
+	UPROPERTY(BlueprintGetter = GetNotes)
 	TArray<FString> Notepad;
 
 	// FiredCues

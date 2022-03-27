@@ -3,22 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DialogSelection.h"
+#include "DialogUnit.h"
 #include "DialogAutoSelection.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class MYGAMESYSTEM_API UDialogAutoSelection : public UObject, public IDialogUnitInterface
+UCLASS(BlueprintType, Blueprintable)
+class UDialogAutoSelectionInfo : public UDialogUnitInfo
 {
 	GENERATED_BODY()
 
 public:
 
-	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
-
-protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSubclassOf<class UDialogCue>> CueOptions;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bCheckFromEnd = false;
@@ -26,7 +22,26 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bSelectFalseCondition = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
-	TArray<TSubclassOf<UObject>> CueOptions;
+};
+
+UCLASS()
+class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogUnit
+{
+	GENERATED_BODY()
+
+public:
+
+	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
+
+	virtual class UDialogAutoSelectionInfo* GetDialogUnitInfo_Implementation() override { return Info; }
+
+protected:
+
+	// ...
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|Info", meta = (AllowPrivateAccess = true))
+	class UDialogAutoSelectionInfo* Info;
 	
 };

@@ -25,18 +25,12 @@ public:
 	TArray<TSubclassOf<UDialogCue>> GetAvailableOptions();
 
 	UFUNCTION(BlueprintPure)
-	struct FDialogSelectionStruct GetSelectionInfo(); //was FORCEINLINE
+	class UDialogSelectionInfo* GetSelectionInfo() { return SelectionInfo; }
 
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSubclassOf<UDialogCue>> CueOptions;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bHasTimer = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float TimerDuration = -1.0f;
+	class UDialogSelectionInfo* SelectionInfo;
 
 private:
 

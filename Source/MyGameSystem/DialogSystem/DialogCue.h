@@ -26,7 +26,7 @@ public:
 	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog);
 
 	UFUNCTION(BlueprintPure)
-	struct FDialogCueStruct GetCueInfo(); //was FORCEINLINE
+	FORCEINLINE class UDialogCueInfo* GetCueInfo() { return CueInfo; }
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UDialog* GetOwningDialog() { return OwningDialog; }
@@ -44,19 +44,14 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void EndCue();
 
-	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
-	FText GetSpeakerName();
-	virtual FText GetSpeakerName_Implementation() { return FText(); }
-
-	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
-	FText GetCueText();
-	virtual FText GetCueText_Implementation() { return FText(); }
-
-	UPROPERTY(EditDefaultsOnly, meta = (MustImplement = "DialogUnitInterface"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
 	TSubclassOf<UObject> NextDialogUnit;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EDialogCueType DialogCueType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDialogCueInfo* CueInfo;
 
 private:
 

@@ -22,7 +22,7 @@ UDialogCue_AnimationAndSound* UAnimNotify_DialogCue::GetCurrentDialogCue(USkelet
 				UDialog* CurrentDialog = MasterDialogComponent->GetCurrentDialog();
 				if (IsValid(CurrentDialog))
 				{
-					return Cast<UDialogCue_AnimationAndSound>(CurrentDialog->GetCurrentDialogCue());
+					return Cast<UDialogCue_AnimationAndSound>(CurrentDialog->GetCurrentDialogUnit());
 				}
 			}
 		}

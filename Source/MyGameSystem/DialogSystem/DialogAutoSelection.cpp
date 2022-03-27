@@ -2,16 +2,17 @@
 
 #include "DialogAutoSelection.h"
 #include "Dialog.h"
+#include "DialogCue.h"
 
 void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 {
-	TArray<TSubclassOf<UObject>> DialogCueOptions = CueOptions;
-	if (bCheckFromEnd)
+	TArray<TSubclassOf<UDialogCue>> DialogCueOptions = Info->CueOptions;
+	if (Info->bCheckFromEnd)
 	{
 		Algo::Reverse(DialogCueOptions);
 	}
 
-	for (TSubclassOf<UObject>& DialogCueClass : DialogCueOptions)
+	for (TSubclassOf<UDialogCue>& DialogCueClass : DialogCueOptions)
 	{
 		if (IsValid(DialogCueClass))
 		{
@@ -19,7 +20,7 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 			if (IsValid(DialogCueObject))
 			{
 				bool bConditionResult = DialogCueObject->CheckAvailabilityCondition(OwnDialog);
-				if (bSelectFalseCondition)
+				if (Info->bSelectFalseCondition)
 				{
 					bConditionResult = !bConditionResult;
 				}

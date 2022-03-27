@@ -9,10 +9,10 @@
 void UDialogSelection::Activate_Implementation(UDialog* OwnDialog)
 {
 	OwningDialog = OwnDialog;
-	if (bHasTimer)
+	if (IsValid(SelectionInfo) && SelectionInfo->bWithTimer)
 	{
 		FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &UDialogSelection::SelectNextCue, 0);
-		GetWorld()->GetTimerManager().SetTimer(SelectionEndTimer, Delegate, TimerDuration, false);
+		GetWorld()->GetTimerManager().SetTimer(SelectionEndTimer, Delegate, SelectionInfo->Time, false);
 	}
 }
 
@@ -34,7 +34,7 @@ void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions()
 {
 	TArray<TSubclassOf<UDialogCue>> AvailableOptions;
-	for (TSubclassOf<UDialogCue>& Cue : CueOptions)
+	for (TSubclassOf<UDialogCue>& Cue : SelectionInfo->Options)
 	{
 		UDialogCue* CueObject = Cast<UDialogCue>(Cue.GetDefaultObject());
 		if (IsValid(CueObject) && CueObject->CheckAvailabilityCondition(OwningDialog))
@@ -43,21 +43,4 @@ TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions()
 		}
 	}
 	return AvailableOptions;
-}
-
-FDialogSelectionStruct UDialogSelection::GetSelectionInfo()
-{
-	TArray<FDialogCueStruct> OptionsInfo = TArray<FDialogCueStruct>();
-	for (TSubclassOf<UDialogCue>& CueClass : CueOptions)
-	{
-		if (IsValid(CueClass))
-		{
-			UDialogCue* Cue = Cast<UDialogCue>(CueClass->GetDefaultObject());
-			if (IsValid(Cue) && Cue->CheckAvailabilityCondition(OwningDialog))
-			{
-				OptionsInfo.Add(Cue->GetCueInfo());
-			}
-		}
-	}
-	return FDialogSelectionStruct(bHasTimer, GetWorld()->GetTimerManager().GetTimerRemaining(SelectionEndTimer), OptionsInfo);
 }

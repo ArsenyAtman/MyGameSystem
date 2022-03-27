@@ -32,7 +32,7 @@ void UDialog::OnDialogUnitPassed(UObject* DialogUnit, TSubclassOf<UObject> NextD
 {
 	if (ActiveDialogUnit == DialogUnit)
 	{
-		UObject* PrevDialogUnit = ActiveDialogUnit;
+		UDialogUnit* PrevDialogUnit = ActiveDialogUnit;
 		UnitEndedForInterlocutors(PrevDialogUnit);
 
 		if (IsValid(NextDialogUnitClass))
@@ -82,7 +82,7 @@ void UDialog::EndDialogForInterlocutors()
 	}
 }
 
-void UDialog::UnitStartedForInterlocutors(UObject* DialogUnit)
+void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit)
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{
@@ -97,7 +97,7 @@ void UDialog::UnitStartedForInterlocutors(UObject* DialogUnit)
 	}
 }
 
-void UDialog::UnitEndedForInterlocutors(UObject* DialogUnit)
+void UDialog::UnitEndedForInterlocutors(UDialogUnit* DialogUnit)
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{

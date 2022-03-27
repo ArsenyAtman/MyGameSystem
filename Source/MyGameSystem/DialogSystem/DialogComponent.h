@@ -36,14 +36,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DialogEnded();
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialog* GetCurrentDialog() { return CurrentDialog; }
+	UFUNCTION(BlueprintGetter)
+	class UDialog* GetCurrentDialog() { return CurrentDialog; }
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
+	UFUNCTION(BlueprintGetter)
+	class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialogUnitInfo* GetCurrentDialogUnitInfo() { return CurrentDialogUnitInfo; }
+	UFUNCTION(BlueprintGetter)
+	class UDialogUnitInfo* GetCurrentDialogUnitInfo() { return CurrentDialogUnitInfo; }
 
 	UFUNCTION(BlueprintCallable)
 	void SetDialogClass(TSubclassOf<UDialog> NewDialogClass) { DialogClass = NewDialogClass; }
@@ -54,8 +54,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveNote(FString NoteToRemove);
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE TArray<FString> GetNotes() { return Notepad; }
+	UFUNCTION(BlueprintGetter)
+	TArray<FString> GetNotes() { return Notepad; }
 
 	UPROPERTY(BlueprintAssignable)
 	FDialogUnitConditionDelegate OnDialogUnitStarted;
@@ -82,18 +82,19 @@ protected:
 
 private:
 
-	UPROPERTY();
+	UPROPERTY(BlueprintGetter = GetCurrentDialog);
 	class UDialog* CurrentDialog;
 
-	UPROPERTY(ReplicatedUsing = OnRep_MasterDialogComponent)
+	UPROPERTY(BlueprintGetter = GetMasterDialogComponent, ReplicatedUsing = OnRep_MasterDialogComponent)
 	class UDialogComponent* MasterDialogComponent;
 
 	UFUNCTION()
 	void OnRep_MasterDialogComponent();
 
+	UPROPERTY(BlueprintGetter = GetCurrentDialogUnitInfo)
 	class UDialogUnitInfo* CurrentDialogUnitInfo;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintGetter = GetNotes)
 	TArray<FString> Notepad;
 
 	// FiredCues

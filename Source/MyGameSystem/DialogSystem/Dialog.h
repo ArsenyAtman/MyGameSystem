@@ -22,19 +22,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnDialogUnitPassed(class UObject* DialogUnit, TSubclassOf<UObject> NextDialogUnitClass);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE class UDialogUnit* GetCurrentDialogUnit() {return ActiveDialogUnit; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE TArray<class AActor*> GetInterlocutors() { return DialogInterlocutors; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE class AActor* GetDialogMaster() { return DialogMaster; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE class AActor* GetDialogInitiator() { return DialogInitiator; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	FORCEINLINE class UDialogComponent* GetOwningDialogComponent() { return OwningDialogComponent; }
 
 	UFUNCTION(BlueprintCallable)
@@ -51,7 +51,7 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (MustImplement = "TalkableInterface"))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetInterlocutors, meta = (MustImplement = "TalkableInterface"))
 	TArray<class AActor*> Interlocutors;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
@@ -61,12 +61,16 @@ private:
 
 	TArray<class AActor*> DialogInterlocutors;
 
+	UPROPERTY(BlueprintGetter = GetDialogInitiator)
 	class AActor* DialogInitiator = nullptr;
+
+	UPROPERTY(BlueprintGetter = GetDialogMaster)
 	class AActor* DialogMaster = nullptr;
 
+	UPROPERTY(BlueprintGetter = GetOwningDialogComponent)
 	class UDialogComponent* OwningDialogComponent;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintGetter = GetCurrentDialogUnit)
 	class UDialogUnit* ActiveDialogUnit;
 	
 };

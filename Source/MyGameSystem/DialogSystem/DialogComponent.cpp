@@ -112,25 +112,23 @@ void UDialogComponent::RemoveNote(FString NoteToRemove)
 	}
 }
 
-void UDialogComponent::UnitStarted(UDialogUnit* DialogUnit)
+void UDialogComponent::UnitStarted_Implementation(UDialogUnitInfo* DialogUnitInfo)
 {
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
+	CurrentDialogUnitInfo = DialogUnitInfo;
+
+	if (OnDialogUnitStarted.IsBound())
 	{
-		if (IsValid(DialogUnit))
-		{
-			CurrentDialogUnitInfo = DialogUnit->GetDialogUnitInfo();
-			OnDialogUnitStarted.Broadcast();
-			return;
-		}
+		OnDialogUnitStarted.Broadcast(DialogUnitInfo);
 	}
 }
 
-void UDialogComponent::UnitPassed(UDialogUnit* DialogUnit)
+void UDialogComponent::UnitPassed_Implementation(UDialogUnitInfo* DialogUnitInfo)
 {
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
+	CurrentDialogUnitInfo = nullptr;
+
+	if (OnDialogUnitEnded.IsBound())
 	{
-		CurrentDialogUnitInfo = nullptr;
-		OnDialogUnitEnded.Broadcast();
+		OnDialogUnitEnded.Broadcast(DialogUnitInfo);
 	}
 }
 
@@ -138,23 +136,16 @@ void UDialogComponent::OnRep_MasterDialogComponent()
 {
 	if (IsValid(MasterDialogComponent))
 	{
-		OnDialogStarted.Broadcast();
+		if (OnDialogStarted.IsBound())
+		{
+			OnDialogStarted.Broadcast();
+		}
 	}
 	else
 	{
-		OnDialogEnded.Broadcast();
-	}
-}
-
-
-void UDialogComponent::OnRep_CurrentDialogUnitInfo()
-{
-	if (IsValid(CurrentDialogUnitInfo))
-	{
-		OnDialogUnitStarted.Broadcast();
-	}
-	else
-	{
-		OnDialogUnitEnded.Broadcast();
+		if (OnDialogEnded.IsBound())
+		{
+			OnDialogEnded.Broadcast();
+		}
 	}
 }

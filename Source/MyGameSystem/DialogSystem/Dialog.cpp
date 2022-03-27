@@ -91,7 +91,7 @@ void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit)
 			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
 			if (IsValid(DialogComponent))
 			{
-				DialogComponent->UnitStarted(DialogUnit);
+				DialogComponent->UnitStarted(DialogUnit->GetDialogUnitInfo());
 			}
 		}
 	}
@@ -106,7 +106,7 @@ void UDialog::UnitEndedForInterlocutors(UDialogUnit* DialogUnit)
 			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
 			if (IsValid(DialogComponent))
 			{
-				DialogComponent->UnitPassed(DialogUnit);
+				DialogComponent->UnitPassed(DialogUnit->GetDialogUnitInfo());
 			}
 		}
 	}

@@ -18,15 +18,11 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
+	virtual class UDialogAutoSelectionInfo* GetDialogUnitInfo_Implementation() override { return Info; }
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bCheckFromEnd = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bSelectFalseCondition = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
-	TArray<TSubclassOf<UObject>> CueOptions;
+	class UDialogAutoSelectionInfo* Info;
 	
 };

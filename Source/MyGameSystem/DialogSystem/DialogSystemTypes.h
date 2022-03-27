@@ -60,12 +60,30 @@ class UDialogSelectionInfo : public UDialogUnitInfo
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
 	TArray<TSubclassOf<class UDialogCue>> Options;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bWithTimer = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Time = -1.0f;
+};
+
+UCLASS(BlueprintType, Blueprintable)
+class UDialogAutoSelectionInfo : public UDialogUnitInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSubclassOf<class UDialogCue>> CueOptions;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bCheckFromEnd = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bSelectFalseCondition = false;
+
 };

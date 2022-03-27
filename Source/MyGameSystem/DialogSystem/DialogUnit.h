@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "DialogSystemTypes.h"
 #include "DialogUnit.generated.h"
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
@@ -16,5 +17,11 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Activate(class UDialog* OwnDialog);
 	virtual void Activate_Implementation(class UDialog* OwnDialog) { return; }
+
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+	class UDialogUnitInfo* GetDialogUnitInfo();
+	virtual class UDialogUnitInfo* GetDialogUnitInfo_Implementation() { return nullptr; }
+
+private:
 
 };

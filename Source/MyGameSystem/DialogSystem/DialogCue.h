@@ -25,8 +25,8 @@ public:
 	bool CheckAvailabilityCondition(class UDialog* CheckingDialog);
 	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog);
 
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialog* GetOwningDialog() { return OwningDialog; }
+	UFUNCTION(BlueprintGetter)
+	class UDialog* GetOwningDialog() { return OwningDialog; }
 
 protected:
 
@@ -52,6 +52,7 @@ protected:
 
 private:
 
+	UPROPERTY(BlueprintGetter = GetOwningDialog)
 	class UDialog* OwningDialog;
 
 };

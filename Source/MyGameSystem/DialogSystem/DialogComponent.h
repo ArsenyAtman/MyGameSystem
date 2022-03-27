@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DialogSystemTypes.h"
 #include "Sound/DialogueTypes.h"
 #include "DialogComponent.generated.h"
 

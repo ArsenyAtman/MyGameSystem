@@ -4,8 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "DialogUnit.h"
-#include "DialogSystemTypes.h"
 #include "DialogCue.generated.h"
+
+UENUM(BlueprintType, Blueprintable)
+enum class EDialogCueType : uint8
+{
+	Usual		UMETA(DisplayName = "Usual"),
+	Additional	UMETA(DisplayName = "Additional"),
+	Important	UMETA(DisplayName = "Important")
+};
+
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UDialogCueInfo : public UDialogUnitInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
+	TSubclassOf<UObject> NextDialogUnit = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EDialogCueType DialogCueType = EDialogCueType::Usual;
+};
 
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UDialogCue : public UDialogUnit

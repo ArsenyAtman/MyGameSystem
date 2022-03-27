@@ -16,15 +16,14 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
+	virtual class UDialogCueInfo* GetDialogUnitInfo_Implementation() override { return CueInfo; }
+
 	UFUNCTION(BlueprintCallable)
 	void PlayNextDialogCue();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool CheckAvailabilityCondition(class UDialog* CheckingDialog);
 	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog);
-
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialogCueInfo* GetCueInfo() { return CueInfo; }
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UDialog* GetOwningDialog() { return OwningDialog; }

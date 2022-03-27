@@ -27,7 +27,6 @@ void UDialogComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UDialogComponent, MasterDialogComponent, COND_OwnerOnly);
-
 	DOREPLIFETIME_CONDITION(UDialogComponent, CurrentDialogUnitInfo, COND_OwnerOnly);
 
 }
@@ -49,7 +48,10 @@ void UDialogComponent::BeginDialogue(APawn* Initiator, const TArray<AActor*>& Ad
 
 				CurrentDialog->Begin(this, this->GetOwner(), Initiator, Interlocutors);
 
-				OnDialogStarted.Broadcast();
+				if (OnDialogStarted.IsBound())
+				{
+					OnDialogStarted.Broadcast();
+				}
 			}
 		}
 	}
@@ -81,7 +83,11 @@ void UDialogComponent::DialogStarted(class UDialogComponent* NewMasterDialogComp
 		if (!IsValid(MasterDialogComponent))
 		{
 			MasterDialogComponent = NewMasterDialogComponent;
-			OnDialogStarted.Broadcast();
+
+			if (OnDialogStarted.IsBound())
+			{
+				OnDialogStarted.Broadcast();
+			}
 		}
 	}
 }
@@ -92,7 +98,11 @@ void UDialogComponent::DialogEnded()
 	{
 		MasterDialogComponent = nullptr;
 		CurrentDialog = nullptr;
-		OnDialogEnded.Broadcast();
+
+		if (OnDialogEnded.IsBound())
+		{
+			OnDialogEnded.Broadcast();
+		}
 	}
 }
 

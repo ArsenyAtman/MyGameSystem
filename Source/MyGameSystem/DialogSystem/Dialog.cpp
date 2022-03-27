@@ -4,9 +4,7 @@
 #include "Dialog.h"
 #include "TalkableInterface.h"
 #include "DialogComponent.h"
-#include "DialogUnitInterface.h"
-#include "DialogCue.h"
-#include "DialogSelection.h"
+#include "DialogUnit.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, TArray<class AActor*> OtherInterlocutors)
@@ -22,10 +20,10 @@ void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, 
 
 	BeginDialogForInterlocutors(OwningDialogComponent);
 
-	ActiveDialogUnit = NewObject<UObject>(this, InitialDialogUnit);
-	if (IsValid(ActiveDialogUnit) && ActiveDialogUnit->Implements<UDialogUnitInterface>())
+	ActiveDialogUnit = NewObject<UDialogUnit>(this, InitialDialogUnit);
+	if (IsValid(ActiveDialogUnit))
 	{
-		IDialogUnitInterface::Execute_Activate(ActiveDialogUnit, this);
+		ActiveDialogUnit->Activate(this);
 		UnitStartedForInterlocutors(ActiveDialogUnit);
 	}
 }
@@ -39,10 +37,10 @@ void UDialog::OnDialogUnitPassed(UObject* DialogUnit, TSubclassOf<UObject> NextD
 
 		if (IsValid(NextDialogUnitClass))
 		{
-			ActiveDialogUnit = NewObject<UObject>(this, NextDialogUnitClass);
-			if (IsValid(ActiveDialogUnit) && ActiveDialogUnit->Implements<UDialogUnitInterface>())
+			ActiveDialogUnit = NewObject<UDialogUnit>(this, NextDialogUnitClass);
+			if (IsValid(ActiveDialogUnit))
 			{
-				IDialogUnitInterface::Execute_Activate(ActiveDialogUnit, this);
+				ActiveDialogUnit->Activate(this);
 				UnitStartedForInterlocutors(ActiveDialogUnit);
 			}
 		}
@@ -52,16 +50,6 @@ void UDialog::OnDialogUnitPassed(UObject* DialogUnit, TSubclassOf<UObject> NextD
 			EndDialogForInterlocutors();
 		}
 	}
-}
-
-UDialogCue* UDialog::GetCurrentDialogCue()
-{
-	return Cast<UDialogCue>(ActiveDialogUnit);
-}
-
-UDialogSelection* UDialog::GetCurrentDialogSelection()
-{
-	return Cast<UDialogSelection>(ActiveDialogUnit);
 }
 
 void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponent)

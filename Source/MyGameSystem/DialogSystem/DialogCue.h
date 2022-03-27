@@ -41,12 +41,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void EndCue();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
-	TSubclassOf<UObject> NextDialogUnit;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EDialogCueType DialogCueType;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UDialogCueInfo* CueInfo;
 

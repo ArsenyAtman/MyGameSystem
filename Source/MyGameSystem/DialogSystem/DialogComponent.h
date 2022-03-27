@@ -40,12 +40,6 @@ public:
 	FORCEINLINE class UDialog* GetCurrentDialog() { return CurrentDialog; }
 
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE class UDialogueVoice* GetSpeakerVoice() { return SpeakerVoice; }
-
-	UFUNCTION(BlueprintPure)
-	FORCEINLINE class USoundAttenuation* GetAttenuation() { return Attenuation; }
-
-	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
 	UFUNCTION(BlueprintPure)
@@ -82,12 +76,6 @@ public:
 	void UnitPassed(class UDialogUnitInfo* DialogUnitInfo);
 
 protected:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueVoice* SpeakerVoice;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class USoundAttenuation* Attenuation;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UDialog> DialogClass;

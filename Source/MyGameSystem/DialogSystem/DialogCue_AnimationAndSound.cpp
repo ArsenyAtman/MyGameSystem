@@ -188,5 +188,5 @@ bool UDialogCue_AnimationAndSound::HasAudioStartAnimNotify(UAnimMontage* Montage
 
 UDialogCueInfo_AnimationAndSound* UDialogCue_AnimationAndSound::GetExpandedCueInfo()
 {
-	return Cast<UDialogCueInfo_AnimationAndSound>(GetCueInfo());
+	return Cast<UDialogCueInfo_AnimationAndSound>(GetDialogUnitInfo());
 }

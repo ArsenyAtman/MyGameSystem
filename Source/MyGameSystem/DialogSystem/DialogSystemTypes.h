@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
 #include "DialogSystemTypes.generated.h"
 
 UENUM(BlueprintType, Blueprintable)
@@ -13,52 +14,51 @@ enum class EDialogCueType : uint8
 	Important	UMETA(DisplayName = "Important")
 };
 
-USTRUCT(BlueprintType, Blueprintable)
-struct FDialogCueStruct
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UDialogCueInfo : public UDataAsset
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText SpeakerName;
+public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText CueText;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
+	TSubclassOf<UObject> NextDialogUnit = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EDialogCueType DialogCueType;
-
-	FDialogCueStruct(FText Speaker = FText(), FText Cue = FText(), EDialogCueType Type = EDialogCueType::Usual)
-	{
-		SpeakerName = Speaker;
-		CueText = Cue;
-		DialogCueType = Type;
-	}
-
-	bool operator == (const FDialogCueStruct& CueInfo);
-	bool operator != (const FDialogCueStruct& CueInfo);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EDialogCueType DialogCueType = EDialogCueType::Usual;
 };
 
-USTRUCT(BlueprintType, Blueprintable)
-struct FDialogSelectionStruct
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UDialogCueInfo_AnimationAndSound : public UDialogCueInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FDialogCueStruct> Options;
+public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bWithTimer;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UAnimMontage* Animation = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Time;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDialogueVoice* Voice = nullptr;
 
-	FDialogSelectionStruct(bool bHasTimer = false, float TimeRemaining = -1.0f, TArray<FDialogCueStruct> OptionsArray = TArray<FDialogCueStruct>())
-	{
-		bWithTimer = bHasTimer;
-		Time = TimeRemaining;
-		Options = OptionsArray;
-	}
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDialogueWave* Sound = nullptr;
+	
+};
 
-	bool operator == (const FDialogSelectionStruct& SelectionInfo); //was FORCEINLINE
-	bool operator != (const FDialogSelectionStruct& SelectionInfo); //was FORCEINLINE
+UCLASS(BlueprintType, Blueprintable)
+class UDialogSelectionInfo : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
+	TArray<TSubclassOf<class UDialogCue>> Options;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bWithTimer = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Time = -1.0f;
 };

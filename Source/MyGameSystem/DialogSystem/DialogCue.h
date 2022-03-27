@@ -21,8 +21,8 @@ class MYGAMESYSTEM_API UDialogCueInfo : public UDialogUnitInfo
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (MustImplement = "DialogUnitInterface"))
-	TSubclassOf<UObject> NextDialogUnit = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UDialogUnit> NextDialogUnit = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EDialogCueType DialogCueType = EDialogCueType::Usual;
@@ -39,30 +39,30 @@ public:
 
 	virtual class UDialogCueInfo* GetDialogUnitInfo_Implementation() override { return CueInfo; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Availability")
 	bool CheckAvailabilityCondition(class UDialog* CheckingDialog);
 	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog);
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "DialogCue|Dialog")
 	class UDialog* GetOwningDialog() { return OwningDialog; }
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
 	void OnCueBeginned();
 	virtual void OnCueBeginned_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
 	void OnCueEnded();
 	virtual void OnCueEnded_Implementation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal")
 	void EndCue();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Info")
 	class UDialogCueInfo* CueInfo;
 
 private:

@@ -20,11 +20,11 @@ class MYGAMESYSTEM_API UDialogUnit : public UObject
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogUnit|Internal")
 	void Activate(class UDialog* OwnDialog);
 	virtual void Activate_Implementation(class UDialog* OwnDialog) { return; }
 
-	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "DialogUnit|Info")
 	class UDialogUnitInfo* GetDialogUnitInfo();
 	virtual class UDialogUnitInfo* GetDialogUnitInfo_Implementation() { return nullptr; }
 

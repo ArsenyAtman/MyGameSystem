@@ -8,7 +8,7 @@
 #include "DialogComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDialogConditionDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogUnitConditionDelegate, class UDialogUnitInfo*, DialogUnitInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogUnitConditionDelegate, class UDialogUnitData*, DialogUnitData);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UDialogComponent : public UActorComponent
@@ -42,7 +42,7 @@ public:
 	class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	class UDialogUnitInfo* GetCurrentDialogUnitInfo() { return CurrentDialogUnitInfo; }
+	class UDialogUnitData* GetCurrentDialogUnitData() { return CurrentDialogUnitData; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	TSubclassOf<UDialog> GetDialogClass() { return DialogClass; }
@@ -72,10 +72,10 @@ public:
 	FDialogConditionDelegate OnDialogEnded;
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "DialogComponent|Internal")
-	void UnitStarted(class UDialogUnitInfo* DialogUnitInfo);
+	void UnitStarted(class UDialogUnitData* DialogUnitData);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "DialogComponent|Internal")
-	void UnitPassed(class UDialogUnitInfo* DialogUnitInfo);
+	void UnitPassed(class UDialogUnitData* DialogUnitData);
 
 protected:
 
@@ -95,8 +95,8 @@ private:
 	UFUNCTION()
 	void OnRep_MasterDialogComponent();
 
-	UPROPERTY(BlueprintGetter = GetCurrentDialogUnitInfo)
-	class UDialogUnitInfo* CurrentDialogUnitInfo;
+	UPROPERTY(BlueprintGetter = GetCurrentDialogUnitData)
+	class UDialogUnitData* CurrentDialogUnitData;
 
 	UPROPERTY(BlueprintGetter = GetNotes)
 	TArray<FString> Notepad;

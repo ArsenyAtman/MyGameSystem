@@ -7,7 +7,7 @@
 #include "DialogCue_AnimationAndSound.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogCueInfo_AnimationAndSound : public UDialogCueInfo
+class MYGAMESYSTEM_API UDialogCueData_AnimationAndSound : public UDialogCueData
 {
 	GENERATED_BODY()
 
@@ -40,7 +40,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
 
-	virtual class UDialogCueInfo_AnimationAndSound* GetDialogUnitInfo_Implementation() override;
+	virtual class UDialogCueData_AnimationAndSound* GetDialogUnitData_Implementation() override;
 
 protected:
 

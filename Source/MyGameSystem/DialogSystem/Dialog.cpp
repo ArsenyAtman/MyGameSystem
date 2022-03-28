@@ -28,7 +28,7 @@ void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, 
 	}
 }
 
-void UDialog::OnDialogUnitPassed(UObject* DialogUnit, TSubclassOf<UObject> NextDialogUnitClass)
+void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUnit> NextDialogUnitClass)
 {
 	if (ActiveDialogUnit == DialogUnit)
 	{
@@ -91,7 +91,7 @@ void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit)
 			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
 			if (IsValid(DialogComponent))
 			{
-				DialogComponent->UnitStarted(DialogUnit->GetDialogUnitInfo());
+				DialogComponent->UnitStarted(DialogUnit->GetDialogUnitData());
 			}
 		}
 	}
@@ -106,7 +106,7 @@ void UDialog::UnitEndedForInterlocutors(UDialogUnit* DialogUnit)
 			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
 			if (IsValid(DialogComponent))
 			{
-				DialogComponent->UnitPassed(DialogUnit->GetDialogUnitInfo());
+				DialogComponent->UnitPassed(DialogUnit->GetDialogUnitData());
 			}
 		}
 	}

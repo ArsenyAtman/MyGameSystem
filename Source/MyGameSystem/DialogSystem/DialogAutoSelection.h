@@ -7,7 +7,7 @@
 #include "DialogAutoSelection.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
-class UDialogAutoSelectionInfo : public UDialogUnitInfo
+class UDialogAutoSelectionData : public UDialogUnitData
 {
 	GENERATED_BODY()
 
@@ -33,7 +33,7 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	virtual class UDialogAutoSelectionInfo* GetDialogUnitInfo_Implementation() override { return Info; }
+	virtual class UDialogAutoSelectionData* GetDialogUnitData_Implementation() override { return Data; }
 
 protected:
 
@@ -41,7 +41,7 @@ protected:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|Info", meta = (AllowPrivateAccess = true))
-	class UDialogAutoSelectionInfo* Info;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|Data", meta = (AllowPrivateAccess = true))
+	class UDialogAutoSelectionData* Data;
 	
 };

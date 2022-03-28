@@ -15,7 +15,7 @@ enum class EDialogCueType : uint8
 };
 
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogCueInfo : public UDialogUnitInfo
+class MYGAMESYSTEM_API UDialogCueData : public UDialogUnitData
 {
 	GENERATED_BODY()
 
@@ -37,7 +37,7 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	virtual class UDialogCueInfo* GetDialogUnitInfo_Implementation() override { return CueInfo; }
+	virtual class UDialogCueData* GetDialogUnitData_Implementation() override { return CueData; }
 
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
@@ -68,8 +68,8 @@ protected:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Info", meta = (AllowPrivateAccess = true))
-	class UDialogCueInfo* CueInfo;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Data", meta = (AllowPrivateAccess = true))
+	class UDialogCueData* CueData;
 
 	UPROPERTY(BlueprintGetter = GetOwningDialog)
 	class UDialog* OwningDialog;

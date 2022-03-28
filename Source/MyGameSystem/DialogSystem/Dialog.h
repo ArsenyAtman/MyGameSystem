@@ -20,7 +20,7 @@ public:
 	void Begin(class UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, TArray<class AActor*> OtherInterlocutors);
 
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void OnDialogUnitPassed(class UObject* DialogUnit, TSubclassOf<UObject> NextDialogUnitClass);
+	void OnDialogUnitPassed(class UDialogUnit* DialogUnit, TSubclassOf<UDialogUnit> NextDialogUnitClass);
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|CurrentDialogUnit")
 	FORCEINLINE class UDialogUnit* GetCurrentDialogUnit() {return ActiveDialogUnit; }

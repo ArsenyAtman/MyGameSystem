@@ -7,7 +7,7 @@
 #include "DialogSelection.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
-class UDialogSelectionInfo : public UDialogUnitInfo
+class UDialogSelectionData : public UDialogUnitData
 {
 	GENERATED_BODY()
 
@@ -32,13 +32,13 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	virtual class UDialogSelectionInfo* GetDialogUnitInfo_Implementation() override { return SelectionInfo; }
+	virtual class UDialogSelectionData* GetDialogUnitData_Implementation() override { return SelectionData; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Internal")
 	void SelectNextCue(int CueIndex);
 	virtual void SelectNextCue_Implementation(int CueIndex);
 
-	UFUNCTION(BlueprintPure, Category = "DialogSelection|Info")
+	UFUNCTION(BlueprintPure, Category = "DialogSelection|Data")
 	TArray<TSubclassOf<class UDialogCue>> GetAvailableOptions();
 
 protected:
@@ -47,8 +47,8 @@ protected:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Info", meta = (AllowPrivateAccess = true))
-	class UDialogSelectionInfo* SelectionInfo;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Data", meta = (AllowPrivateAccess = true))
+	class UDialogSelectionData* SelectionData;
 
 	FTimerHandle SelectionEndTimer;
 

@@ -27,7 +27,7 @@ void UDialogComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UDialogComponent, MasterDialogComponent, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(UDialogComponent, CurrentDialogUnitInfo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UDialogComponent, CurrentDialogUnitData, COND_OwnerOnly);
 
 }
 
@@ -122,23 +122,23 @@ void UDialogComponent::RemoveNote(FString NoteToRemove)
 	}
 }
 
-void UDialogComponent::UnitStarted_Implementation(UDialogUnitInfo* DialogUnitInfo)
+void UDialogComponent::UnitStarted_Implementation(UDialogUnitData* DialogUnitData)
 {
-	CurrentDialogUnitInfo = DialogUnitInfo;
+	CurrentDialogUnitData = DialogUnitData;
 
 	if (OnDialogUnitStarted.IsBound())
 	{
-		OnDialogUnitStarted.Broadcast(DialogUnitInfo);
+		OnDialogUnitStarted.Broadcast(DialogUnitData);
 	}
 }
 
-void UDialogComponent::UnitPassed_Implementation(UDialogUnitInfo* DialogUnitInfo)
+void UDialogComponent::UnitPassed_Implementation(UDialogUnitData* DialogUnitData)
 {
-	CurrentDialogUnitInfo = nullptr;
+	CurrentDialogUnitData = nullptr;
 
 	if (OnDialogUnitEnded.IsBound())
 	{
-		OnDialogUnitEnded.Broadcast(DialogUnitInfo);
+		OnDialogUnitEnded.Broadcast(DialogUnitData);
 	}
 }
 

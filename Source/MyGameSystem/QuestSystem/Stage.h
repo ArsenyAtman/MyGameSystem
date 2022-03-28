@@ -8,28 +8,36 @@
 #include "Objective.h"
 #include "Stage.generated.h"
 
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UStageData : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+
+	// ...
+
+};
+
 USTRUCT(Blueprintable, BlueprintType)
 struct FStageInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Description;
+	UPROPERTY(BlueprintReadWrite)
+	class UStageData* StageData;
 
 	UPROPERTY(BlueprintReadWrite)
 	ETaskCondition Condition;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	TArray<FObjectiveInfo> ObjectivesInfo;
 
-	FStageInfo(FText ObjectiveName = FText::FromString("None"), FText ObjectiveDescription = FText::FromString("None"))
+	FStageInfo(class UStageData* Data = nullptr, ETaskCondition StageCondition = ETaskCondition::InProcess, TArray<FObjectiveInfo> Objectives = TArray<FObjectiveInfo>())
 	{
-		Name = ObjectiveName;
-		Description = ObjectiveDescription;
-		Condition = ETaskCondition::InProcess;
+		StageData = Data;
+		Condition = StageCondition;
+		ObjectivesInfo = Objectives;
 	}
 };
 
@@ -63,7 +71,7 @@ public:
 	void UnmarkObjectives();
 
 	UFUNCTION(BlueprintPure)
-	FStageInfo GetStageInfo(); // was FORCEINLINE
+	FStageInfo GetStageInfo();
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UQuest* GetOwningQuest() { return OwningQuest; }

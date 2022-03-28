@@ -3,16 +3,17 @@
 
 #include "DialogSelection.h"
 #include "Dialog.h"
+#include "DialogCue.h"
 #include "DialogComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void UDialogSelection::Activate_Implementation(UDialog* OwnDialog)
 {
 	OwningDialog = OwnDialog;
-	if (IsValid(SelectionInfo) && SelectionInfo->bWithTimer)
+	if (IsValid(SelectionData) && SelectionData->bWithTimer)
 	{
 		FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &UDialogSelection::SelectNextCue, 0);
-		GetWorld()->GetTimerManager().SetTimer(SelectionEndTimer, Delegate, SelectionInfo->Time, false);
+		GetWorld()->GetTimerManager().SetTimer(SelectionEndTimer, Delegate, SelectionData->Time, false);
 	}
 }
 
@@ -34,7 +35,7 @@ void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions()
 {
 	TArray<TSubclassOf<UDialogCue>> AvailableOptions;
-	for (TSubclassOf<UDialogCue>& Cue : SelectionInfo->Options)
+	for (TSubclassOf<UDialogCue>& Cue : SelectionData->Options)
 	{
 		UDialogCue* CueObject = Cast<UDialogCue>(Cue.GetDefaultObject());
 		if (IsValid(CueObject) && CueObject->CheckAvailabilityCondition(OwningDialog))

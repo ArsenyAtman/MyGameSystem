@@ -7,7 +7,7 @@
 #include "DialogUnit.generated.h"
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class MYGAMESYSTEM_API UDialogUnitInfo : public UDataAsset
+class MYGAMESYSTEM_API UDialogUnitData : public UDataAsset
 {
 	GENERATED_BODY()
 
@@ -24,9 +24,9 @@ public:
 	void Activate(class UDialog* OwnDialog);
 	virtual void Activate_Implementation(class UDialog* OwnDialog) { return; }
 
-	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "DialogUnit|Info")
-	class UDialogUnitInfo* GetDialogUnitInfo();
-	virtual class UDialogUnitInfo* GetDialogUnitInfo_Implementation() { return nullptr; }
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "DialogUnit|Data")
+	class UDialogUnitData* GetDialogUnitData();
+	virtual class UDialogUnitData* GetDialogUnitData_Implementation() { return nullptr; }
 
 private:
 

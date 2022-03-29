@@ -11,17 +11,3 @@ AObjectiveMarkersManager::AObjectiveMarkersManager()
 
 }
 
-// Called when the game starts or when spawned
-void AObjectiveMarkersManager::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AObjectiveMarkersManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-

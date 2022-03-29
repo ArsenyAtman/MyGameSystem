@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "QuestActorsReferencer.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API AQuestActorsReferencer : public AActor
 {
 	GENERATED_BODY()
@@ -15,12 +15,17 @@ public:
 	// Sets default values for this actor's properties
 	AQuestActorsReferencer();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintGetter)
+	TSubclassOf<class UObjective> GetObjectiveClass() { return ObjectiveClass; }
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintGetter)
+	TArray<class AActor*> GetRelatedActors() { return RelatedActors; }
 
+private:
+
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetObjectiveClass, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
+	TSubclassOf<class UObjective> ObjectiveClass;
+
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetRelatedActors, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
+	TArray<class AActor*> RelatedActors;
 };

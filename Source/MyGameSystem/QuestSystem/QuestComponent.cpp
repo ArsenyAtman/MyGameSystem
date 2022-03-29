@@ -143,6 +143,11 @@ TArray<UQuest*> UQuestComponent::GetAllQuests()
 	return AllQuests;
 }
 
+bool UQuestComponent::HasTrackedQuest()
+{
+	return TrackedQuestInfo != FQuestInfo();
+}
+
 void UQuestComponent::MarkActors_Implementation(TSubclassOf<AActor> MarkerClass, const TArray<AActor*>& ActorsToMark)
 {
 	for (AActor* ActorToMark : ActorsToMark)
@@ -243,14 +248,12 @@ void UQuestComponent::SetTrackedQuest(UQuest* NewTrackedQuest)
 void UQuestComponent::TrackedQuestSelectedNotify_Implementation(FQuestInfo NewTrackedQuestInfo)
 {
 	TrackedQuestInfo = NewTrackedQuestInfo;
-	bHasTrackedQuest = true;
 	OnTrackedQuestSelected.Broadcast();
 }
 
 void UQuestComponent::TrackedQuestDeselectedNotify_Implementation()
 {
 	TrackedQuestInfo = FQuestInfo();
-	bHasTrackedQuest = false;
 	OnTrackedQuestDeselected.Broadcast();
 }
 
@@ -263,14 +266,12 @@ void UQuestComponent::TrackedQuestUpdatedNotify_Implementation(FQuestInfo NewTra
 void UQuestComponent::TrackedQuestCompletedNotify_Implementation(FQuestInfo QuestInfo)
 {
 	TrackedQuestInfo = FQuestInfo();
-	bHasTrackedQuest = false;
 	OnTrackedQuestCompleted.Broadcast(QuestInfo);
 }
 
 void UQuestComponent::TrackedQuestFailedNotify_Implementation(FQuestInfo QuestInfo)
 {
 	TrackedQuestInfo = FQuestInfo();
-	bHasTrackedQuest = false;
 	OnTrackedQuestFailed.Broadcast(QuestInfo);
 }
 

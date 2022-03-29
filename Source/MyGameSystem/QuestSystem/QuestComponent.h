@@ -9,7 +9,6 @@
 #include "QuestComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestEventDelegate);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQuestInfoEventDelegate, FQuestInfo, QuestInfo);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable, BlueprintType )
@@ -27,7 +26,10 @@ public:
 	void AddQuest(TSubclassOf<class UQuest> QuestClass);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
-	void SelectQuestToTrack(int QuestIndex);
+	void SelectQuestToTrackByIndex(int QuestIndex);
+
+	//UFUNCTION(Server, Reliable, BlueprintCallable)
+	//void SelectQuestToTrackByInfo(FQuestInfo QuestInfo);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void UntrackQuest();
@@ -41,26 +43,41 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void QuestUpdated(class UQuest* Quest);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	TArray<class UQuest*> GetActiveQuests() { return ActiveQuests; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	TArray<class UQuest*> GetCompletedQuests() { return CompletedQuests; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	TArray<class UQuest*> GetFailedQuests() { return FailedQuests; }
 
 	UFUNCTION(BlueprintPure)
 	TArray<class UQuest*> GetAllQuests();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
+	TArray<struct FQuestInfo> GetActiveQuestsInfo() { return ActiveQuestsInfo; }
+
+	UFUNCTION(BlueprintGetter)
+	TArray<struct FQuestInfo> GetCompletedQuestsInfo() { return CompletedQuestsInfo; }
+
+	UFUNCTION(BlueprintGetter)
+	TArray<struct FQuestInfo> GetFailedQuestsInfo() { return FailedQuestsInfo; }
+
+	UFUNCTION(BlueprintGetter)
+	bool HasTrackedQuest() { return bHasTrackedQuest; }
+
+	UFUNCTION(BlueprintGetter)
+	class UQuest* GetTrackedQuest() { return TrackedQuest; }
+
+	UFUNCTION(BlueprintGetter)
 	struct FQuestInfo GetTrackedQuestInfo() { return TrackedQuestInfo; }
 
 	UFUNCTION(Client, Reliable, BlueprintCallable)
-	void MarkActors(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToMark);
+	void MarkActors(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToMark); // MarkerComponent
 
 	UFUNCTION(Client, Reliable, BlueprintCallable)
-	void UnmarkActors(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToUnmark);
+	void UnmarkActors(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToUnmark); // MarkerComponent
 
 	UPROPERTY(BlueprintAssignable)
 	FQuestInfoEventDelegate OnQuestAdded;
@@ -72,10 +89,13 @@ public:
 	FQuestInfoEventDelegate OnQuestFailed;
 
 	UPROPERTY(BlueprintAssignable)
-	FQuestEventDelegate OnUpdated;
+	FQuestEventDelegate OnQuestsUpdated;
 
 	UPROPERTY(BlueprintAssignable)
 	FQuestEventDelegate OnTrackedQuestSelected;
+
+	UPROPERTY(BlueprintAssignable)
+	FQuestEventDelegate OnTrackedQuestDeselected;
 
 	UPROPERTY(BlueprintAssignable)
 	FQuestEventDelegate OnTrackedQuestUpdated;
@@ -89,7 +109,7 @@ public:
 protected:
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateInfos();
+	void UpdateAllQuestsInfo();
 
 	UFUNCTION(BlueprintCallable)
 	TArray<struct FQuestInfo> GetQuestsInfo(TArray<class UQuest*> Quests);
@@ -97,55 +117,34 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	bool CheckQuestOnDuplication(TSubclassOf<class UQuest> QuestClass);
 
-	UPROPERTY(BlueprintReadOnly)
-	TArray<class UQuest*> ActiveQuests;
-
-	UPROPERTY(BlueprintReadOnly)
-	TArray<class UQuest*> CompletedQuests;
-
-	UPROPERTY(BlueprintReadOnly)
-	TArray<class UQuest*> FailedQuests;
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_ActiveQuestsInfo, BlueprintReadOnly)
-	TArray<struct FQuestInfo> ActiveQuestsInfo;
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_CompletedQuestsInfo, BlueprintReadOnly)
-	TArray<struct FQuestInfo> CompletedQuestsInfo;
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnRep_FailedQuestsInfo, BlueprintReadOnly)
-	TArray<struct FQuestInfo> FailedQuestsInfo;
-
-	UPROPERTY(BlueprintReadOnly)
-	class UQuest* TrackedQuest;
-
-	UPROPERTY(BlueprintReadOnly)
-	struct FQuestInfo TrackedQuestInfo;
-
 	UFUNCTION(BlueprintCallable)
 	void SetTrackedQuest(class UQuest* NewTrackedQuest);
 
 private:
 
 	UFUNCTION(Client, Reliable)
-	void TrackedQuestSelected(struct FQuestInfo NewTrackedQuestInfo);
+	void TrackedQuestSelectedNotify(struct FQuestInfo NewTrackedQuestInfo);
 
 	UFUNCTION(Client, Reliable)
-	void TrackedQuestUpdated(struct FQuestInfo NewTrackedQuestInfo);
+	void TrackedQuestDeselectedNotify();
 
 	UFUNCTION(Client, Reliable)
-	void TrackedQuestCompleted(struct FQuestInfo QuestInfo);
+	void TrackedQuestUpdatedNotify(struct FQuestInfo NewTrackedQuestInfo);
 
 	UFUNCTION(Client, Reliable)
-	void TrackedQuestFailed(struct FQuestInfo QuestInfo);
+	void TrackedQuestCompletedNotify(struct FQuestInfo QuestInfo);
 
 	UFUNCTION(Client, Reliable)
-	void QuestAddedMessage(struct FQuestInfo QuestInfo);
+	void TrackedQuestFailedNotify(struct FQuestInfo QuestInfo);
 
 	UFUNCTION(Client, Reliable)
-	void QuestCompletedMessage(struct FQuestInfo QuestInfo);
+	void QuestAddedNotify(struct FQuestInfo QuestInfo);
 
 	UFUNCTION(Client, Reliable)
-	void QuestFailedMessage(struct FQuestInfo QuestInfo);
+	void QuestCompletedNotify(struct FQuestInfo QuestInfo);
+
+	UFUNCTION(Client, Reliable)
+	void QuestFailedNotify(struct FQuestInfo QuestInfo);
 
 	UFUNCTION()
 	void OnRep_ActiveQuestsInfo();
@@ -157,4 +156,31 @@ private:
 	void OnRep_FailedQuestsInfo();
 
 	TArray<class AActor*> Markers;
+
+	UPROPERTY(BlueprintGetter = GetActiveQuests)
+	TArray<class UQuest*> ActiveQuests;
+
+	UPROPERTY(BlueprintGetter = GetCompletedQuests)
+	TArray<class UQuest*> CompletedQuests;
+
+	UPROPERTY(BlueprintGetter = GetFailedQuests)
+	TArray<class UQuest*> FailedQuests;
+
+	UPROPERTY(BlueprintGetter = GetActiveQuestsInfo, Replicated, ReplicatedUsing = OnRep_ActiveQuestsInfo)
+	TArray<struct FQuestInfo> ActiveQuestsInfo;
+
+	UPROPERTY(BlueprintGetter = GetCompletedQuestsInfo, Replicated, ReplicatedUsing = OnRep_CompletedQuestsInfo)
+	TArray<struct FQuestInfo> CompletedQuestsInfo;
+
+	UPROPERTY(BlueprintGetter = GetFailedQuestsInfo, Replicated, ReplicatedUsing = OnRep_FailedQuestsInfo)
+	TArray<struct FQuestInfo> FailedQuestsInfo;
+
+	UPROPERTY(BlueprintGetter = GetTrackedQuest)
+	class UQuest* TrackedQuest;
+
+	UPROPERTY(BlueprintGetter = GetTrackedQuestInfo)
+	struct FQuestInfo TrackedQuestInfo;
+
+	UPROPERTY(BlueprintGetter = HasTrackedQuest)
+	bool bHasTrackedQuest = false;
 };

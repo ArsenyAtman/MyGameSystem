@@ -40,16 +40,16 @@ struct FObjectiveInfo
 		Progress = ObjectiveProgress;
 	}
 
-	bool operator == (const FObjectiveInfo& Info)
+	friend bool operator == (const FObjectiveInfo& Info1, const FObjectiveInfo& Info2)
 	{
-		return 	this->ObjectiveData == Info.ObjectiveData &&
-				this->Condition == Info.Condition &&
-				this->Progress == Info.Progress;
+		return 	Info1.ObjectiveData == Info2.ObjectiveData &&
+				Info1.Condition == Info2.Condition &&
+				Info1.Progress == Info2.Progress;
 	}
 
-	bool operator != (const FObjectiveInfo& Info)
+	friend bool operator != (const FObjectiveInfo& Info1, const FObjectiveInfo& Info2)
 	{
-		return !((*this) == Info);
+		return !(Info1 == Info2);
 	}
 };
 

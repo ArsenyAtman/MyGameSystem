@@ -60,19 +60,19 @@ struct FQuestInfo
 		Progress = ObjectiveProgress;
 	}
 
-	bool operator == (const FQuestInfo& Info)
+	friend bool operator == (const FQuestInfo& Info1, const FQuestInfo& Info2)
 	{
-		return 	this->QuestData == Info.QuestData &&
-				this->Condition == Info.Condition &&
-				this->bIsBeingTracked == Info.bIsBeingTracked &&
-				this->Progress == Info.Progress &&
-				this->CurrentStageInfo == Info.CurrentStageInfo &&
-				this->PastStagesInfo == Info.PastStagesInfo;
+		return 	Info1.QuestData == Info2.QuestData &&
+				Info1.Condition == Info2.Condition &&
+				Info1.bIsBeingTracked == Info2.bIsBeingTracked &&
+				Info1.Progress == Info2.Progress &&
+				Info1.CurrentStageInfo == Info2.CurrentStageInfo &&
+				Info1.PastStagesInfo == Info2.PastStagesInfo;
 	}
 
-	bool operator != (const FQuestInfo& Info)
+	friend bool operator != (const FQuestInfo& Info1, const FQuestInfo& Info2)
 	{
-		return !((*this) == Info);
+		return !(Info1 == Info2);
 	}
 };
 

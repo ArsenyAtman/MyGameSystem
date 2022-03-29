@@ -40,16 +40,16 @@ struct FStageInfo
 		ObjectivesInfo = Objectives;
 	}
 
-	bool operator == (const FStageInfo& Info)
+	friend bool operator == (const FStageInfo& Info1, const FStageInfo& Info2)
 	{
-		return 	this->StageData == Info.StageData &&
-				this->Condition == Info.Condition &&
-				this->ObjectivesInfo == Info.ObjectivesInfo;
+		return 	Info1.StageData == Info2.StageData &&
+				Info1.Condition == Info2.Condition &&
+				Info1.ObjectivesInfo == Info2.ObjectivesInfo;
 	}
 
-	bool operator != (const FStageInfo& Info)
+	friend bool operator != (const FStageInfo& Info1, const FStageInfo& Info2)
 	{
-		return !((*this) == Info);
+		return !(Info1 == Info2);
 	}
 };
 

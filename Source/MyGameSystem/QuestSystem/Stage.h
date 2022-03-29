@@ -39,6 +39,18 @@ struct FStageInfo
 		Condition = StageCondition;
 		ObjectivesInfo = Objectives;
 	}
+
+	bool operator == (const FStageInfo& Info)
+	{
+		return 	this->StageData == Info.StageData &&
+				this->Condition == Info.Condition &&
+				this->ObjectivesInfo == Info.ObjectivesInfo;
+	}
+
+	bool operator != (const FStageInfo& Info)
+	{
+		return !((*this) == Info);
+	}
 };
 
 UCLASS(Blueprintable, BlueprintType, Abstract)

@@ -28,8 +28,8 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SelectQuestToTrackByIndex(int QuestIndex);
 
-	//UFUNCTION(Server, Reliable, BlueprintCallable)
-	//void SelectQuestToTrackByInfo(FQuestInfo QuestInfo);
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void SelectQuestToTrackByInfo(FQuestInfo QuestInfo);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void UntrackQuest();

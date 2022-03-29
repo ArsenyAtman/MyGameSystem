@@ -59,7 +59,7 @@ void UQuestComponent::SelectQuestToTrackByIndex_Implementation(int QuestIndex)
 		}
 	}
 }
-/*
+
 void UQuestComponent::SelectQuestToTrackByInfo_Implementation(FQuestInfo Info)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
@@ -75,7 +75,7 @@ void UQuestComponent::SelectQuestToTrackByInfo_Implementation(FQuestInfo Info)
 		}
 	}
 }
-*/
+
 void UQuestComponent::UntrackQuest_Implementation()
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)

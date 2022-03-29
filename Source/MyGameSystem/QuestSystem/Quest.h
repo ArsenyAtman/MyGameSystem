@@ -59,6 +59,21 @@ struct FQuestInfo
 		bIsBeingTracked = bIsTracking;
 		Progress = ObjectiveProgress;
 	}
+
+	bool operator == (const FQuestInfo& Info)
+	{
+		return 	this->QuestData == Info.QuestData &&
+				this->Condition == Info.Condition &&
+				this->bIsBeingTracked == Info.bIsBeingTracked &&
+				this->Progress == Info.Progress &&
+				this->CurrentStageInfo == Info.CurrentStageInfo &&
+				this->PastStagesInfo == Info.PastStagesInfo;
+	}
+
+	bool operator != (const FQuestInfo& Info)
+	{
+		return !((*this) == Info);
+	}
 };
 
 UCLASS(Blueprintable, BlueprintType)

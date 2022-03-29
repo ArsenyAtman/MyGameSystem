@@ -39,6 +39,18 @@ struct FObjectiveInfo
 		Condition = ObjectiveCondition;
 		Progress = ObjectiveProgress;
 	}
+
+	bool operator == (const FObjectiveInfo& Info)
+	{
+		return 	this->ObjectiveData == Info.ObjectiveData &&
+				this->Condition == Info.Condition &&
+				this->Progress == Info.Progress;
+	}
+
+	bool operator != (const FObjectiveInfo& Info)
+	{
+		return !((*this) == Info);
+	}
 };
 
 UCLASS(Blueprintable, BlueprintType)

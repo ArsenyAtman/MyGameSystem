@@ -64,8 +64,8 @@ public:
 	UFUNCTION(BlueprintGetter)
 	TArray<struct FQuestInfo> GetFailedQuestsInfo() { return FailedQuestsInfo; }
 
-	UFUNCTION(BlueprintGetter)
-	bool HasTrackedQuest() { return bHasTrackedQuest; }
+	UFUNCTION(BlueprintPure)
+	bool HasTrackedQuest();
 
 	UFUNCTION(BlueprintGetter)
 	class UQuest* GetTrackedQuest() { return TrackedQuest; }

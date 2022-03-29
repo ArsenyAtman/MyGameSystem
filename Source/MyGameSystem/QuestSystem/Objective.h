@@ -15,7 +15,7 @@ class MYGAMESYSTEM_API UObjectiveData : public UDataAsset
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bIsAdditional = false;
+	bool bIsOptional = false;
 
 };
 

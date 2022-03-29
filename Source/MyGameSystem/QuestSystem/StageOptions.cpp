@@ -71,7 +71,7 @@ UObjective* UStageOptions::GetCompletedObjective(TArray<UObjective*> Objectives)
 {
 	for (UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsAdditional)
+		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{
 			return Objective;
 		}

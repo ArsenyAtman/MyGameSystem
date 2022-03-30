@@ -6,7 +6,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "ObjectiveActorInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "ObjectiveMarkersManager.h"
 
 // Sets default values for this component's properties
 UQuestComponent::UQuestComponent()
@@ -23,11 +24,20 @@ void UQuestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UQuestComponent, ActiveQuestsInfo, COND_OwnerOnly);
-
 	DOREPLIFETIME_CONDITION(UQuestComponent, CompletedQuestsInfo, COND_OwnerOnly);
-
 	DOREPLIFETIME_CONDITION(UQuestComponent, FailedQuestsInfo, COND_OwnerOnly);
 
+}
+
+void UQuestComponent::BeginPlay()
+{
+	//if (GetOwnerRole() == ENetRole::ROLE_Authority)
+	{
+		ObjectiveMarkersManager = FindObjectiveMarkersManager();
+
+	}
+
+	// ...
 }
 
 void UQuestComponent::AddQuest(TSubclassOf<UQuest> QuestClass)
@@ -146,38 +156,6 @@ TArray<UQuest*> UQuestComponent::GetAllQuests()
 bool UQuestComponent::HasTrackedQuest()
 {
 	return TrackedQuestInfo != FQuestInfo();
-}
-
-void UQuestComponent::MarkActors_Implementation(TSubclassOf<AActor> MarkerClass, const TArray<AActor*>& ActorsToMark)
-{
-	for (AActor* ActorToMark : ActorsToMark)
-	{
-		AActor* NewMarker = GetWorld()->SpawnActor<AActor>(MarkerClass, FTransform());
-		if (IsValid(NewMarker))
-		{
-			NewMarker->AttachToActor(ActorToMark, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false));
-			if (ActorToMark->Implements<UObjectiveActorInterface>())
-			{
-				FTransform MarkerTransfrom = IObjectiveActorInterface::Execute_GetMarkerRelativeTransform(ActorToMark);
-				NewMarker->SetActorRelativeTransform(MarkerTransfrom);
-			}
-			Markers.Add(NewMarker);
-		}
-	}
-}
-
-void UQuestComponent::UnmarkActors_Implementation(TSubclassOf<AActor> MarkerClass, const TArray<AActor*>& ActorsToUnmark)
-{
-	for (int i = Markers.Num() - 1; i >= 0; --i)
-	{
-		auto Marker = Markers[i];
-		if (IsValid(Marker) && (!IsValid(Marker->GetAttachParentActor()) || (Marker->GetClass() == MarkerClass && ActorsToUnmark.Find(Marker->GetAttachParentActor()) != INDEX_NONE)))
-		{
-			Marker->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
-			Marker->Destroy();
-		}
-		Markers.Remove(Marker);
-	}
 }
 
 void UQuestComponent::UpdateAllQuestsInfo()
@@ -303,4 +281,11 @@ void UQuestComponent::OnRep_CompletedQuestsInfo()
 void UQuestComponent::OnRep_FailedQuestsInfo()
 {
 	OnQuestsUpdated.Broadcast();
+}
+
+AObjectiveMarkersManager* UQuestComponent::FindObjectiveMarkersManager()
+{
+	TArray<AActor*> FoundManagers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AObjectiveMarkersManager::StaticClass(), FoundManagers);
+	return Cast<AObjectiveMarkersManager>(FoundManagers[0]);
 }

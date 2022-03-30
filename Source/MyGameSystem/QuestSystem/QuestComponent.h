@@ -73,9 +73,6 @@ public:
 	UFUNCTION(BlueprintGetter)
 	struct FQuestInfo GetTrackedQuestInfo() { return TrackedQuestInfo; }
 
-	UFUNCTION(BlueprintGetter)
-	class AObjectiveMarkersManager* GetObjectiveMarkersManager() { return ObjectiveMarkersManager; }
-
 	UPROPERTY(BlueprintAssignable)
 	FQuestInfoEventDelegate OnQuestAdded;
 
@@ -180,9 +177,4 @@ private:
 
 	UPROPERTY(BlueprintGetter = HasTrackedQuest)
 	bool bHasTrackedQuest = false;
-
-	class AObjectiveMarkersManager* FindObjectiveMarkersManager();
-
-	UPROPERTY(BlueprintGetter = GetObjectiveMarkersManager)
-	class AObjectiveMarkersManager* ObjectiveMarkersManager;
 };

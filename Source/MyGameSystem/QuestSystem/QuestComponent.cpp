@@ -7,7 +7,6 @@
 #include "Engine/Engine.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "ObjectiveMarkersManager.h"
 
 // Sets default values for this component's properties
 UQuestComponent::UQuestComponent()
@@ -31,12 +30,6 @@ void UQuestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void UQuestComponent::BeginPlay()
 {
-	//if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		ObjectiveMarkersManager = FindObjectiveMarkersManager();
-
-	}
-
 	// ...
 }
 
@@ -281,11 +274,4 @@ void UQuestComponent::OnRep_CompletedQuestsInfo()
 void UQuestComponent::OnRep_FailedQuestsInfo()
 {
 	OnQuestsUpdated.Broadcast();
-}
-
-AObjectiveMarkersManager* UQuestComponent::FindObjectiveMarkersManager()
-{
-	TArray<AActor*> FoundManagers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AObjectiveMarkersManager::StaticClass(), FoundManagers);
-	return Cast<AObjectiveMarkersManager>(FoundManagers[0]);
 }

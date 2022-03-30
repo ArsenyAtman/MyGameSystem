@@ -27,9 +27,6 @@ struct FStatInfo
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class UStat> StatClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStatDataAsset* StatData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -41,9 +38,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<struct FEffectInfo> AppliedEffects;
 
-	FStatInfo(TSubclassOf<class UStat> Class = nullptr, class UStatDataAsset* Data = nullptr, FStatValues BaseValues = FStatValues(), FStatValues Values = FStatValues(), TArray<struct FEffectInfo> Effects = TArray<struct FEffectInfo>())
+	FStatInfo(class UStatDataAsset* Data = nullptr, FStatValues BaseValues = FStatValues(), FStatValues Values = FStatValues(), TArray<struct FEffectInfo> Effects = TArray<struct FEffectInfo>())
 	{
-		StatClass = Class;
 		StatData = Data;
 		StatBaseValues = BaseValues;
 		StatValues = Values;

@@ -122,5 +122,6 @@ private:
 
 	TArray<class AActor*> FindActorsForMarking();
 	TArray<class AActor*> ActorsForMarking;
-	TArray<class AActor*> MarkedActors;
+
+	TArray<class AActor*> Markers;
 };

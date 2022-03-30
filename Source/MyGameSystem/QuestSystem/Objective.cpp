@@ -6,7 +6,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "QuestComponent.h"
-#include "ObjectiveMarkersManager.h"
+#include "MarkersManagerComponent.h"
+#include "ActorWithQuestsInterface.h"
 #include "QuestActorsReferencer.h"
 
 void UObjective::Activate_Implementation(UStage* RelatedStage)
@@ -29,20 +30,28 @@ void UObjective::Abort_Implementation()
 
 void UObjective::Mark()
 {
-	AObjectiveMarkersManager* MarkersManager = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetObjectiveMarkersManager();
-	if (IsValid(MarkersManager))
+	AActor* QuestActor = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetOwner();
+	if (IsValid(QuestActor) && QuestActor->Implements<UActorWithQuestsInterface>())
 	{
-		MarkedActors = MarkersManager->MarkActors(MarkerClass, FilterActorsForMarking(ActorsForMarking));
+		UMarkersManagerComponent* MarkersManager = IActorWithQuestsInterface::Execute_GetActorMarkersManagerComponent(QuestActor);
+		if(IsValid(MarkersManager))
+		{
+			Markers = MarkersManager->MarkActorsReplicated(MarkerClass, FilterActorsForMarking(ActorsForMarking));
+		}
 	}
 }
 
 void UObjective::Unmark()
 {
-	AObjectiveMarkersManager* MarkersManager = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetObjectiveMarkersManager();
-	if (IsValid(MarkersManager))
+	AActor* QuestActor = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetOwner();
+	if (IsValid(QuestActor) && QuestActor->Implements<UActorWithQuestsInterface>())
 	{
-		MarkersManager->UnmarkActors(MarkerClass, MarkedActors);
-		MarkedActors.Empty();
+		UMarkersManagerComponent* MarkersManager = IActorWithQuestsInterface::Execute_GetActorMarkersManagerComponent(QuestActor);
+		if(IsValid(MarkersManager))
+		{
+			MarkersManager->UnmarkActors(Markers);
+			Markers.Empty();
+		}
 	}
 }
 

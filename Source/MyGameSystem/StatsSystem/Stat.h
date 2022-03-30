@@ -5,11 +5,51 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "StatsSystemTypes.h"
+#include "Engine/DataAsset.h"
 #include "Stat.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatPassiveEffectDelegate, class UEffect*, Effect);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, FStatValues, Delta, class UEffect*, Effect);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStatConditionChangeDelegate);
+
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UStatDataAsset : public UDataAsset
+{
+	GENERATED_BODY()
+
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FStatInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UStat> StatClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UStatDataAsset* StatData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FStatValues StatBaseValues;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FStatValues StatValues;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<struct FEffectInfo> AppliedEffects;
+
+	FStatInfo(TSubclassOf<class UStat> Class = nullptr, class UStatDataAsset* Data = nullptr, FStatValues BaseValues = FStatValues(), FStatValues Values = FStatValues(), TArray<struct FEffectInfo> Effects = TArray<struct FEffectInfo>())
+	{
+		StatClass = Class;
+		StatData = Data;
+		StatBaseValues = BaseValues;
+		StatValues = Values;
+		AppliedEffects = Effects;
+	}
+};
 
 UCLASS(BlueprintType, Blueprintable, EditInlineNew)
 class MYGAMESYSTEM_API UStat : public UObject
@@ -59,12 +99,6 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FText StatName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FText StatDescription;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatValues)
 	FStatValues StatValues;
 
@@ -73,6 +107,9 @@ protected:
 
 	UPROPERTY(BlueprintGetter = GetEffects)
 	TArray<class UEffect*> Effects;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UStatDataAsset* StatData = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced)
 	class UStatDeltaApplier* StatDeltaApplier;

@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintGetter)
 	TArray<class AActor*> GetRelatedActors() { return RelatedActors; }
 
+	UFUNCTION(BlueprintGetter)
+	TArray<class AActor*> GetActorsToMark() { return ActorsToMark; }
+
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetObjectiveClass, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
@@ -28,4 +31,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetRelatedActors, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
 	TArray<class AActor*> RelatedActors;
+
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetActorsToMark, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
+	TArray<class AActor*> ActorsToMark;
 };

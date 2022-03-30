@@ -73,11 +73,8 @@ public:
 	UFUNCTION(BlueprintGetter)
 	struct FQuestInfo GetTrackedQuestInfo() { return TrackedQuestInfo; }
 
-	UFUNCTION(Client, Reliable, BlueprintCallable)
-	void MarkActors(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToMark); // MarkerComponent
-
-	UFUNCTION(Client, Reliable, BlueprintCallable)
-	void UnmarkActors(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToUnmark); // MarkerComponent
+	UFUNCTION(BlueprintGetter)
+	class AObjectiveMarkersManager* GetObjectiveMarkersManager() { return ObjectiveMarkersManager; }
 
 	UPROPERTY(BlueprintAssignable)
 	FQuestInfoEventDelegate OnQuestAdded;
@@ -107,6 +104,8 @@ public:
 	FQuestInfoEventDelegate OnTrackedQuestFailed;
 
 protected:
+
+	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAllQuestsInfo();
@@ -155,8 +154,6 @@ private:
 	UFUNCTION()
 	void OnRep_FailedQuestsInfo();
 
-	TArray<class AActor*> Markers;
-
 	UPROPERTY(BlueprintGetter = GetActiveQuests)
 	TArray<class UQuest*> ActiveQuests;
 
@@ -183,4 +180,9 @@ private:
 
 	UPROPERTY(BlueprintGetter = HasTrackedQuest)
 	bool bHasTrackedQuest = false;
+
+	class AObjectiveMarkersManager* FindObjectiveMarkersManager();
+
+	UPROPERTY(BlueprintGetter = GetObjectiveMarkersManager)
+	class AObjectiveMarkersManager* ObjectiveMarkersManager;
 };

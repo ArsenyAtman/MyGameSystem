@@ -84,6 +84,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UStage* GetOwningStage() { return OwningStage; }
 
+	UFUNCTION(BlueprintGetter)
+	TArray<class AActor*> GetActorsForQuest() { return ActorsForQuest; }
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -91,9 +94,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class TSubclassOf<AActor> MarkerClass;
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<class AActor*> OnLevelObjectives;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Fail();
@@ -107,18 +107,20 @@ protected:
 	float RecalculateProgress();
 	virtual float RecalculateProgress_Implementation() { return -1.0f; }
 
-	UFUNCTION(BlueprintCallable)
-	void MarkObjectives(TArray<class AActor*> Objectives);
-
-	UFUNCTION(BlueprintCallable)
-	void UnmarkObjectives(TArray<class AActor*> Objectives);
-
-	UFUNCTION(BlueprintCallable)
-	TArray<class AActor*> GetOnLevelObjectivesFormManager();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark);
+	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) { return ActorsToMark; }
 
 private:
 
 	class UStage* OwningStage;
 
-	TArray<class AActor*> Markers;
+	TArray<class AActor*> FindActorsForQuest();
+
+	UPROPERTY(BlueprintGetter = GetActorsForQuest)
+	TArray<class AActor*> ActorsForQuest;
+
+	TArray<class AActor*> FindActorsForMarking();
+	TArray<class AActor*> ActorsForMarking;
+	TArray<class AActor*> MarkedActors;
 };

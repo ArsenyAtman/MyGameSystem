@@ -6,7 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/Engine.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "ObjectiveActorInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UQuestComponent::UQuestComponent()
@@ -23,11 +23,14 @@ void UQuestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UQuestComponent, ActiveQuestsInfo, COND_OwnerOnly);
-
 	DOREPLIFETIME_CONDITION(UQuestComponent, CompletedQuestsInfo, COND_OwnerOnly);
-
 	DOREPLIFETIME_CONDITION(UQuestComponent, FailedQuestsInfo, COND_OwnerOnly);
 
+}
+
+void UQuestComponent::BeginPlay()
+{
+	// ...
 }
 
 void UQuestComponent::AddQuest(TSubclassOf<UQuest> QuestClass)
@@ -39,17 +42,33 @@ void UQuestComponent::AddQuest(TSubclassOf<UQuest> QuestClass)
 			UQuest* NewQuest = NewObject<UQuest>(this, QuestClass);
 			ActiveQuests.Add(NewQuest);
 			NewQuest->Activate(this);
-			UpdateInfos();
-			QuestAddedMessage(NewQuest->GetQuestInfo());
+			UpdateAllQuestsInfo();
+			QuestAddedNotify(NewQuest->GetQuestInfo());
 		}
 	}
 }
 
-void UQuestComponent::SelectQuestToTrack_Implementation(int QuestIndex)
+void UQuestComponent::SelectQuestToTrackByIndex_Implementation(int QuestIndex)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		if (ActiveQuests.IsValidIndex(QuestIndex))
+		{
+			SetTrackedQuest(ActiveQuests[QuestIndex]);
+		}
+		else
+		{
+			SetTrackedQuest(nullptr);
+		}
+	}
+}
+
+void UQuestComponent::SelectQuestToTrackByInfo_Implementation(FQuestInfo Info)
+{
+	if (GetOwnerRole() == ENetRole::ROLE_Authority)
+	{
+		int QuestIndex = ActiveQuestsInfo.Find(Info);
+		if (QuestIndex != INDEX_NONE)
 		{
 			SetTrackedQuest(ActiveQuests[QuestIndex]);
 		}
@@ -75,14 +94,14 @@ void UQuestComponent::QuestCompleted(UQuest* Quest)
 		if (Quest == TrackedQuest)
 		{
 			SetTrackedQuest(nullptr);
-			TrackedQuestCompleted(Quest->GetQuestInfo());
+			TrackedQuestCompletedNotify(Quest->GetQuestInfo());
 		}
 
 		if (ActiveQuests.Remove(Quest) > 0)
 		{
 			CompletedQuests.Add(Quest);
-			UpdateInfos();
-			QuestCompletedMessage(Quest->GetQuestInfo());
+			UpdateAllQuestsInfo();
+			QuestCompletedNotify(Quest->GetQuestInfo());
 		}
 	}
 }
@@ -94,14 +113,14 @@ void UQuestComponent::QuestFailed(UQuest* Quest)
 		if (Quest == TrackedQuest)
 		{
 			SetTrackedQuest(nullptr);
-			TrackedQuestFailed(Quest->GetQuestInfo());
+			TrackedQuestFailedNotify(Quest->GetQuestInfo());
 		}
 
 		if (ActiveQuests.Remove(Quest) > 0)
 		{
 			FailedQuests.Add(Quest);
-			UpdateInfos();
-			QuestFailedMessage(Quest->GetQuestInfo());
+			UpdateAllQuestsInfo();
+			QuestFailedNotify(Quest->GetQuestInfo());
 		}
 	}
 }
@@ -112,9 +131,9 @@ void UQuestComponent::QuestUpdated(UQuest* Quest)
 	{
 		if (Quest == TrackedQuest)
 		{
-			TrackedQuestUpdated(Quest->GetQuestInfo());
+			TrackedQuestUpdatedNotify(Quest->GetQuestInfo());
 		}
-		UpdateInfos();
+		UpdateAllQuestsInfo();
 	}
 }
 
@@ -127,39 +146,12 @@ TArray<UQuest*> UQuestComponent::GetAllQuests()
 	return AllQuests;
 }
 
-void UQuestComponent::MarkActors_Implementation(TSubclassOf<AActor> MarkerClass, const TArray<AActor*>& ActorsToMark)
+bool UQuestComponent::HasTrackedQuest()
 {
-	for (AActor* ActorToMark : ActorsToMark)
-	{
-		AActor* NewMarker = GetWorld()->SpawnActor<AActor>(MarkerClass, FTransform());
-		if (IsValid(NewMarker))
-		{
-			NewMarker->AttachToActor(ActorToMark, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false));
-			if (ActorToMark->Implements<UObjectiveActorInterface>())
-			{
-				FTransform MarkerTransfrom = IObjectiveActorInterface::Execute_GetMarkerRelativeTransform(ActorToMark);
-				NewMarker->SetActorRelativeTransform(MarkerTransfrom);
-			}
-			Markers.Add(NewMarker);
-		}
-	}
+	return TrackedQuestInfo != FQuestInfo();
 }
 
-void UQuestComponent::UnmarkActors_Implementation(TSubclassOf<AActor> MarkerClass, const TArray<AActor*>& ActorsToUnmark)
-{
-	for (int i = Markers.Num() - 1; i >= 0; --i)
-	{
-		auto Marker = Markers[i];
-		if (IsValid(Marker) && (!IsValid(Marker->GetAttachParentActor()) || (Marker->GetClass() == MarkerClass && ActorsToUnmark.Find(Marker->GetAttachParentActor()) != INDEX_NONE)))
-		{
-			Marker->DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
-			Marker->Destroy();
-		}
-		Markers.Remove(Marker);
-	}
-}
-
-void UQuestComponent::UpdateInfos()
+void UQuestComponent::UpdateAllQuestsInfo()
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
@@ -172,7 +164,7 @@ void UQuestComponent::UpdateInfos()
 		FailedQuestsInfo.Empty();
 		FailedQuestsInfo = GetQuestsInfo(FailedQuests);
 
-		OnUpdated.Broadcast();
+		OnQuestsUpdated.Broadcast();
 	}
 }
 
@@ -208,65 +200,78 @@ void UQuestComponent::SetTrackedQuest(UQuest* NewTrackedQuest)
 			TrackedQuest->SetIsBeingTracked(false);
 		}
 		TrackedQuest = NewTrackedQuest;
-		FQuestInfo QuestInfo;
+
 		if (IsValid(TrackedQuest))
 		{
 			TrackedQuest->SetIsBeingTracked(true);
-			QuestInfo = TrackedQuest->GetQuestInfo();
+			FQuestInfo QuestInfo = TrackedQuest->GetQuestInfo();
+			UpdateAllQuestsInfo();
+			TrackedQuestSelectedNotify(QuestInfo);
 		}
-		UpdateInfos();
-		TrackedQuestSelected(QuestInfo);
+		else
+		{
+			TrackedQuestDeselectedNotify();
+		}
+		
 	}
 }
 
-void UQuestComponent::TrackedQuestSelected_Implementation(FQuestInfo NewTrackedQuestInfo)
+void UQuestComponent::TrackedQuestSelectedNotify_Implementation(FQuestInfo NewTrackedQuestInfo)
 {
 	TrackedQuestInfo = NewTrackedQuestInfo;
 	OnTrackedQuestSelected.Broadcast();
 }
 
-void UQuestComponent::TrackedQuestUpdated_Implementation(FQuestInfo NewTrackedQuestInfo)
+void UQuestComponent::TrackedQuestDeselectedNotify_Implementation()
+{
+	TrackedQuestInfo = FQuestInfo();
+	OnTrackedQuestDeselected.Broadcast();
+}
+
+void UQuestComponent::TrackedQuestUpdatedNotify_Implementation(FQuestInfo NewTrackedQuestInfo)
 {
 	TrackedQuestInfo = NewTrackedQuestInfo;
 	OnTrackedQuestUpdated.Broadcast();
 }
 
-void UQuestComponent::TrackedQuestCompleted_Implementation(FQuestInfo QuestInfo)
+void UQuestComponent::TrackedQuestCompletedNotify_Implementation(FQuestInfo QuestInfo)
 {
+	TrackedQuestInfo = FQuestInfo();
 	OnTrackedQuestCompleted.Broadcast(QuestInfo);
 }
 
-void UQuestComponent::TrackedQuestFailed_Implementation(FQuestInfo QuestInfo)
+void UQuestComponent::TrackedQuestFailedNotify_Implementation(FQuestInfo QuestInfo)
 {
+	TrackedQuestInfo = FQuestInfo();
 	OnTrackedQuestFailed.Broadcast(QuestInfo);
 }
 
-void UQuestComponent::QuestAddedMessage_Implementation(FQuestInfo QuestInfo)
+void UQuestComponent::QuestAddedNotify_Implementation(FQuestInfo QuestInfo)
 {
 	OnQuestAdded.Broadcast(QuestInfo);
 }
 
-void UQuestComponent::QuestCompletedMessage_Implementation(FQuestInfo QuestInfo)
+void UQuestComponent::QuestCompletedNotify_Implementation(FQuestInfo QuestInfo)
 {
 	OnQuestCompleted.Broadcast(QuestInfo);
 }
 
-void UQuestComponent::QuestFailedMessage_Implementation(FQuestInfo QuestInfo)
+void UQuestComponent::QuestFailedNotify_Implementation(FQuestInfo QuestInfo)
 {
 	OnQuestFailed.Broadcast(QuestInfo);
 }
 
 void UQuestComponent::OnRep_ActiveQuestsInfo()
 {
-	OnUpdated.Broadcast();
+	OnQuestsUpdated.Broadcast();
 }
 
 void UQuestComponent::OnRep_CompletedQuestsInfo()
 {
-	OnUpdated.Broadcast();
+	OnQuestsUpdated.Broadcast();
 }
 
 void UQuestComponent::OnRep_FailedQuestsInfo()
 {
-	OnUpdated.Broadcast();
+	OnQuestsUpdated.Broadcast();
 }

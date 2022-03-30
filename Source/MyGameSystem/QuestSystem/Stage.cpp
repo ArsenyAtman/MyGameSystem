@@ -91,7 +91,7 @@ bool UStage::IsAllObjectivesCompleted(TArray<UObjective*> Objectives)
 {
 	for (UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition != ETaskCondition::Completed && !Objective->GetObjectiveInfo().bIsAdditional)
+		if (Objective->GetObjectiveInfo().Condition != ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{
 			return false;
 		}
@@ -103,7 +103,7 @@ bool UStage::IsAllObjectivesFailed(TArray<UObjective*> Objectives)
 {
 	for (UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition != ETaskCondition::Failed && !Objective->GetObjectiveInfo().bIsAdditional)
+		if (Objective->GetObjectiveInfo().Condition != ETaskCondition::Failed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{
 			return false;
 		}
@@ -115,7 +115,7 @@ bool UStage::IsOneObjectiveCompleted(TArray<UObjective*> Objectives)
 {
 	for (UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Completed && !Objective->GetObjectiveInfo().bIsAdditional)
+		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{
 			return true;
 		}
@@ -127,7 +127,7 @@ bool UStage::IsOneObjectiveFailed(TArray<UObjective*> Objectives)
 {
 	for (UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Failed && !Objective->GetObjectiveInfo().bIsAdditional)
+		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Failed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{
 			return true;
 		}

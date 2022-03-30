@@ -17,25 +17,31 @@ enum class EQuestType : uint8
 	Challenge	UMETA(DisplayName = "Challenge")
 };
 
+UCLASS(BlueprintType, Blueprintable, Abstract)
+class MYGAMESYSTEM_API UQuestData : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EQuestType Type = EQuestType::Usual;
+
+};
+
 USTRUCT(Blueprintable, BlueprintType)
 struct FQuestInfo
 {
 	GENERATED_BODY();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Description;
+	UPROPERTY(BlueprintReadWrite)
+	class UQuestData* QuestData;
 
 	UPROPERTY(BlueprintReadWrite)
 	ETaskCondition Condition;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	bool bIsBeingTracked;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EQuestType Type;
 
 	UPROPERTY(BlueprintReadWrite)
 	float Progress;
@@ -46,14 +52,27 @@ struct FQuestInfo
 	UPROPERTY(BlueprintReadWrite)
 	TArray<struct FStageInfo> PastStagesInfo;
 
-	FQuestInfo(FText ObjectiveName = FText::FromString("None"), FText ObjectiveDescription = FText::FromString("None"), EQuestType QuestType = EQuestType::Usual, float ObjectiveProgress = 0.0f)
+	FQuestInfo(class UQuestData* Data = nullptr, ETaskCondition QuestCondition = ETaskCondition::InProcess, bool bIsTracking = false, float ObjectiveProgress = 0.0f)
 	{
-		Name = ObjectiveName;
-		Description = ObjectiveDescription;
-		Condition = ETaskCondition::InProcess;
-		bIsBeingTracked = false;
-		Type = QuestType;
+		QuestData = Data;
+		Condition = QuestCondition;
+		bIsBeingTracked = bIsTracking;
 		Progress = ObjectiveProgress;
+	}
+
+	friend bool operator == (const FQuestInfo& Info1, const FQuestInfo& Info2)
+	{
+		return 	Info1.QuestData == Info2.QuestData &&
+				Info1.Condition == Info2.Condition &&
+				Info1.bIsBeingTracked == Info2.bIsBeingTracked &&
+				Info1.Progress == Info2.Progress &&
+				Info1.CurrentStageInfo == Info2.CurrentStageInfo &&
+				Info1.PastStagesInfo == Info2.PastStagesInfo;
+	}
+
+	friend bool operator != (const FQuestInfo& Info1, const FQuestInfo& Info2)
+	{
+		return !(Info1 == Info2);
 	}
 };
 
@@ -80,7 +99,7 @@ public:
 	virtual void Update_Implementation();
 
 	UFUNCTION(BlueprintPure)
-	FQuestInfo GetQuestInfo(); // was FORCEINLINE
+	FQuestInfo GetQuestInfo();
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UQuestComponent* GetOwningQuestComponent() { return OwningQuestComponent; }

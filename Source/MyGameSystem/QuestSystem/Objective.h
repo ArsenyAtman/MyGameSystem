@@ -7,19 +7,25 @@
 #include "QuestSystemTypes.h"
 #include "Objective.generated.h"
 
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UObjectiveData : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bIsOptional = false;
+
+};
+
 USTRUCT(Blueprintable, BlueprintType)
 struct FObjectiveInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Description;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsAdditional;
+	UPROPERTY(BlueprintReadWrite)
+	class UObjectiveData* ObjectiveData;
 
 	UPROPERTY(BlueprintReadWrite)
 	ETaskCondition Condition;
@@ -27,13 +33,23 @@ struct FObjectiveInfo
 	UPROPERTY(BlueprintReadWrite)
 	float Progress;
 
-	FObjectiveInfo(FText ObjectiveName = FText::FromString("None"), FText ObjectiveDescription = FText::FromString("None"), bool IsObjectiveAdditional = false, float ObjectiveProgress = 0.0f)
+	FObjectiveInfo(class UObjectiveData* Data = nullptr, ETaskCondition ObjectiveCondition = ETaskCondition::InProcess, float ObjectiveProgress = 0.0f)
 	{
-		Name = ObjectiveName;
-		Description = ObjectiveDescription;
-		bIsAdditional = IsObjectiveAdditional;
-		Condition = ETaskCondition::InProcess;
+		ObjectiveData = Data;
+		Condition = ObjectiveCondition;
 		Progress = ObjectiveProgress;
+	}
+
+	friend bool operator == (const FObjectiveInfo& Info1, const FObjectiveInfo& Info2)
+	{
+		return 	Info1.ObjectiveData == Info2.ObjectiveData &&
+				Info1.Condition == Info2.Condition &&
+				Info1.Progress == Info2.Progress;
+	}
+
+	friend bool operator != (const FObjectiveInfo& Info1, const FObjectiveInfo& Info2)
+	{
+		return !(Info1 == Info2);
 	}
 };
 
@@ -63,10 +79,13 @@ public:
 	virtual void Update_Implementation();
 
 	UFUNCTION(BlueprintPure)
-	FObjectiveInfo GetObjectiveInfo(); // was FORCEINLINE
+	FObjectiveInfo GetObjectiveInfo();
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UStage* GetOwningStage() { return OwningStage; }
+
+	UFUNCTION(BlueprintGetter)
+	TArray<class AActor*> GetActorsForQuest() { return ActorsForQuest; }
 
 protected:
 
@@ -75,9 +94,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class TSubclassOf<AActor> MarkerClass;
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<class AActor*> OnLevelObjectives;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Fail();
@@ -91,18 +107,21 @@ protected:
 	float RecalculateProgress();
 	virtual float RecalculateProgress_Implementation() { return -1.0f; }
 
-	UFUNCTION(BlueprintCallable)
-	void MarkObjectives(TArray<class AActor*> Objectives);
-
-	UFUNCTION(BlueprintCallable)
-	void UnmarkObjectives(TArray<class AActor*> Objectives);
-
-	UFUNCTION(BlueprintCallable)
-	TArray<class AActor*> GetOnLevelObjectivesFormManager();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark);
+	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) { return ActorsToMark; }
 
 private:
 
 	class UStage* OwningStage;
+
+	TArray<class AActor*> FindActorsForQuest();
+
+	UPROPERTY(BlueprintGetter = GetActorsForQuest)
+	TArray<class AActor*> ActorsForQuest;
+
+	TArray<class AActor*> FindActorsForMarking();
+	TArray<class AActor*> ActorsForMarking;
 
 	TArray<class AActor*> Markers;
 };

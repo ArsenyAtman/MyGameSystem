@@ -5,15 +5,18 @@
 #include "Stage.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "ObjectivesManager.h"
 #include "QuestComponent.h"
+#include "MarkersManagerComponent.h"
+#include "ActorWithQuestsInterface.h"
+#include "QuestActorsReferencer.h"
 
 void UObjective::Activate_Implementation(UStage* RelatedStage)
 {
 	OwningStage = RelatedStage;
 	ObjectiveInfo.Condition = ETaskCondition::InProcess;
 
-	OnLevelObjectives = GetOnLevelObjectivesFormManager();
+	ActorsForQuest = FindActorsForQuest();
+	ActorsForMarking = FindActorsForMarking();
 }
 
 void UObjective::Abort_Implementation()
@@ -27,16 +30,36 @@ void UObjective::Abort_Implementation()
 
 void UObjective::Mark()
 {
-	MarkObjectives(OnLevelObjectives);
+	AActor* QuestActor = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetOwner();
+	if (IsValid(QuestActor) && QuestActor->Implements<UActorWithQuestsInterface>())
+	{
+		UMarkersManagerComponent* MarkersManager = IActorWithQuestsInterface::Execute_GetActorMarkersManagerComponent(QuestActor);
+		if(IsValid(MarkersManager))
+		{
+			Markers = MarkersManager->MarkActorsReplicated(MarkerClass, FilterActorsForMarking(ActorsForMarking));
+		}
+	}
 }
 
 void UObjective::Unmark()
 {
-	UnmarkObjectives(OnLevelObjectives);
+	AActor* QuestActor = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetOwner();
+	if (IsValid(QuestActor) && QuestActor->Implements<UActorWithQuestsInterface>())
+	{
+		UMarkersManagerComponent* MarkersManager = IActorWithQuestsInterface::Execute_GetActorMarkersManagerComponent(QuestActor);
+		if(IsValid(MarkersManager))
+		{
+			MarkersManager->UnmarkActors(Markers);
+			Markers.Empty();
+		}
+	}
 }
 
 void UObjective::Update_Implementation()
 {
+	Unmark();
+	Mark();
+
 	OwningStage->Update();
 }
 
@@ -59,35 +82,40 @@ void UObjective::Complete_Implementation()
 	OwningStage->ObjectiveCompleted(this);
 }
 
-void UObjective::MarkObjectives(TArray<AActor*> Objectives)
+TArray<AActor*> UObjective::FindActorsForQuest()
 {
-	UQuestComponent* OwningQuestComponent = OwningStage->GetOwningQuest()->GetOwningQuestComponent();
-	if (IsValid(OwningQuestComponent))
-	{
-		OwningQuestComponent->MarkActors(MarkerClass, Objectives);
-	}
-}
+	TArray<AActor*> FoundActors;
 
-void UObjective::UnmarkObjectives(TArray<AActor*> Objectives)
-{
-	UQuestComponent* OwningQuestComponent = OwningStage->GetOwningQuest()->GetOwningQuestComponent();
-	if (IsValid(OwningQuestComponent))
-	{
-		OwningQuestComponent->UnmarkActors(MarkerClass, Objectives);
-	}
-}
+	TArray<AActor*> FoundReferencers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AQuestActorsReferencer::StaticClass(), FoundReferencers);
 
-TArray<AActor*> UObjective::GetOnLevelObjectivesFormManager()
-{
-	TArray<AActor*> FoundManagers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AObjectivesManager::StaticClass(), FoundManagers);
-	if (FoundManagers.IsValidIndex(0))
+	for (AActor* ReferencerActor : FoundReferencers)
 	{
-		AObjectivesManager* ObjectivesManager = Cast<AObjectivesManager>(FoundManagers[0]);
-		if (IsValid(ObjectivesManager))
+		AQuestActorsReferencer* Referencer = Cast<AQuestActorsReferencer>(ReferencerActor);
+		if (Referencer->GetObjectiveClass() == this->StaticClass())
 		{
-			return ObjectivesManager->GetOnLevelObjectives(this);
+			FoundActors.Append(Referencer->GetRelatedActors());
 		}
 	}
-	return TArray<AActor*>();
+
+	return FoundActors;
+}
+
+TArray<AActor*> UObjective::FindActorsForMarking()
+{
+	TArray<AActor*> FoundActors;
+
+	TArray<AActor*> FoundReferencers;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AQuestActorsReferencer::StaticClass(), FoundReferencers);
+
+	for (AActor* ReferencerActor : FoundReferencers)
+	{
+		AQuestActorsReferencer* Referencer = Cast<AQuestActorsReferencer>(ReferencerActor);
+		if (Referencer->GetObjectiveClass() == this->StaticClass())
+		{
+			FoundActors.Append(Referencer->GetActorsToMark());
+		}
+	}
+
+	return FoundActors;
 }

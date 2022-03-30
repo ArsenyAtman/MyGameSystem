@@ -45,5 +45,5 @@ AActor* UEffect::GetRelatedActor()
 
 FEffectInfo UEffect::GetEffectInfo()
 {
-	return FEffectInfo(GetClass(), EffectData);
+	return FEffectInfo(EffectData);
 }

@@ -45,10 +45,10 @@ public:
 	TArray<class UStat*> GetStatsOfClass(TSubclassOf<class UStat> StatClass);
 
 	UFUNCTION(BlueprintGetter)
-	TArray<FEffectInfo> GetEffectsInfo() { return EffectsInfo; }
+	TArray<struct FEffectInfo> GetEffectsInfo() { return EffectsInfo; }
 
 	UFUNCTION(BlueprintGetter)
-	TArray<FStatInfo> GetStatsInfo() { return StatsInfo; }
+	TArray<struct FStatInfo> GetStatsInfo() { return StatsInfo; }
 
 	UPROPERTY(BlueprintAssignable)
 	FStatsComponentUpdateDelegate OnEffectsUpdated;
@@ -71,10 +71,10 @@ protected:
 	TArray<class UEffect*> Effects;
 
 	UPROPERTY(BlueprintGetter = GetEffectsInfo, ReplicatedUsing = OnRep_EffectsInfo)
-	TArray<FEffectInfo> EffectsInfo;
+	TArray<struct FEffectInfo> EffectsInfo;
 
 	UPROPERTY(BlueprintGetter = GetStatsInfo, ReplicatedUsing = OnRep_StatsInfo)
-	TArray<FStatInfo> StatsInfo;
+	TArray<struct FStatInfo> StatsInfo;
 
 private:
 

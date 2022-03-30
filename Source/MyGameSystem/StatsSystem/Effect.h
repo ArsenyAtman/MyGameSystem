@@ -23,14 +23,10 @@ struct FEffectInfo
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class UEffect> EffectClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UEffectDataAsset* EffectData;
 
-	FEffectInfo(TSubclassOf<class UEffect> Class = nullptr, class UEffectDataAsset* Data = nullptr)
+	FEffectInfo(class UEffectDataAsset* Data = nullptr)
 	{
-		EffectClass = Class;
 		EffectData = Data;
 	}
 };

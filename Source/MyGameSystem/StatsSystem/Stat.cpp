@@ -89,5 +89,5 @@ FStatInfo UStat::GetStatInfo()
 		EffectInfos.Add(Effect->GetEffectInfo());
 	}
 
-	return FStatInfo(GetClass(), StatName, StatDescription, StatValues, EffectInfos);
+	return FStatInfo(StatData, StatBaseValues, StatValues, EffectInfos);
 }

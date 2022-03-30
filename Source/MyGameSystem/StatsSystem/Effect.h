@@ -5,11 +5,31 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "StatsSystemTypes.h"
+#include "Engine/DataAsset.h"
 #include "Effect.generated.h"
 
-/**
- * 
- */
+UCLASS(BlueprintType, Blueprintable)
+class MYGAMESYSTEM_API UEffectDataAsset : public UDataAsset
+{
+	GENERATED_BODY()
+
+};
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FEffectInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UEffectDataAsset* EffectData;
+
+	FEffectInfo(class UEffectDataAsset* Data = nullptr)
+	{
+		EffectData = Data;
+	}
+};
 
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UEffect : public UObject
@@ -47,10 +67,7 @@ protected:
 	virtual void OnDeactivating_Implementation() { return; }
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FText EffectName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FText EffectDescription;
+	class UEffectDataAsset* EffectData = nullptr;
 
 private:
 

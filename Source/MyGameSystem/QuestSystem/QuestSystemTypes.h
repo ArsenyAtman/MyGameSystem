@@ -13,3 +13,20 @@ enum class ETaskCondition : uint8
 	Failed		UMETA(DisplayName = "Failed"),
 	Aborted		UMETA(DisplayName = "Aborted")
 };
+
+USTRUCT(BlueprintType, Blueprintable)
+struct FReferencesForQuest
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<class AActor*> RelatedActors;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<class AActor*> ActorsToMark;
+
+	FReferencesForQuest()
+	{
+		// ...
+	}
+};

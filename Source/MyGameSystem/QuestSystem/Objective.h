@@ -84,9 +84,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE class UStage* GetOwningStage() { return OwningStage; }
 
-	UFUNCTION(BlueprintGetter)
-	TArray<class AActor*> GetActorsForQuest() { return ActorsForQuest; }
-
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -111,17 +108,17 @@ protected:
 	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark);
 	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) { return ActorsToMark; }
 
+	UFUNCTION(BlueprintGetter)
+	FReferencesForQuest GetReferencesForQuest() { return ReferencesForQuest; }
+
 private:
 
 	class UStage* OwningStage;
 
-	TArray<class AActor*> FindActorsForQuest();
+	FReferencesForQuest FindReferencesForQuest();
 
-	UPROPERTY(BlueprintGetter = GetActorsForQuest)
-	TArray<class AActor*> ActorsForQuest;
-
-	TArray<class AActor*> FindActorsForMarking();
-	TArray<class AActor*> ActorsForMarking;
+	UPROPERTY(BlueprintGetter = GetReferencesForQuest)
+	FReferencesForQuest ReferencesForQuest;
 
 	TArray<class AActor*> Markers;
 };

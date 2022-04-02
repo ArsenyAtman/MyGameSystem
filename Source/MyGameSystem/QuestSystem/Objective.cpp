@@ -15,8 +15,7 @@ void UObjective::Activate_Implementation(UStage* RelatedStage)
 	OwningStage = RelatedStage;
 	ObjectiveInfo.Condition = ETaskCondition::InProcess;
 
-	ActorsForQuest = FindActorsForQuest();
-	ActorsForMarking = FindActorsForMarking();
+	ReferencesForQuest = FindReferencesForQuest();
 }
 
 void UObjective::Abort_Implementation()
@@ -36,7 +35,7 @@ void UObjective::Mark()
 		UMarkersManagerComponent* MarkersManager = IActorWithQuestsInterface::Execute_GetActorMarkersManagerComponent(QuestActor);
 		if(IsValid(MarkersManager))
 		{
-			Markers = MarkersManager->MarkActorsReplicated(MarkerClass, FilterActorsForMarking(ActorsForMarking));
+			Markers = MarkersManager->MarkActorsReplicated(MarkerClass, FilterActorsForMarking(ReferencesForQuest.ActorsToMark));
 		}
 	}
 }
@@ -82,40 +81,19 @@ void UObjective::Complete_Implementation()
 	OwningStage->ObjectiveCompleted(this);
 }
 
-TArray<AActor*> UObjective::FindActorsForQuest()
+FReferencesForQuest UObjective::FindReferencesForQuest()
 {
-	TArray<AActor*> FoundActors;
-
 	TArray<AActor*> FoundReferencers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AQuestActorsReferencer::StaticClass(), FoundReferencers);
 
 	for (AActor* ReferencerActor : FoundReferencers)
 	{
 		AQuestActorsReferencer* Referencer = Cast<AQuestActorsReferencer>(ReferencerActor);
-		if (Referencer->GetObjectiveClass() == this->StaticClass())
+		if (IsValid(Referencer))
 		{
-			FoundActors.Append(Referencer->GetRelatedActors());
+			return Referencer->GetReferencesForQuest(this->StaticClass());
 		}
 	}
 
-	return FoundActors;
-}
-
-TArray<AActor*> UObjective::FindActorsForMarking()
-{
-	TArray<AActor*> FoundActors;
-
-	TArray<AActor*> FoundReferencers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AQuestActorsReferencer::StaticClass(), FoundReferencers);
-
-	for (AActor* ReferencerActor : FoundReferencers)
-	{
-		AQuestActorsReferencer* Referencer = Cast<AQuestActorsReferencer>(ReferencerActor);
-		if (Referencer->GetObjectiveClass() == this->StaticClass())
-		{
-			FoundActors.Append(Referencer->GetActorsToMark());
-		}
-	}
-
-	return FoundActors;
+	return FReferencesForQuest();
 }

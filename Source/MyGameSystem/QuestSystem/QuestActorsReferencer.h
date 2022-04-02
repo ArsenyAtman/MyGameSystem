@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "QuestSystemTypes.h"
 #include "QuestActorsReferencer.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
@@ -15,23 +16,11 @@ public:
 	// Sets default values for this actor's properties
 	AQuestActorsReferencer();
 
-	UFUNCTION(BlueprintGetter)
-	TSubclassOf<class UObjective> GetObjectiveClass() { return ObjectiveClass; }
-
-	UFUNCTION(BlueprintGetter)
-	TArray<class AActor*> GetRelatedActors() { return RelatedActors; }
-
-	UFUNCTION(BlueprintGetter)
-	TArray<class AActor*> GetActorsToMark() { return ActorsToMark; }
+	UFUNCTION(BlueprintPure)
+	FReferencesForQuest GetReferencesForQuest(TSubclassOf<class UObjective> ObjectiveClass);
 
 private:
 
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetObjectiveClass, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
-	TSubclassOf<class UObjective> ObjectiveClass;
-
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetRelatedActors, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
-	TArray<class AActor*> RelatedActors;
-
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetActorsToMark, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
-	TArray<class AActor*> ActorsToMark;
+	UPROPERTY(EditAnywhere)
+	TMap<TSubclassOf<class UObjective>, FReferencesForQuest> ReferencesForQuests;
 };

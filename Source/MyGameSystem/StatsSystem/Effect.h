@@ -9,7 +9,7 @@
 #include "Effect.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UEffectDataAsset : public UPrimaryDataAsset
+class MYGAMESYSTEM_API UEffectDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 

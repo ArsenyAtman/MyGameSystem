@@ -5,23 +5,11 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "StatsSystemTypes.h"
-#include "Engine/DataAsset.h"
 #include "Stat.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatPassiveEffectDelegate, class UEffect*, Effect);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, FStatValues, Delta, class UEffect*, Effect);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStatConditionChangeDelegate);
-
-UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UStatDataAsset : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-
-	virtual bool IsNameStableForNetworking() const override { return true; }
-
-};
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FStatInfo

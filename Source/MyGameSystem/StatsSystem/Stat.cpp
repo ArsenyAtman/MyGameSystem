@@ -6,6 +6,7 @@
 #include "StatDeltaApplier.h"
 #include "StatsComponent.h"
 #include "Effect.h"
+#include "StatDataAsset.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 FStatValues UStat::ApplyDelta(FStatValues Delta, UEffect* Effect)

@@ -143,11 +143,6 @@ void UStatsComponent::UpdateStatsInfo()
 
 void UStatsComponent::OnRep_EffectsInfo()
 {
-	for (FEffectInfo EffectInfo : EffectsInfo)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), EffectInfo.EffectData->GetName());
-	}
-
 	if (OnEffectsUpdated.IsBound())
 	{
 		OnEffectsUpdated.Broadcast();
@@ -161,7 +156,6 @@ void UStatsComponent::UpdateEffectsInfo()
 	for (UEffect* Effect : GetEffects())
 	{
 		EffectsInfo.Add(Effect->GetEffectInfo());
-		UKismetSystemLibrary::PrintString(GetWorld(), Effect->GetEffectInfo().EffectData->GetName());
 	}
 
 	if (OnEffectsUpdated.IsBound())

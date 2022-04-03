@@ -9,8 +9,4 @@ class MYGAMESYSTEM_API UStatDataAsset : public UReplicableDataAsset
 {
 	GENERATED_BODY()
 
-public:
-
-	virtual bool IsNameStableForNetworking() const override { return true; }
-
 };

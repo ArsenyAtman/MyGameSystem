@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "StatsSystemTypes.h"
-#include "Engine/PrimaryDataAsset.h"
+#include "Engine/DataAsset.h"
 #include "Effect.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)

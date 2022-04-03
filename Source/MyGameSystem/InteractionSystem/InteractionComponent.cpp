@@ -126,9 +126,9 @@ void UInteractionComponent::Trace()
 
 				// = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), TraceStart, TraceEnd, TraceRadius, UCollisionProfile::ConvertToTraceType(ECollisionChannel::ECC_Visibility), false, ActorsToIgnore, ( ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None), OutHit, true);
 
-				if (bWasHit && OutHit.Actor.IsValid())
+				if (bWasHit && IsValid(OutHit.GetActor()))
 				{
-					SetActorForInteraction(OutHit.Actor.Get());
+					SetActorForInteraction(OutHit.GetActor());
 				}
 				else
 				{

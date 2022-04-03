@@ -6,6 +6,7 @@
 #include "DialogCue.h"
 #include "DialogComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "DialogSelectionDataAsset.h"
 
 void UDialogSelection::Activate_Implementation(UDialog* OwnDialog)
 {

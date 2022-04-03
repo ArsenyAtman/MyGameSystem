@@ -4,25 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "DialogCue.h"
+#include "DialogCueDataAsset.h"
+#include "DialogCueDataAsset_AnimationAndSound.h"
 #include "DialogCue_AnimationAndSound.generated.h"
-
-UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogCueData_AnimationAndSound : public UDialogCueData
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UAnimMontage* Animation = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueVoice* Voice = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	class UDialogueWave* Sound = nullptr;
-
-};
 
 /**
  * 
@@ -40,7 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
 
-	virtual class UDialogCueData_AnimationAndSound* GetDialogUnitData_Implementation() override;
+	virtual class UDialogCueDataAsset_AnimationAndSound* GetDialogUnitData_Implementation() override;
 
 protected:
 

@@ -122,7 +122,7 @@ void UDialogComponent::RemoveNote(FString NoteToRemove)
 	}
 }
 
-void UDialogComponent::UnitStarted_Implementation(UDialogUnitData* DialogUnitData)
+void UDialogComponent::UnitStarted_Implementation(UDialogUnitDataAsset* DialogUnitData)
 {
 	CurrentDialogUnitData = DialogUnitData;
 
@@ -132,7 +132,7 @@ void UDialogComponent::UnitStarted_Implementation(UDialogUnitData* DialogUnitDat
 	}
 }
 
-void UDialogComponent::UnitPassed_Implementation(UDialogUnitData* DialogUnitData)
+void UDialogComponent::UnitPassed_Implementation(UDialogUnitDataAsset* DialogUnitData)
 {
 	CurrentDialogUnitData = nullptr;
 

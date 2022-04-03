@@ -4,29 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "DialogUnit.h"
+#include "DialogCueDataAsset.h"
+#include "DialogSystemTypes.h"
 #include "DialogCue.generated.h"
-
-UENUM(BlueprintType, Blueprintable)
-enum class EDialogCueType : uint8
-{
-	Usual		UMETA(DisplayName = "Usual"),
-	Additional	UMETA(DisplayName = "Additional"),
-	Important	UMETA(DisplayName = "Important")
-};
-
-UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogCueData : public UDialogUnitData
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UDialogUnit> NextDialogUnit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EDialogCueType DialogCueType = EDialogCueType::Usual;
-};
 
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UDialogCue : public UDialogUnit
@@ -37,7 +17,7 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	virtual class UDialogCueData* GetDialogUnitData_Implementation() override { return CueData; }
+	virtual class UDialogCueDataAsset* GetDialogUnitData_Implementation() override { return CueData; }
 
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
@@ -69,7 +49,7 @@ protected:
 private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Data", meta = (AllowPrivateAccess = true))
-	class UDialogCueData* CueData;
+	class UDialogCueDataAsset* CueData;
 
 	UPROPERTY(BlueprintGetter = GetOwningDialog)
 	class UDialog* OwningDialog;

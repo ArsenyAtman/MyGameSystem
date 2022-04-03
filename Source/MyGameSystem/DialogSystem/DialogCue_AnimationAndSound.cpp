@@ -12,6 +12,7 @@
 #include "MyGameSystem/MontagePlayer/MontagePlayableActorInterface.h"
 #include "AnimNotify_PlayAudioOfDialogCue.h"
 #include "Dialog.h"
+#include "DialogCueDataAsset_AnimationAndSound.h"
 
 void UDialogCue_AnimationAndSound::OnCueBeginned_Implementation()
 {
@@ -186,7 +187,7 @@ bool UDialogCue_AnimationAndSound::HasAudioStartAnimNotify(UAnimMontage* Montage
 	return false;
 }
 
-UDialogCueData_AnimationAndSound* UDialogCue_AnimationAndSound::GetDialogUnitData_Implementation()
+UDialogCueDataAsset_AnimationAndSound* UDialogCue_AnimationAndSound::GetDialogUnitData_Implementation()
 {
-	return Cast<UDialogCueData_AnimationAndSound>(Super::GetDialogUnitData_Implementation());
+	return Cast<UDialogCueDataAsset_AnimationAndSound>(Super::GetDialogUnitData_Implementation());
 }

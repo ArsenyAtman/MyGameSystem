@@ -4,6 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-// #include "DialogSystemTypes.generated.h"
+#include "DialogSystemTypes.generated.h"
 
-// ...
+UENUM(BlueprintType, Blueprintable)
+enum class EDialogCueType : uint8
+{
+	Usual		UMETA(DisplayName = "Usual"),
+	Additional	UMETA(DisplayName = "Additional"),
+	Important	UMETA(DisplayName = "Important")
+};

@@ -13,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, FStatValu
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStatConditionChangeDelegate);
 
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UStatDataAsset : public UPrimaryDataAsset
+class MYGAMESYSTEM_API UStatDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 

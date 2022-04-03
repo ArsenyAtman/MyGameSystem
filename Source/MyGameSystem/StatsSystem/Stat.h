@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "StatsSystemTypes.h"
-#include "Engine/DataAsset.h"
+#include "Engine/PrimaryDataAsset.h"
 #include "Stat.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatPassiveEffectDelegate, class UEffect*, Effect);
@@ -13,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, FStatValu
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStatConditionChangeDelegate);
 
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UStatDataAsset : public UDataAsset
+class MYGAMESYSTEM_API UStatDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 

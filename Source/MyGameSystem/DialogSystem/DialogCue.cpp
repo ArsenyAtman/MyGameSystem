@@ -7,6 +7,7 @@
 #include "Dialog.h"
 #include "DialogComponent.h"
 #include "TalkableInterface.h"
+#include "DialogCueDataAsset.h"
 
 void UDialogCue::Activate_Implementation(class UDialog* OwnDialog)
 {

@@ -8,7 +8,7 @@
 #include "DialogComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDialogConditionDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogUnitConditionDelegate, class UDialogUnitData*, DialogUnitData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogUnitConditionDelegate, class UDialogUnitDataAsset*, DialogUnitData);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UDialogComponent : public UActorComponent
@@ -42,7 +42,7 @@ public:
 	class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	class UDialogUnitData* GetCurrentDialogUnitData() { return CurrentDialogUnitData; }
+	class UDialogUnitDataAsset* GetCurrentDialogUnitData() { return CurrentDialogUnitData; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	TSubclassOf<UDialog> GetDialogClass() { return DialogClass; }
@@ -72,10 +72,10 @@ public:
 	FDialogConditionDelegate OnDialogEnded;
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "DialogComponent|Internal")
-	void UnitStarted(class UDialogUnitData* DialogUnitData);
+	void UnitStarted(class UDialogUnitDataAsset* DialogUnitData);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "DialogComponent|Internal")
-	void UnitPassed(class UDialogUnitData* DialogUnitData);
+	void UnitPassed(class UDialogUnitDataAsset* DialogUnitData);
 
 protected:
 
@@ -84,7 +84,7 @@ protected:
 private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetDialogClass, BlueprintSetter = SetDialogClass, Category = "DialogComponent|Dialog", meta = (AllowPrivateAccess = true))
-		TSubclassOf<UDialog> DialogClass;
+	TSubclassOf<UDialog> DialogClass;
 
 	UPROPERTY(BlueprintGetter = GetCurrentDialog);
 	class UDialog* CurrentDialog;
@@ -96,7 +96,7 @@ private:
 	void OnRep_MasterDialogComponent();
 
 	UPROPERTY(BlueprintGetter = GetCurrentDialogUnitData)
-	class UDialogUnitData* CurrentDialogUnitData;
+	class UDialogUnitDataAsset* CurrentDialogUnitData;
 
 	UPROPERTY(BlueprintGetter = GetNotes)
 	TArray<FString> Notepad;

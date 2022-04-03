@@ -4,25 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "DialogUnit.h"
+#include "DialogAutoSelectionDataAsset.h"
 #include "DialogAutoSelection.generated.h"
-
-UCLASS(BlueprintType, Blueprintable)
-class UDialogAutoSelectionData : public UDialogUnitData
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSubclassOf<class UDialogCue>> CueOptions;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bCheckFromEnd = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bSelectFalseCondition = false;
-
-};
 
 UCLASS()
 class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogUnit
@@ -33,7 +16,7 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	virtual class UDialogAutoSelectionData* GetDialogUnitData_Implementation() override { return Data; }
+	virtual class UDialogAutoSelectionDataAsset* GetDialogUnitData_Implementation() override { return Data; }
 
 protected:
 
@@ -42,6 +25,6 @@ protected:
 private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|Data", meta = (AllowPrivateAccess = true))
-	class UDialogAutoSelectionData* Data;
+	class UDialogAutoSelectionDataAsset* Data;
 	
 };

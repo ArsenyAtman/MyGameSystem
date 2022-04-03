@@ -3,6 +3,7 @@
 #include "DialogAutoSelection.h"
 #include "Dialog.h"
 #include "DialogCue.h"
+#include "DialogAutoSelectionDataAsset.h"
 
 void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 {

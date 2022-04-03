@@ -13,6 +13,10 @@ class MYGAMESYSTEM_API UEffectDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
+public:
+
+	virtual bool IsNameStableForNetworking() const override { return true; }
+
 };
 
 USTRUCT(BlueprintType, Blueprintable)

@@ -5,19 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "StatsSystemTypes.h"
-#include "Engine/DataAsset.h"
 #include "Effect.generated.h"
-
-UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UEffectDataAsset : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-
-	virtual bool IsNameStableForNetworking() const override { return true; }
-
-};
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FEffectInfo

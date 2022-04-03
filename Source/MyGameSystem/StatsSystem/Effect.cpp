@@ -3,6 +3,7 @@
 #include "Effect.h"
 #include "StatsComponent.h"
 #include "Stat.h"
+#include "EffectDataAsset.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void UEffect::Activate(UStatsComponent* StatsComponent)

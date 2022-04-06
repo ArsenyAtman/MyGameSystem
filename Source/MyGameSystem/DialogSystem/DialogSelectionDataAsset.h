@@ -14,10 +14,4 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSubclassOf<class UDialogCue>> Options;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bWithTimer = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float Time = -1.0f;
-
 };

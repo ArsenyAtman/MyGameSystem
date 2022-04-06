@@ -27,14 +27,18 @@ public:
 
 protected:
 
-	// ...
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void OnSelectionStarted();
+	virtual void OnSelectionStarted_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void OnSelectionEnded();
+	virtual void OnSelectionEnded_Implementation() { return; }
 
 private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Data", meta = (AllowPrivateAccess = true))
 	class UDialogSelectionDataAsset* SelectionData;
-
-	FTimerHandle SelectionEndTimer;
 
 	class UDialog* OwningDialog;
 	

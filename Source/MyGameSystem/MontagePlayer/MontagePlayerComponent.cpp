@@ -15,17 +15,17 @@ UMontagePlayerComponent::UMontagePlayerComponent()
 	// ...
 }
 
-UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageReplicated(UAnimMontage* Montage, float InPlayRate, EMontagePlayReturnType ReturnValueType, float StartTime, bool bStopAllMontages)
+UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageReplicated(UAnimMontage* Montage, float InPlayRate, float StartTime, bool bStopAllMontages)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		PlayAnimationMontageOnClients(Montage, InPlayRate, ReturnValueType, StartTime, bStopAllMontages);
-		return PlayAnimationMontageLocally(Montage, InPlayRate, ReturnValueType, StartTime, bStopAllMontages);
+		PlayAnimationMontageOnClients(Montage, InPlayRate, StartTime, bStopAllMontages);
+		return PlayAnimationMontageLocally(Montage, InPlayRate, StartTime, bStopAllMontages);
 	}
 	return nullptr;
 }
 
-UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageLocally(UAnimMontage* Montage, float InPlayRate, EMontagePlayReturnType ReturnValueType, float StartTime, bool bStopAllMontages)
+UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageLocally(UAnimMontage* Montage, float InPlayRate, float StartTime, bool bStopAllMontages)
 {
 	AActor* Owner = GetOwner();
 	if (IsValid(Owner) && Owner->Implements<UMontagePlayableActorInterface>())
@@ -36,7 +36,7 @@ UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageLocally(UAnimMontage
 			UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
 			if (IsValid(AnimInstance))
 			{
-				AnimInstance->Montage_Play(Montage, InPlayRate, ReturnValueType, StartTime, bStopAllMontages);
+				AnimInstance->Montage_Play(Montage, InPlayRate, EMontagePlayReturnType::Duration, StartTime, bStopAllMontages);
 				return AnimInstance;
 			}
 		}
@@ -44,11 +44,11 @@ UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageLocally(UAnimMontage
 	return nullptr;
 }
 
-void UMontagePlayerComponent::PlayAnimationMontageOnClients_Implementation(UAnimMontage* Montage, float InPlayRate, EMontagePlayReturnType ReturnValueType, float StartTime, bool bStopAllMontages)
+void UMontagePlayerComponent::PlayAnimationMontageOnClients_Implementation(UAnimMontage* Montage, float InPlayRate, float StartTime, bool bStopAllMontages)
 {
 	if (GetOwnerRole() != ENetRole::ROLE_Authority)
 	{
-		PlayAnimationMontageLocally(Montage, InPlayRate, ReturnValueType, StartTime, bStopAllMontages);
+		PlayAnimationMontageLocally(Montage, InPlayRate, StartTime, bStopAllMontages);
 	}
 }
 

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Animation/AnimInstance.h"
 #include "MontagePlayerComponent.generated.h"
 
 
@@ -18,13 +17,13 @@ public:
 	UMontagePlayerComponent();
 
 	UFUNCTION(BlueprintCallable, Category = "MontagePlayerComponent")
-	class UAnimInstance* PlayAnimationMontageReplicated(class UAnimMontage* Montage, float InPlayRate = 1.0f, EMontagePlayReturnType ReturnValueType = EMontagePlayReturnType::MontageLength, float StartTime = 0.0f, bool bStopAllMontages = true);
+	class UAnimInstance* PlayAnimationMontageReplicated(class UAnimMontage* Montage, float InPlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = true);
 
 	UFUNCTION(BlueprintCallable, Category = "MontagePlayerComponent")
-	class UAnimInstance* PlayAnimationMontageLocally(class UAnimMontage* Montage, float InPlayRate = 1.0f, EMontagePlayReturnType ReturnValueType = EMontagePlayReturnType::MontageLength, float StartTime = 0.0f, bool bStopAllMontages = true);
+	class UAnimInstance* PlayAnimationMontageLocally(class UAnimMontage* Montage, float InPlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = true);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
-	void PlayAnimationMontageOnClients(class UAnimMontage* Montage, float InPlayRate = 1.0f, EMontagePlayReturnType ReturnValueType = EMontagePlayReturnType::MontageLength, float StartTime = 0.0f, bool bStopAllMontages = true);
+	void PlayAnimationMontageOnClients(class UAnimMontage* Montage, float InPlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = true);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
 	void StopAnimationMontage(class UAnimMontage* Montage);

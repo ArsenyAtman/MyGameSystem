@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Animation/AnimInstance.h"
 #include "MontagePlayerComponent.generated.h"
 
 

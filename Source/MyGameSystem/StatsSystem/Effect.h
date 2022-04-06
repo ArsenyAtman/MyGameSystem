@@ -30,35 +30,35 @@ class MYGAMESYSTEM_API UEffect : public UObject
 
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Effect|Internal")
 	void Activate(class UStatsComponent* StatsComponent);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Effect|Internal")
 	void Deactivate();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Effect|RelatedStatsComponent")
 	class UStatsComponent* GetRelatedStatsComponent() { return RelatedStatsComponent; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Effect|RelatedActor")
 	class AActor* GetRelatedActor();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Effect|Condition")
 	FEffectInfo GetEffectInfo();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Effect|Condition")
 	bool GetIsActive() { return bIsActive; }
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Effect|Control")
 	void OnActivated();
 	virtual void OnActivated_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Effect|Control")
 	void OnDeactivating();
 	virtual void OnDeactivating_Implementation() { return; }
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect|Condition")
 	class UEffectDataAsset* EffectData = nullptr;
 
 private:

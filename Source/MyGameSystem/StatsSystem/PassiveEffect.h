@@ -16,7 +16,7 @@ class MYGAMESYSTEM_API UPassiveEffect : public UStatEffect
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "PassiveEffect|ApplyToDelta")
 	FStatValues ApplyToDelta(FStatValues Delta, class UEffect* OfEffect, class UStat* OnStat);
 	virtual FStatValues ApplyToDelta_Implementation(FStatValues Delta, class UEffect* OfEffect, class UStat* OnStat) { return FStatValues(); }
 	

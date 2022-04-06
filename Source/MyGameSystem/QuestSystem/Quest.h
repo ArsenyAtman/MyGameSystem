@@ -83,53 +83,53 @@ class MYGAMESYSTEM_API UQuest : public UObject
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
 	void Activate(class UQuestComponent* QuestComponent);
 	virtual void Activate_Implementation(class UQuestComponent* QuestComponent);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Quest|Internal")
 	void SetIsBeingTracked(bool bNewIsBeingTracked);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
 	void StagePassed(class UStage* Stage, TSubclassOf<class UStage> NextStageClass);
 	virtual void StagePassed_Implementation(class UStage* Stage, TSubclassOf<class UStage> NextStage);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
 	void Update();
 	virtual void Update_Implementation();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Quest|Info")
 	FQuestInfo GetQuestInfo();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Quest|OwningQuestComponent")
 	FORCEINLINE class UQuestComponent* GetOwningQuestComponent() { return OwningQuestComponent; }
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
 	void Complete();
 	virtual void Complete_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
 	void Fail();
 	virtual void Fail_Implementation();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Info")
 	FQuestInfo QuestInfo;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Stages")
 	TSubclassOf<class UStage> InitialStageClass;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Quest|Stages")
 	class UStage* ActiveStage;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Quest|Stages")
 	TArray<class UStage*> PastStages;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|QuestsFlow")
 	TSubclassOf<class UQuest> NextQuestIfCompleted;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|QuestsFlow")
 	TSubclassOf<class UQuest> NextQuestIfFailed;
 
 private:

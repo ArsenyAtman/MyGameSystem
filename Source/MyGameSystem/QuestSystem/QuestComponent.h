@@ -22,98 +22,98 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Control")
 	void AddQuest(TSubclassOf<class UQuest> QuestClass);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "QuestComponent|Control")
 	void SelectQuestToTrackByIndex(int QuestIndex);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "QuestComponent|Control")
 	void SelectQuestToTrackByInfo(FQuestInfo QuestInfo);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "QuestComponent|Control")
 	void UntrackQuest();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	void QuestCompleted(class UQuest* Quest);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	void QuestFailed(class UQuest* Quest);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	void QuestUpdated(class UQuest* Quest);
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetActiveQuests() { return ActiveQuests; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetCompletedQuests() { return CompletedQuests; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetFailedQuests() { return FailedQuests; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetAllQuests();
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<struct FQuestInfo> GetActiveQuestsInfo() { return ActiveQuestsInfo; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<struct FQuestInfo> GetCompletedQuestsInfo() { return CompletedQuestsInfo; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<struct FQuestInfo> GetFailedQuestsInfo() { return FailedQuestsInfo; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "QuestComponent|Quests")
 	bool HasTrackedQuest();
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	class UQuest* GetTrackedQuest() { return TrackedQuest; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	struct FQuestInfo GetTrackedQuestInfo() { return TrackedQuestInfo; }
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestInfoEventDelegate OnQuestAdded;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestInfoEventDelegate OnQuestCompleted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestInfoEventDelegate OnQuestFailed;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestEventDelegate OnQuestsUpdated;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestEventDelegate OnTrackedQuestSelected;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestEventDelegate OnTrackedQuestDeselected;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestEventDelegate OnTrackedQuestUpdated;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestInfoEventDelegate OnTrackedQuestCompleted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestInfoEventDelegate OnTrackedQuestFailed;
 
 protected:
 
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	void UpdateAllQuestsInfo();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	TArray<struct FQuestInfo> GetQuestsInfo(TArray<class UQuest*> Quests);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	bool CheckQuestOnDuplication(TSubclassOf<class UQuest> QuestClass);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	void SetTrackedQuest(class UQuest* NewTrackedQuest);
 
 private:

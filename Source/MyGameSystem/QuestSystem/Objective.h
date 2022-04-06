@@ -60,55 +60,55 @@ class MYGAMESYSTEM_API UObjective : public UObject
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Activate(class UStage* RelatedStage);
 	virtual void Activate_Implementation(class UStage* RelatedStage);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Abort();
 	virtual void Abort_Implementation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Objective|Internal")
 	void Mark();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Objective|Internal")
 	void Unmark();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
 	void Update();
 	virtual void Update_Implementation();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Objective|Info")
 	FObjectiveInfo GetObjectiveInfo();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Objective|OwningStage")
 	FORCEINLINE class UStage* GetOwningStage() { return OwningStage; }
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Info")
 	FObjectiveInfo ObjectiveInfo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Marker")
 	class TSubclassOf<AActor> MarkerClass;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
 	void Fail();
 	virtual void Fail_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
 	void Complete();
 	virtual void Complete_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Progress")
 	float RecalculateProgress();
 	virtual float RecalculateProgress_Implementation() { return -1.0f; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|RelatedActors")
 	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark);
 	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) { return ActorsToMark; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Objective|RelatedActors")
 	FReferencesForQuest GetReferencesForQuest() { return ReferencesForQuest; }
 
 private:

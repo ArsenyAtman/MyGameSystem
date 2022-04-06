@@ -60,72 +60,72 @@ class MYGAMESYSTEM_API UStage : public UObject
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void Activate(class UQuest* RelatedQuest);
 	virtual void Activate_Implementation(class UQuest* RelatedQuest);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void ObjectiveCompleted(class UObjective* Objective);
 	virtual void ObjectiveCompleted_Implementation(class UObjective* Objective);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void ObjectiveFailed(class UObjective* Objective);
 	virtual void ObjectiveFailed_Implementation(class UObjective* Objective);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void Update();
 	virtual void Update_Implementation();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Stage|Internal")
 	void MarkObjectives();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Stage|Internal")
 	void UnmarkObjectives();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Stage|Info")
 	FStageInfo GetStageInfo();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Stage|OwningQuest")
 	FORCEINLINE class UQuest* GetOwningQuest() { return OwningQuest; }
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
 	void CheckCondition();
 	virtual void CheckCondition_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
 	void Complete(class UClass* NextStage);
 	virtual void Complete_Implementation(TSubclassOf<class UStage> NextStage);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
 	void Fail(class UClass* NextStage);
 	virtual void Fail_Implementation(TSubclassOf<class UStage> NextStage);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void AbortAllObjectives();
 	virtual void AbortAllObjectives_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Objectives")
 	TArray<class UObjective*> GetStageObjectives();
 	virtual TArray<class UObjective*> GetStageObjectives_Implementation() { return TArray<class UObjective*>(); }
 
 	UFUNCTION(BlueprintCallable)
 	TArray<class AActor*> GetAllActorsOfClass(class UClass* ActorClass);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
 	bool IsAllObjectivesCompleted(TArray<class UObjective*> Objectives);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
 	bool IsAllObjectivesFailed(TArray<class UObjective*> Objectives);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
 	bool IsOneObjectiveCompleted(TArray<class UObjective*> Objectives);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
 	bool IsOneObjectiveFailed(TArray<class UObjective*> Objectives);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Info")
 	FStageInfo StageInfo;
 
 private:

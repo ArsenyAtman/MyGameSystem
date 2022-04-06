@@ -38,16 +38,16 @@ protected:
 
 	TArray<class UObjective*> GetStageObjectives_Implementation() override;
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "StageOptions|QuestFlow")
 	class UClass* GetNextStage(class UObjective* OfObjective, TArray<FOption> FromOptions);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "StageOptions|Objectives")
 	UObjective* GetCompletedObjective(TArray<class UObjective*> Objectives);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageOptions|QuestFlow")
 	TArray<FOption> Options;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "StageOptions|QuestFlow")
 	TSubclassOf<class UStage> NextStageClassIfFailed;
 
 };

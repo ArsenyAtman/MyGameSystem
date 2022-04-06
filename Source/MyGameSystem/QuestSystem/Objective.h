@@ -74,10 +74,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Objective|Internal")
 	void Unmark();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
-	void Update();
-	virtual void Update_Implementation();
-
 	UFUNCTION(BlueprintPure, Category = "Objective|Info")
 	FObjectiveInfo GetObjectiveInfo();
 
@@ -99,6 +95,10 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
 	void Complete();
 	virtual void Complete_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	void Update();
+	virtual void Update_Implementation();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Progress")
 	float RecalculateProgress();

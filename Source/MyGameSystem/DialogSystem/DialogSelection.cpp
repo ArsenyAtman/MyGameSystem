@@ -11,11 +11,8 @@
 void UDialogSelection::Activate_Implementation(UDialog* OwnDialog)
 {
 	OwningDialog = OwnDialog;
-	if (IsValid(SelectionData) && SelectionData->bWithTimer)
-	{
-		FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &UDialogSelection::SelectNextCue, 0);
-		GetWorld()->GetTimerManager().SetTimer(SelectionEndTimer, Delegate, SelectionData->Time, false);
-	}
+	
+	OnSelectionStarted();
 }
 
 void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
@@ -30,7 +27,7 @@ void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 		OwningDialog->OnDialogUnitPassed(this, nullptr);
 	}
 
-	GetWorld()->GetTimerManager().ClearTimer(SelectionEndTimer);
+	OnSelectionEnded();
 }
 
 TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions()

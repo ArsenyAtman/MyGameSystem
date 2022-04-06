@@ -7,8 +7,8 @@
 
 void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 {
-	TArray<TSubclassOf<UDialogCue>> DialogCueOptions = Data->CueOptions;
-	if (Data->bCheckFromEnd)
+	TArray<TSubclassOf<UDialogCue>> DialogCueOptions = GetDialogUnitData_Implementation()->Options;
+	if (GetDialogUnitData_Implementation()->bCheckFromEnd)
 	{
 		Algo::Reverse(DialogCueOptions);
 	}
@@ -21,7 +21,7 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 			if (IsValid(DialogCueObject))
 			{
 				bool bConditionResult = DialogCueObject->CheckAvailabilityCondition(OwnDialog);
-				if (Data->bSelectFalseCondition)
+				if (GetDialogUnitData_Implementation()->bSelectFalseCondition)
 				{
 					bConditionResult = !bConditionResult;
 				}
@@ -40,4 +40,9 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 		}
 	}
 	OwnDialog->OnDialogUnitPassed(this, nullptr);
+}
+
+UDialogAutoSelectionDataAsset* UDialogAutoSelection::GetDialogUnitData_Implementation()
+{
+	return Cast<UDialogAutoSelectionDataAsset>(Super::GetDialogUnitData_Implementation());
 }

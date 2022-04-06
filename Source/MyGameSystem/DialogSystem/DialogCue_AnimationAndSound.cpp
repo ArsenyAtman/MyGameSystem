@@ -174,9 +174,9 @@ bool UDialogCue_AnimationAndSound::HasAudioStartAnimNotify(UAnimMontage* Montage
 {
 	if (IsValid(Montage))
 	{
-		TArray<FAnimNotifyEventReference> Notifies;
-		Montage->GetAnimNotifies(0, Montage->GetPlayLength(), false, Notifies);
-		for (FAnimNotifyEventReference& Notify : Notifies)
+		FAnimNotifyContext NotifyContext;
+		Montage->GetAnimNotifies(0, Montage->GetPlayLength(), NotifyContext);
+		for (FAnimNotifyEventReference& Notify : NotifyContext.ActiveNotifies)
 		{
 			if (Cast<UAnimNotify_PlayAudioOfDialogCue>(Notify.GetNotify()->Notify))
 			{

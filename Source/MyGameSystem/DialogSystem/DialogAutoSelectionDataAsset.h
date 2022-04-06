@@ -1,18 +1,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DialogUnitDataAsset.h"
+#include "DialogSelectionDataAsset.h"
 #include "DialogAutoSelectionDataAsset.generated.h"
 
 UCLASS()
-class MYGAMESYSTEM_API UDialogAutoSelectionDataAsset : public UDialogUnitDataAsset
+class MYGAMESYSTEM_API UDialogAutoSelectionDataAsset : public UDialogSelectionDataAsset
 {
 	GENERATED_BODY()
 
 public:
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSubclassOf<class UDialogCue>> CueOptions;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bCheckFromEnd = false;

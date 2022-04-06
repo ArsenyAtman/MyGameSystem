@@ -80,13 +80,6 @@ void UStage::Fail_Implementation(TSubclassOf<UStage> NextStage)
 	OwningQuest->StagePassed(this, NextStage);
 }
 
-TArray<AActor*> UStage::GetAllActorsOfClass(UClass* ActorClass)
-{
-	TArray<AActor*> OutActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ActorClass, OutActors);
-	return OutActors;
-}
-
 bool UStage::IsAllObjectivesCompleted(TArray<UObjective*> Objectives)
 {
 	for (UObjective* Objective : Objectives)

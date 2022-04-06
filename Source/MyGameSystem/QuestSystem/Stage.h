@@ -110,9 +110,6 @@ protected:
 	TArray<class UObjective*> GetStageObjectives();
 	virtual TArray<class UObjective*> GetStageObjectives_Implementation() { return TArray<class UObjective*>(); }
 
-	UFUNCTION(BlueprintCallable)
-	TArray<class AActor*> GetAllActorsOfClass(class UClass* ActorClass);
-
 	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
 	bool IsAllObjectivesCompleted(TArray<class UObjective*> Objectives);
 

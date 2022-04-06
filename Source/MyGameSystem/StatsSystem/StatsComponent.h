@@ -23,57 +23,57 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "StatComponent|Control")
 	void ApplyEffect(class UEffect* Effect);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "StatComponent|Control")
 	void AbortEffect(class UEffect* Effect);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "StatComponent|Internal")
 	void AddEffect(class UEffect* Effect);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "StatComponent|Internal")
 	void RemoveEffect(class UEffect* Effect);
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "StatComponent|Effects")
 	TArray<class UEffect*> GetEffects() { return Effects; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "StatComponent|Stats")
 	TArray<class UStat*> GetStats() { return Stats; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "StatComponent|Stats")
 	TArray<class UStat*> GetStatsOfClass(TSubclassOf<class UStat> StatClass);
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "StatComponent|Effects")
 	TArray<struct FEffectInfo> GetEffectsInfo() { return EffectsInfo; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "StatComponent|Stats")
 	TArray<struct FStatInfo> GetStatsInfo() { return StatsInfo; }
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
 	FStatsComponentUpdateDelegate OnEffectsUpdated;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
 	FStatsComponentUpdateDelegate OnStatsUpdated;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
 	FStatsComponentEffectDelegate OnEffectAdded;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
 	FStatsComponentEffectDelegate OnEffectRemoved;
 
 protected:
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintGetter = GetStats)
+	UPROPERTY(EditAnywhere, Instanced, BlueprintGetter = GetStats, Category = "StatComponent|Stats")
 	TArray<class UStat*> Stats;
 
-	UPROPERTY(BlueprintGetter = GetEffects)
+	UPROPERTY(BlueprintGetter = GetEffects, Category = "StatComponent|Effects")
 	TArray<class UEffect*> Effects;
 
-	UPROPERTY(BlueprintGetter = GetEffectsInfo, ReplicatedUsing = OnRep_EffectsInfo)
+	UPROPERTY(BlueprintGetter = GetEffectsInfo, ReplicatedUsing = OnRep_EffectsInfo, Category = "StatComponent|Effects")
 	TArray<struct FEffectInfo> EffectsInfo;
 
-	UPROPERTY(BlueprintGetter = GetStatsInfo, ReplicatedUsing = OnRep_StatsInfo)
+	UPROPERTY(BlueprintGetter = GetStatsInfo, ReplicatedUsing = OnRep_StatsInfo, Category = "StatComponent|Stats")
 	TArray<struct FStatInfo> StatsInfo;
 
 private:

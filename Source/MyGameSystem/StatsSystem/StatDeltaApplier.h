@@ -17,11 +17,11 @@ class MYGAMESYSTEM_API UStatDeltaApplier : public UObject
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "StatDeltaApplier|ApplyDelta")
 	FStatValues ApplyDelta(FStatValues Delta, class UEffect* OfEffect);
 	virtual FStatValues ApplyDelta_Implementation(FStatValues Delta, class UEffect* OfEffect) { return FStatValues(); }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "StatDeltaApplier|OwningStat")
 	class UStat* GetOwningStat();
 	
 };

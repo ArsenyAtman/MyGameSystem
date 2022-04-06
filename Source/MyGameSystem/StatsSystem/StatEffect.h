@@ -16,7 +16,7 @@ class MYGAMESYSTEM_API UStatEffect : public UEffect
 
 public:
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "StatEffect|RelatedStats")
 	TArray<class UStat*> GetRelatedStats() { return RelatedStats; }
 	
 protected:
@@ -25,7 +25,7 @@ protected:
 
 	virtual void OnDeactivating_Implementation();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn = true), Category = "StatEffect|RelatedStats")
 	TSubclassOf<class UStat> ForStatsOfClass;
 
 private:

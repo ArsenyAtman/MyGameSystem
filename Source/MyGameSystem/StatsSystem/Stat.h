@@ -46,59 +46,59 @@ class MYGAMESYSTEM_API UStat : public UObject
 
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Stat|Delta")
 	FStatValues ApplyDelta(FStatValues Delta, class UEffect* Effect);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Stat|Effects")
 	void AddEffect(class UEffect* Effect);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Stat|Effects")
 	void RemoveEffect(class UEffect* Effect);
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Stat|Condition")
 	FStatValues GetStatValues() { return StatValues; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Stat|Condition")
 	FStatValues GetStatBaseValues() { return StatBaseValues; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Stat|Effects")
 	TArray<class UEffect*> GetEffects() { return Effects; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Stat|StatsComponent")
 	class UStatsComponent* GetOwningStatsComponent();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Stat|Condition")
 	FStatInfo GetStatInfo();
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
 	FStatValueChangeDelegate OnValuesChanged;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
 	FStatConditionChangeDelegate OnMinReached;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
 	FStatConditionChangeDelegate OnMaxReached;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
 	FStatPassiveEffectDelegate OnEffectAdded;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
 	FStatPassiveEffectDelegate OnEffectRemoved;
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatValues)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatValues, Category = "Stat|Condition")
 	FStatValues StatValues;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatBaseValues)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatBaseValues, Category = "Stat|Condition")
 	FStatValues StatBaseValues;
 
-	UPROPERTY(BlueprintGetter = GetEffects)
+	UPROPERTY(BlueprintGetter = GetEffects, Category = "Stat|Effects")
 	TArray<class UEffect*> Effects;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stat|Condition")
 	class UStatDataAsset* StatData = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Stat|DeltaApplier")
 	class UStatDeltaApplier* StatDeltaApplier;
 };

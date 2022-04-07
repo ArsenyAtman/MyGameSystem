@@ -27,26 +27,19 @@ void UDialogComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(UDialogComponent, MasterDialogComponent, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(UDialogComponent, CurrentDialogUnitData, COND_OwnerOnly);
 
 }
 
-void UDialogComponent::BeginDialogue(APawn* Initiator, const TArray<AActor*>& AdditionalInterlocutors)
+void UDialogComponent::BeginDialogue(AActor* Initiator, const TArray<AActor*>& AdditionalInterlocutors)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		if (!IsValid(CurrentDialog) && !IsValid(MasterDialogComponent) && IsValid(DialogClass))
 		{
-			TArray<AActor*> Interlocutors = AdditionalInterlocutors;
-
-			//MasterDialogComponent = this;
 			CurrentDialog = NewObject<UDialog>(this, DialogClass);
 			if (IsValid(CurrentDialog))
 			{
-				Interlocutors.Add(this->GetOwner());
-				Interlocutors.Add(Initiator);
-
-				CurrentDialog->Begin(this, this->GetOwner(), Initiator, Interlocutors);
+				CurrentDialog->Begin(this, this->GetOwner(), Initiator, AdditionalInterlocutors);
 
 				if (OnDialogStarted.IsBound())
 				{

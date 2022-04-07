@@ -30,6 +30,8 @@ void UQuestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void UQuestComponent::BeginPlay()
 {
+	Super::BeginPlay();
+
 	// ...
 }
 

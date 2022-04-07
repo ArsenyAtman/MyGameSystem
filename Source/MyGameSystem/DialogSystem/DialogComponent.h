@@ -22,7 +22,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Control")
-	void BeginDialogue(class APawn* Initiator, const TArray<class AActor*>& AdditionalInterlocutors);
+	void BeginDialogue(class AActor* Initiator, const TArray<class AActor*>& AdditionalInterlocutors);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "DialogComponent|Control")
 	void SelectDialogCue(int CueIndex);

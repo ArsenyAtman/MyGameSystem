@@ -24,7 +24,7 @@ struct FStageInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStageData* StageData;
 
 	UPROPERTY(BlueprintReadWrite)

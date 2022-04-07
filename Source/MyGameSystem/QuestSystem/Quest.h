@@ -34,7 +34,7 @@ struct FQuestInfo
 {
 	GENERATED_BODY();
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UQuestData* QuestData;
 
 	UPROPERTY(BlueprintReadWrite)

@@ -91,7 +91,7 @@ FReferencesForQuest UObjective::FindReferencesForQuest()
 		AQuestActorsReferencer* Referencer = Cast<AQuestActorsReferencer>(ReferencerActor);
 		if (IsValid(Referencer))
 		{
-			return Referencer->GetReferencesForQuest(this->StaticClass());
+			return Referencer->GetReferencesForQuest(this->GetClass());
 		}
 	}
 

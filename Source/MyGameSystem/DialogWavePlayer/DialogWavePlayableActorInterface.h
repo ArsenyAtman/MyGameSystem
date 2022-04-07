@@ -28,10 +28,6 @@ public:
 	virtual class UDialogWavePlayerComponent* GetDialogWaveComponent_Implementation() = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
-	class USkeletalMeshComponent* GetSkeletalMeshForDialog();
-	virtual class USkeletalMeshComponent* GetSkeletalMeshForDialog_Implementation() = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
 	class USceneComponent* GetMouthComponent();
 	virtual class USceneComponent* GetMouthComponent_Implementation() = 0;
 

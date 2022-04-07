@@ -44,7 +44,7 @@ UAudioComponent* UDialogWavePlayerComponent::PlayDialogWaveLocally(UDialogueWave
 		USceneComponent* AttachComponent = IDialogWavePlayableActorInterface::Execute_GetMouthComponent(Actor);
 		FName AttachPoint = IDialogWavePlayableActorInterface::Execute_GetMouthPoint(Actor);
 		FVector RelativeLocation = IDialogWavePlayableActorInterface::Execute_GetMouthRelativeLocation(Actor);
-		return UGameplayStatics::SpawnDialogueAttached(DialogWave, Context, AttachComponent, AttachPoint, RelativeLocation, EAttachLocation::SnapToTarget, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, Attenuation, bAutoDestroy);
+		return UGameplayStatics::SpawnDialogueAttached(DialogWave, Context, AttachComponent, AttachPoint, RelativeLocation, EAttachLocation::KeepRelativeOffset, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, Attenuation, bAutoDestroy);
 	}
 	return nullptr;
 }
@@ -62,7 +62,6 @@ void UDialogWavePlayerComponent::StopDialogWave_Implementation()
 	if (IsValid(PlayingAudioComponent))
 	{
 		PlayingAudioComponent->Stop();
-		PlayingAudioComponent->DestroyComponent();
 		PlayingAudioComponent = nullptr;
 	}
 }

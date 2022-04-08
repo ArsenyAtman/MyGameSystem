@@ -6,8 +6,6 @@
 
 void UStageOptions::Activate_Implementation(UQuest* RelatedQuest)
 {
-	Super::Activate_Implementation(RelatedQuest);
-
 	for (FOption& Option : Options)
 	{
 		UObjective* NewObjective = NewObject<UObjective>(this, Option.ObjectiveClass);
@@ -17,6 +15,8 @@ void UStageOptions::Activate_Implementation(UQuest* RelatedQuest)
 			Option.Objective->Activate(this);
 		}
 	}
+
+	Super::Activate_Implementation(RelatedQuest);
 }
 
 void UStageOptions::CheckCondition_Implementation()

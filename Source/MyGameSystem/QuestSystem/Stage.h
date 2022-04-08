@@ -94,13 +94,29 @@ protected:
 	void CheckCondition();
 	virtual void CheckCondition_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void Complete(class UClass* NextStage);
 	virtual void Complete_Implementation(TSubclassOf<class UStage> NextStage);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void Fail(class UClass* NextStage);
 	virtual void Fail_Implementation(TSubclassOf<class UStage> NextStage);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	void OnStageActivated();
+	virtual void OnStageActivated_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	void OnStageCompleted();
+	virtual void OnStageCompleted_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	void OnStageFailed();
+	virtual void OnStageFailed_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	void OnStageUpdated();
+	virtual void OnStageUpdated_Implementation() { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void AbortAllObjectives();

@@ -11,6 +11,7 @@ void UStage::Activate_Implementation(UQuest* RelatedQuest)
 {
 	OwningQuest = RelatedQuest;
 	StageInfo.Condition = ETaskCondition::InProcess;
+	OnStageActivated();
 }
 
 void UStage::ObjectiveCompleted_Implementation(class UObjective* Objective)
@@ -31,6 +32,7 @@ void UStage::ObjectiveFailed_Implementation(class UObjective* Objective)
 
 void UStage::Update_Implementation()
 {
+	OnStageUpdated();
 	OwningQuest->Update();
 }
 
@@ -68,7 +70,7 @@ void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)
 {
 	StageInfo.Condition = ETaskCondition::Completed;
 	AbortAllObjectives();
-
+	OnStageCompleted();
 	OwningQuest->StagePassed(this, NextStage);
 }
 
@@ -76,7 +78,7 @@ void UStage::Fail_Implementation(TSubclassOf<UStage> NextStage)
 {
 	StageInfo.Condition = ETaskCondition::Failed;
 	AbortAllObjectives();
-
+	OnStageFailed();
 	OwningQuest->StagePassed(this, NextStage);
 }
 

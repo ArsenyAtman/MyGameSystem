@@ -88,17 +88,37 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Marker")
 	class TSubclassOf<AActor> MarkerClass;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
-	void Fail();
-	virtual void Fail_Implementation();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Complete();
 	virtual void Complete_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	void Fail();
+	virtual void Fail_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Update();
 	virtual void Update_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	void OnObjectiveActivated();
+	virtual void OnObjectiveActivated_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	void OnObjectiveAborted();
+	virtual void OnObjectiveAborted_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	void OnObjectiveCompleted();
+	virtual void OnObjectiveCompleted_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	void OnObjectiveFailed();
+	virtual void OnObjectiveFailed_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	void OnObjectiveUpdated();
+	virtual void OnObjectiveUpdated_Implementation() { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Progress")
 	float RecalculateProgress();

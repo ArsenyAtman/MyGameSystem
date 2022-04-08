@@ -106,13 +106,29 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
 	void Complete();
 	virtual void Complete_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
 	void Fail();
 	virtual void Fail_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	void OnQuestActivated();
+	virtual void OnQuestActivated_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	void OnQuestCompleted();
+	virtual void OnQuestCompleted_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	void OnQuestFailed();
+	virtual void OnQuestFailed_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	void OnQuestUpdated();
+	virtual void OnQuestUpdated_Implementation() { return; }
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Info")
 	FQuestInfo QuestInfo;

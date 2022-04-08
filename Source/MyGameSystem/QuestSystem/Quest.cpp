@@ -18,6 +18,8 @@ void UQuest::Activate_Implementation(UQuestComponent* QuestComponent)
 			ActiveStage->Activate(this);
 		}
 	}
+
+	OnQuestActivated();
 }
 
 void UQuest::SetIsBeingTracked(bool bNewIsBeingTracked)
@@ -66,6 +68,7 @@ void UQuest::StagePassed_Implementation(UStage* Stage, TSubclassOf<UStage> NextS
 
 void UQuest::Update_Implementation()
 {
+	OnQuestUpdated();
 	OwningQuestComponent->QuestUpdated(this);
 }
 
@@ -88,6 +91,7 @@ void UQuest::Complete_Implementation()
 	}
 	SetIsBeingTracked(false);
 	QuestInfo.Condition = ETaskCondition::Completed;
+	OnQuestCompleted();
 	OwningQuestComponent->QuestCompleted(this);
 }
 
@@ -99,5 +103,6 @@ void UQuest::Fail_Implementation()
 	}
 	SetIsBeingTracked(false);
 	QuestInfo.Condition = ETaskCondition::Failed;
+	OnQuestFailed();
 	OwningQuestComponent->QuestFailed(this);
 }

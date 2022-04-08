@@ -19,10 +19,10 @@ struct FReferencesForQuest
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<class AActor*> RelatedActors;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<class AActor*> ActorsToMark;
 
 	FReferencesForQuest()

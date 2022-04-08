@@ -6,8 +6,6 @@
 
 void UStageList::Activate_Implementation(UQuest* RelatedQuest)
 {
-	Super::Activate_Implementation(RelatedQuest);
-
 	for (UClass* ObjectiveClass : InitialObjectives)
 	{
 		if (IsValid(ObjectiveClass) && ObjectiveClass->IsChildOf(UObjective::StaticClass()))
@@ -20,6 +18,8 @@ void UStageList::Activate_Implementation(UQuest* RelatedQuest)
 			}
 		}
 	}
+
+	Super::Activate_Implementation(RelatedQuest);
 }
 
 void UStageList::CheckCondition_Implementation()

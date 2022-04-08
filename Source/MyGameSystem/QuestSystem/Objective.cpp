@@ -14,8 +14,8 @@ void UObjective::Activate_Implementation(UStage* RelatedStage)
 {
 	OwningStage = RelatedStage;
 	ObjectiveInfo.Condition = ETaskCondition::InProcess;
-
 	ReferencesForQuest = FindReferencesForQuest();
+	OnObjectiveActivated();
 }
 
 void UObjective::Abort_Implementation()
@@ -25,6 +25,7 @@ void UObjective::Abort_Implementation()
 		ObjectiveInfo.Condition = ETaskCondition::Aborted;
 		Unmark();
 	}
+	OnObjectiveAborted();
 }
 
 void UObjective::Mark()
@@ -58,7 +59,7 @@ void UObjective::Update_Implementation()
 {
 	Unmark();
 	Mark();
-
+	OnObjectiveUpdated();
 	OwningStage->Update();
 }
 
@@ -67,18 +68,20 @@ FObjectiveInfo UObjective::GetObjectiveInfo()
 	return ObjectiveInfo;
 }
 
-void UObjective::Fail_Implementation()
-{
-	ObjectiveInfo.Condition = ETaskCondition::Failed;
-	Unmark();
-	OwningStage->ObjectiveFailed(this);
-}
-
 void UObjective::Complete_Implementation()
 {
 	ObjectiveInfo.Condition = ETaskCondition::Completed;
 	Unmark();
+	OnObjectiveCompleted();
 	OwningStage->ObjectiveCompleted(this);
+}
+
+void UObjective::Fail_Implementation()
+{
+	ObjectiveInfo.Condition = ETaskCondition::Failed;
+	Unmark();
+	OnObjectiveFailed();
+	OwningStage->ObjectiveFailed(this);
 }
 
 FReferencesForQuest UObjective::FindReferencesForQuest()

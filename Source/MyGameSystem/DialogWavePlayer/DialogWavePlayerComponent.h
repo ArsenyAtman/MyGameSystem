@@ -43,6 +43,7 @@ protected:
 
 private:
 
+	UPROPERTY()
 	class UAudioComponent* PlayingAudioComponent = nullptr;
 		
 };

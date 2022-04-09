@@ -15,7 +15,7 @@ struct FOption
 	TSubclassOf<class UObjective> ObjectiveClass;
 
 	UPROPERTY(BlueprintReadOnly)
-	class UObjective* Objective;
+	class UObjective* Objective = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<class UStage> NextStageClass;

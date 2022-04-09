@@ -53,7 +53,7 @@ void UDialogWavePlayerComponent::PlayDialogWaveOnClients_Implementation(UDialogu
 {
 	if (GetOwnerRole() != ENetRole::ROLE_Authority)
 	{
-		this->PlayDialogWaveLocally(DialogWave, Interlocutors, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, bAutoDestroy);
+		PlayingAudioComponent = this->PlayDialogWaveLocally(DialogWave, Interlocutors, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, bAutoDestroy);
 	}
 }
 
@@ -61,9 +61,13 @@ void UDialogWavePlayerComponent::StopDialogWave_Implementation()
 {
 	if (IsValid(PlayingAudioComponent))
 	{
-		PlayingAudioComponent->Stop();
-		PlayingAudioComponent = nullptr;
+		if(PlayingAudioComponent->IsPlaying())
+		{
+			PlayingAudioComponent->Stop();
+		}
+		PlayingAudioComponent->DestroyComponent();
 	}
+	PlayingAudioComponent = nullptr;
 }
 
 bool UDialogWavePlayerComponent::IsPlaying()

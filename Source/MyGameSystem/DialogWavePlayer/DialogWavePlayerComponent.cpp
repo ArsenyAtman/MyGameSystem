@@ -72,5 +72,10 @@ void UDialogWavePlayerComponent::StopDialogWave_Implementation()
 
 bool UDialogWavePlayerComponent::IsPlaying()
 {
-	return IsValid(PlayingAudioComponent);
+	if(IsValid(PlayingAudioComponent))
+	{
+		return PlayingAudioComponent->IsPlaying();
+	}
+	
+	return false;
 }

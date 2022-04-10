@@ -70,7 +70,7 @@ void UDialogWavePlayerComponent::StopDialogWave_Implementation()
 	PlayingAudioComponent = nullptr;
 }
 
-bool UDialogWavePlayerComponent::IsPlaying()
+bool UDialogWavePlayerComponent::IsPlaying() const
 {
 	if(IsValid(PlayingAudioComponent))
 	{

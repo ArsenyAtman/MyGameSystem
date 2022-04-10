@@ -30,7 +30,7 @@ void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 	OnSelectionEnded();
 }
 
-TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions()
+TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions() const
 {
 	TArray<TSubclassOf<UDialogCue>> AvailableOptions;
 	for (TSubclassOf<UDialogCue>& Cue : SelectionData->Options)

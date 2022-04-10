@@ -16,14 +16,14 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	virtual class UDialogSelectionDataAsset* GetDialogUnitData_Implementation() override { return SelectionData; }
+	virtual class UDialogSelectionDataAsset* GetDialogUnitData_Implementation() const override { return SelectionData; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Internal")
 	void SelectNextCue(int CueIndex);
 	virtual void SelectNextCue_Implementation(int CueIndex);
 
 	UFUNCTION(BlueprintPure, Category = "DialogSelection|Data")
-	TArray<TSubclassOf<class UDialogCue>> GetAvailableOptions();
+	TArray<TSubclassOf<class UDialogCue>> GetAvailableOptions() const;
 
 protected:
 

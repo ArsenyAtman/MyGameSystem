@@ -27,10 +27,10 @@ public:
 	virtual void NewActionTriedToStart_Implementation(class UActorAction* NewAction) { return; }
 
 	UFUNCTION(BlueprintPure, Category = "ActorAction")
-	class AActor* GetControlledActor();
+	class AActor* GetControlledActor() const;
 
 	UFUNCTION(BlueprintPure, Category = "ActorAction")
-	class UActionDriverComponent* GetActionDriverComponent();
+	class UActionDriverComponent* GetActionDriverComponent() const;
 
 	UFUNCTION(BlueprintCallable, Category = "ActorAction|ActionEvent")
 	void StartActionEvent();
@@ -39,7 +39,7 @@ public:
 	void EndActionEvent();
 
 	UFUNCTION(BlueprintGetter, Category = "ActorAction|ActionEvent")
-	FORCEINLINE bool GetEventStarted() { return bEventStarted; }
+	FORCEINLINE bool GetEventStarted() const { return bEventStarted; }
 
 	UFUNCTION(BlueprintCallable, Category = "ActorAction|ComboWindow")
 	void StartComboWindow();
@@ -48,7 +48,7 @@ public:
 	void EndComboWindow();
 
 	UFUNCTION(BlueprintGetter, Category = "ActorAction|ComboWindow")
-	FORCEINLINE bool GetComboWindowStarted() { return bComboWindowStarted; }
+	FORCEINLINE bool GetComboWindowStarted() const { return bComboWindowStarted; }
 
 protected:
 

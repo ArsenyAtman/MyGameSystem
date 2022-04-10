@@ -17,17 +17,17 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	virtual class UDialogCueDataAsset* GetDialogUnitData_Implementation() override { return CueData; }
+	virtual class UDialogCueDataAsset* GetDialogUnitData_Implementation() const override { return CueData; }
 
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Availability")
-	bool CheckAvailabilityCondition(class UDialog* CheckingDialog);
-	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog);
+	bool CheckAvailabilityCondition(class UDialog* CheckingDialog) const;
+	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog) const { return true; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogCue|Dialog")
-	class UDialog* GetOwningDialog() { return OwningDialog; }
+	class UDialog* GetOwningDialog() const { return OwningDialog; }
 
 protected:
 

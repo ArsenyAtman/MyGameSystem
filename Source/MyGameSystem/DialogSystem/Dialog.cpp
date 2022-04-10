@@ -7,7 +7,7 @@
 #include "DialogUnit.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, TArray<class AActor*> OtherInterlocutors)
+void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, const TArray<class AActor*>& OtherInterlocutors)
 {
 	OwningDialogComponent = OwnDialogComponent;
 

@@ -42,7 +42,7 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 	OwnDialog->OnDialogUnitPassed(this, nullptr);
 }
 
-UDialogAutoSelectionDataAsset* UDialogAutoSelection::GetDialogUnitData_Implementation()
+UDialogAutoSelectionDataAsset* UDialogAutoSelection::GetDialogUnitData_Implementation() const
 {
 	return Cast<UDialogAutoSelectionDataAsset>(Super::GetDialogUnitData_Implementation());
 }

@@ -28,10 +28,10 @@ public:
 	void StopDialogWave();
 
 	UFUNCTION(BlueprintPure)
-	bool IsPlaying();
+	bool IsPlaying() const;
 
 	UFUNCTION(BlueprintPure)
-	class UDialogueVoice* GetSpeakerVoice() { return SpeakerVoice; }
+	class UDialogueVoice* GetSpeakerVoice() const { return SpeakerVoice; }
 	
 protected:
 

@@ -24,7 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
 
-	virtual class UDialogCueDataAsset_AnimationAndSound* GetDialogUnitData_Implementation() override;
+	virtual class UDialogCueDataAsset_AnimationAndSound* GetDialogUnitData_Implementation() const override;
 
 protected:
 
@@ -46,13 +46,13 @@ protected:
 	void AnimationPlayed(class UAnimMontage* AnimMontage, bool bInterrupted);
 
 	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
-	TArray<class UDialogueVoice*> GetInterlocutorsVoices(TArray<class AActor*> Interlocutors);
+	TArray<class UDialogueVoice*> GetInterlocutorsVoices(const TArray<class AActor*>& Interlocutors) const;
 
 	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
-	class AActor* GetOwnerOfVoice(TArray<class AActor*> Interlocutors, class UDialogueVoice* Voice);
+	class AActor* GetOwnerOfVoice(const TArray<class AActor*>& Interlocutors, const class UDialogueVoice* Voice) const;
 
 	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Animation")
-	bool HasAudioStartAnimNotify(class UAnimMontage* Montage);
+	bool HasAudioStartAnimNotify(const class UAnimMontage* Montage) const;
 
 private:
 

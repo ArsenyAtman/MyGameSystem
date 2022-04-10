@@ -24,6 +24,6 @@ class MYGAMESYSTEM_API IActionDrivenActorInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionDrivenActorInterface")
-	class UActionDriverComponent* GetActionDriverComponent();
-	virtual class UActionDriverComponent* GetActionDriverComponent_Implementation() = 0;
+	class UActionDriverComponent* GetActionDriverComponent() const;
+	virtual class UActionDriverComponent* GetActionDriverComponent_Implementation() const = 0;
 };

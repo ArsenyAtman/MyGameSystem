@@ -27,10 +27,10 @@ public:
 	void SetIsTracing(bool NewIsTracing);
 
 	UFUNCTION(BlueprintGetter)
-	bool GetIsTracing();
+	bool GetIsTracing() const { return bIsTracing; }
 
 	UFUNCTION(BlueprintPure)
-	bool CanInteract();
+	bool CanInteract() const;
 
 	UPROPERTY(BlueprintAssignable)
 	FInteractionAvailableDelegate OnInteractionAvailable;
@@ -55,7 +55,7 @@ protected:
 	void SetActorForInteraction(class AActor* Actor);
 
 	UFUNCTION(BlueprintGetter)
-	class AActor* GetActorForInteraction();
+	class AActor* GetActorForInteraction() const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing")
 	float TraceInterval = 1.0f;

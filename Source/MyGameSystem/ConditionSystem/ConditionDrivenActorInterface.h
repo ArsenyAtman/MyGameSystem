@@ -24,6 +24,6 @@ class MYGAMESYSTEM_API IConditionDrivenActorInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ConditionDrivenActorInterface")
-	class UConditionComponent* GetConditionComponent();
-	virtual class UConditionComponent* GetConditionComponent_Implementation() = 0;
+	class UConditionComponent* GetConditionComponent() const;
+	virtual class UConditionComponent* GetConditionComponent_Implementation() const = 0;
 };

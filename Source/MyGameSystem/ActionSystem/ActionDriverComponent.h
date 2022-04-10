@@ -30,10 +30,10 @@ public:
 	void ActionCompleted(class UActorAction* Action);
 
 	UFUNCTION(BlueprintGetter, Category = "ActionDriver|CurrentAction")
-	class UActorAction* GetCurrentAction() { return CurrentAction; }
+	class UActorAction* GetCurrentAction() const{ return CurrentAction; }
 
 	UFUNCTION(BlueprintGetter, Category = "ActionDriver|CurrentAction")
-	class UClass* GetCurrentActionClass() { return CurrentActionClass; }
+	class UClass* GetCurrentActionClass() const { return CurrentActionClass; }
 
 	UPROPERTY(BlueprintAssignable, Category = "ActionDriver|Delegates")
 	FActionStartDelegate OnActionStarted;

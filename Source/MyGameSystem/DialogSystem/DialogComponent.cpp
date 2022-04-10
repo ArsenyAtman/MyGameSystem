@@ -99,7 +99,7 @@ void UDialogComponent::DialogEnded()
 	}
 }
 
-void UDialogComponent::AddNote(FString NoteToAdd)
+void UDialogComponent::AddNote(const FString& NoteToAdd)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
@@ -107,7 +107,7 @@ void UDialogComponent::AddNote(FString NoteToAdd)
 	}
 }
 
-void UDialogComponent::RemoveNote(FString NoteToRemove)
+void UDialogComponent::RemoveNote(const FString& NoteToRemove)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{

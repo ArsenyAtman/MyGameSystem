@@ -67,12 +67,7 @@ void UInteractionComponent::SetIsTracing(bool NewIsTracing)
 	}
 }
 
-bool UInteractionComponent::GetIsTracing()
-{
-	return bIsTracing;
-}
-
-bool UInteractionComponent::CanInteract()
+bool UInteractionComponent::CanInteract() const
 {
 	return IsValid(GetActorForInteraction());
 }
@@ -163,7 +158,7 @@ void UInteractionComponent::SetActorForInteraction(class AActor* Actor)
 	}
 }
 
-AActor* UInteractionComponent::GetActorForInteraction()
+AActor* UInteractionComponent::GetActorForInteraction() const
 {
 	if (IsValid(ActorForInteraction) && ActorForInteraction->Implements<UInteractableActorInterface>())
 	{

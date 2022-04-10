@@ -21,8 +21,8 @@ protected:
 	virtual void OnActionEnded_Implementation() override;
 
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
-	class UAnimMontage* GetAnimationMontageToPlay();
-	virtual class UAnimMontage* GetAnimationMontageToPlay_Implementation() { return nullptr; }
+	class UAnimMontage* GetAnimationMontageToPlay() const;
+	virtual class UAnimMontage* GetAnimationMontageToPlay_Implementation() const { return nullptr; }
 
 	UFUNCTION()
 	void AnimationPlayed(class UAnimMontage* AnimMontage, bool bInterrupted);

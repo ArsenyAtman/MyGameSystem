@@ -11,9 +11,5 @@ class MYGAMESYSTEM_API UDialogAutoSelectionDataAsset : public UDialogSelectionDa
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bCheckFromEnd = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bSelectFalseCondition = false;
+	// ...
 };

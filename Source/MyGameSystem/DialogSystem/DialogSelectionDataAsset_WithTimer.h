@@ -14,7 +14,4 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Time = -1.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    int DefaultOption = 0;
-
 };

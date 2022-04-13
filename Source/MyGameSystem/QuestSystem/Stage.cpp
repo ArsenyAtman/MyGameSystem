@@ -10,13 +10,13 @@
 void UStage::Activate_Implementation(UQuest* RelatedQuest)
 {
 	OwningQuest = RelatedQuest;
-	StageInfo.Condition = ETaskCondition::InProcess;
+	Condition = ETaskCondition::InProcess;
 	OnStageActivated();
 }
 
 void UStage::ObjectiveCompleted_Implementation(class UObjective* Objective)
 {
-	if (StageInfo.Condition == ETaskCondition::InProcess)
+	if (Condition == ETaskCondition::InProcess)
 	{
 		CheckCondition();
 	}
@@ -24,7 +24,7 @@ void UStage::ObjectiveCompleted_Implementation(class UObjective* Objective)
 
 void UStage::ObjectiveFailed_Implementation(class UObjective* Objective)
 {
-	if (StageInfo.Condition == ETaskCondition::InProcess)
+	if (Condition == ETaskCondition::InProcess)
 	{
 		CheckCondition();
 	}
@@ -57,19 +57,18 @@ void UStage::UnmarkObjectives()
 
 FStageInfo UStage::GetStageInfo() const
 {
-	FStageInfo StageInfoToReturn;
-	StageInfoToReturn = StageInfo;
 	TArray<UObjective*> Objectives = GetStageObjectives();
+	TArray<FObjectiveInfo> ObjectiveInfos;
 	for (const UObjective* Objective : Objectives)
 	{
-		StageInfoToReturn.ObjectivesInfo.Add(Objective->GetObjectiveInfo());
+		ObjectiveInfos.Add(Objective->GetObjectiveInfo());
 	}
-	return StageInfoToReturn;
+	return FStageInfo(StageData, Condition, ObjectiveInfos);
 }
 
 void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)
 {
-	StageInfo.Condition = ETaskCondition::Completed;
+	Condition = ETaskCondition::Completed;
 	AbortAllObjectives();
 	OnStageCompleted();
 	OwningQuest->StagePassed(this, NextStage);
@@ -77,7 +76,7 @@ void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)
 
 void UStage::Fail_Implementation(TSubclassOf<UStage> NextStage)
 {
-	StageInfo.Condition = ETaskCondition::Failed;
+	Condition = ETaskCondition::Failed;
 	AbortAllObjectives();
 	OnStageFailed();
 	OwningQuest->StagePassed(this, NextStage);

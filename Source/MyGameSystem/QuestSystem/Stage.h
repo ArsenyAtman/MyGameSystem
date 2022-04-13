@@ -139,10 +139,12 @@ protected:
 	bool IsOneObjectiveFailed(const TArray<class UObjective*>& Objectives) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Info")
-	FStageInfo StageInfo;
+	UStageData* StageData;
 
 private:
 
 	class UQuest* OwningQuest;
+
+	ETaskCondition Condition = ETaskCondition::Aborted;
 	
 };

@@ -84,24 +84,24 @@ FQuestInfo UQuest::GetQuestInfo() const
 
 void UQuest::Complete_Implementation()
 {
-	if (IsValid(NextQuestIfCompleted))
-	{
-		OwningQuestComponent->AddQuest(NextQuestIfCompleted);
-	}
 	SetIsBeingTracked(false);
 	Condition = ETaskCondition::Completed;
 	OnQuestCompleted();
 	OwningQuestComponent->QuestCompleted(this);
+	if (IsValid(NextQuestIfCompleted))
+	{
+		OwningQuestComponent->AddQuest(NextQuestIfCompleted);
+	}
 }
 
 void UQuest::Fail_Implementation()
 {
-	if (IsValid(NextQuestIfFailed))
-	{
-		OwningQuestComponent->AddQuest(NextQuestIfFailed);
-	}
 	SetIsBeingTracked(false);
 	Condition = ETaskCondition::Failed;
 	OnQuestFailed();
 	OwningQuestComponent->QuestFailed(this);
+	if (IsValid(NextQuestIfFailed))
+	{
+		OwningQuestComponent->AddQuest(NextQuestIfFailed);
+	}
 }

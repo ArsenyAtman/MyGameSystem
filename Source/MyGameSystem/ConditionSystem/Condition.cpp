@@ -9,7 +9,7 @@ void UCondition::StartCondition()
 	OnConditionStarted();
 }
 
-AActor* UCondition::GetControlledActor()
+AActor* UCondition::GetControlledActor() const
 {
 	if (IsValid(GetConditionComponent()))
 	{
@@ -18,7 +18,7 @@ AActor* UCondition::GetControlledActor()
 	return nullptr;
 }
 
-UConditionComponent* UCondition::GetConditionComponent()
+UConditionComponent* UCondition::GetConditionComponent() const
 {
 	if (IsValid(GetOuter()))
 	{

@@ -20,10 +20,10 @@ public:
 	void StartCondition();
 
 	UFUNCTION(BlueprintPure, Category = "Condition")
-	class AActor* GetControlledActor();
+	class AActor* GetControlledActor() const;
 
 	UFUNCTION(BlueprintPure, Category = "Condition")
-	class UConditionComponent* GetConditionComponent();
+	class UConditionComponent* GetConditionComponent() const;
 
 protected:
 

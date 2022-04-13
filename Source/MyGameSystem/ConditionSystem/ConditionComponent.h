@@ -25,10 +25,10 @@ public:
 	void ConditionChange(class UCondition* NewCondition);
 
 	UFUNCTION(BlueprintGetter, Category = "ConditionComponent|CurrentCondition")
-	class UCondition* GetCurrentCondition() { return CurrentCondition; }
+	class UCondition* GetCurrentCondition() const { return CurrentCondition; }
 
 	UFUNCTION(BlueprintGetter, Category = "ConditionComponent|CurrentCondition")
-	TSubclassOf<class UCondition> GetCurrentConditionClass() { return CurrentConditionClass; }
+	TSubclassOf<class UCondition> GetCurrentConditionClass() const { return CurrentConditionClass; }
 
 	UPROPERTY(BlueprintAssignable, Category = "ConditionComponent|Delegates")
 	FConditionComponentDelegate OnConditionChanged;

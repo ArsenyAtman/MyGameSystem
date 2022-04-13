@@ -8,7 +8,7 @@
 #include "DialogCue_AnimationAndSound.h"
 #include "Dialog.h"
 
-UDialogCue_AnimationAndSound* UAnimNotify_DialogCue::GetCurrentDialogCue(USkeletalMeshComponent* MeshComponent)
+UDialogCue_AnimationAndSound* UAnimNotify_DialogCue::GetCurrentDialogCue(const USkeletalMeshComponent* MeshComponent) const
 {
 	AActor* Owner = MeshComponent->GetOwner();
 	if (IsValid(Owner) && Owner->GetLocalRole() == ENetRole::ROLE_Authority && Owner->Implements<UTalkableInterface>())

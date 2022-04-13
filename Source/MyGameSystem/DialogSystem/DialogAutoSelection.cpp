@@ -13,7 +13,7 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 		Algo::Reverse(DialogCueOptions);
 	}
 
-	for (TSubclassOf<UDialogCue>& DialogCueClass : DialogCueOptions)
+	for (const TSubclassOf<UDialogCue>& DialogCueClass : DialogCueOptions)
 	{
 		if (IsValid(DialogCueClass))
 		{
@@ -42,7 +42,7 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 	OwnDialog->OnDialogUnitPassed(this, nullptr);
 }
 
-UDialogAutoSelectionDataAsset* UDialogAutoSelection::GetDialogUnitData_Implementation()
+UDialogAutoSelectionDataAsset* UDialogAutoSelection::GetDialogUnitData_Implementation() const
 {
 	return Cast<UDialogAutoSelectionDataAsset>(Super::GetDialogUnitData_Implementation());
 }

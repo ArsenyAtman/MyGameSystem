@@ -16,7 +16,7 @@ public:
 
 	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
 
-	virtual class UDialogAutoSelectionDataAsset* GetDialogUnitData_Implementation() override;
+	virtual class UDialogAutoSelectionDataAsset* GetDialogUnitData_Implementation() const override;
 
 protected:
 

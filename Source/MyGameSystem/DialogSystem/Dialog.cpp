@@ -7,7 +7,7 @@
 #include "DialogUnit.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, TArray<class AActor*> OtherInterlocutors)
+void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, const TArray<class AActor*>& OtherInterlocutors)
 {
 	OwningDialogComponent = OwnDialogComponent;
 
@@ -54,7 +54,7 @@ void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUni
 
 void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponent)
 {
-	for (AActor* Interlocutor : Interlocutors)
+	for (const AActor* Interlocutor : Interlocutors)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
@@ -69,7 +69,7 @@ void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponen
 
 void UDialog::EndDialogForInterlocutors()
 {
-	for (AActor* Interlocutor : Interlocutors)
+	for (const AActor* Interlocutor : Interlocutors)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
@@ -84,7 +84,7 @@ void UDialog::EndDialogForInterlocutors()
 
 void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit)
 {
-	for (AActor* Interlocutor : Interlocutors)
+	for (const AActor* Interlocutor : Interlocutors)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
@@ -99,7 +99,7 @@ void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit)
 
 void UDialog::UnitEndedForInterlocutors(UDialogUnit* DialogUnit)
 {
-	for (AActor* Interlocutor : Interlocutors)
+	for (const AActor* Interlocutor : Interlocutors)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{

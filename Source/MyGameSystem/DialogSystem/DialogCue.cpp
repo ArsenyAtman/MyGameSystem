@@ -20,11 +20,6 @@ void UDialogCue::PlayNextDialogCue()
 	EndCue();
 }
 
-bool UDialogCue::CheckAvailabilityCondition_Implementation(UDialog* CheckingDialog)
-{
-	return true;
-}
-
 void UDialogCue::OnCueBeginned_Implementation()
 {
 	return;

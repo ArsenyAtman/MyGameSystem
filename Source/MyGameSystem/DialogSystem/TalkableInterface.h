@@ -24,7 +24,7 @@ class MYGAMESYSTEM_API ITalkableInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "TalkableInterface")
-	class UDialogComponent* GetDialogComponent();
-	virtual class UDialogComponent* GetDialogComponent_Implementation() = 0;
+	class UDialogComponent* GetDialogComponent() const;
+	virtual class UDialogComponent* GetDialogComponent_Implementation() const = 0;
 
 };

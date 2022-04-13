@@ -134,7 +134,7 @@ void UDialogCue_AnimationAndSound::CheckTransitionCondition()
 	}
 }
 
-TArray<UDialogueVoice*> UDialogCue_AnimationAndSound::GetInterlocutorsVoices(TArray<AActor*> Interlocutors)
+TArray<UDialogueVoice*> UDialogCue_AnimationAndSound::GetInterlocutorsVoices(const TArray<AActor*>& Interlocutors) const
 {
 	TArray<UDialogueVoice*> Voices;
 
@@ -153,7 +153,7 @@ TArray<UDialogueVoice*> UDialogCue_AnimationAndSound::GetInterlocutorsVoices(TAr
 	return Voices;
 }
 
-AActor* UDialogCue_AnimationAndSound::GetOwnerOfVoice(TArray<AActor*> Interlocutors, UDialogueVoice* SpeakerVoice)
+AActor* UDialogCue_AnimationAndSound::GetOwnerOfVoice(const TArray<AActor*>& Interlocutors, const UDialogueVoice* SpeakerVoice) const
 {
 	for (AActor* Interlocutor : Interlocutors)
 	{
@@ -170,13 +170,13 @@ AActor* UDialogCue_AnimationAndSound::GetOwnerOfVoice(TArray<AActor*> Interlocut
 	return nullptr;
 }
 
-bool UDialogCue_AnimationAndSound::HasAudioStartAnimNotify(UAnimMontage* Montage)
+bool UDialogCue_AnimationAndSound::HasAudioStartAnimNotify(const UAnimMontage* Montage) const
 {
 	if (IsValid(Montage))
 	{
 		FAnimNotifyContext NotifyContext;
 		Montage->GetAnimNotifies(0, Montage->GetPlayLength(), NotifyContext);
-		for (FAnimNotifyEventReference& Notify : NotifyContext.ActiveNotifies)
+		for (const FAnimNotifyEventReference& Notify : NotifyContext.ActiveNotifies)
 		{
 			if (Cast<UAnimNotify_PlayAudioOfDialogCue>(Notify.GetNotify()->Notify))
 			{
@@ -187,7 +187,7 @@ bool UDialogCue_AnimationAndSound::HasAudioStartAnimNotify(UAnimMontage* Montage
 	return false;
 }
 
-UDialogCueDataAsset_AnimationAndSound* UDialogCue_AnimationAndSound::GetDialogUnitData_Implementation()
+UDialogCueDataAsset_AnimationAndSound* UDialogCue_AnimationAndSound::GetDialogUnitData_Implementation() const
 {
 	return Cast<UDialogCueDataAsset_AnimationAndSound>(Super::GetDialogUnitData_Implementation());
 }

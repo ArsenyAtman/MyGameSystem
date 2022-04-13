@@ -12,7 +12,7 @@ class MYGAMESYSTEM_API UDialogSelection_WithTimer : public UDialogSelection
 
 public:
 
-    virtual class UDialogSelectionDataAsset_WithTimer* GetDialogUnitData_Implementation() override;
+    virtual class UDialogSelectionDataAsset_WithTimer* GetDialogUnitData_Implementation() const override;
 
 protected:
 

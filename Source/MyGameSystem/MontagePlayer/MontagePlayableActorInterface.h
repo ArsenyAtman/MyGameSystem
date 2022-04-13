@@ -24,10 +24,10 @@ class MYGAMESYSTEM_API IMontagePlayableActorInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MontagePlayableActorInterface")
-	class UMontagePlayerComponent* GetMontagePlayerComponent();
-	virtual class UMontagePlayerComponent* GetMontagePlayerComponent_Implementation() = 0;
+	class UMontagePlayerComponent* GetMontagePlayerComponent() const;
+	virtual class UMontagePlayerComponent* GetMontagePlayerComponent_Implementation() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MontagePlayableActorInterface")
-	class USkeletalMeshComponent* GetSkeletalMeshForMontagePlaying();
-	virtual class USkeletalMeshComponent* GetSkeletalMeshForMontagePlaying_Implementation() = 0;
+	class USkeletalMeshComponent* GetSkeletalMeshForMontagePlaying() const;
+	virtual class USkeletalMeshComponent* GetSkeletalMeshForMontagePlaying_Implementation() const = 0;
 };

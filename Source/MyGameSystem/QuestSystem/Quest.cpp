@@ -72,15 +72,16 @@ void UQuest::Update_Implementation()
 	OwningQuestComponent->QuestUpdated(this);
 }
 
-FQuestInfo UQuest::GetQuestInfo()
+FQuestInfo UQuest::GetQuestInfo() const
 {
-	QuestInfo.CurrentStageInfo = ActiveStage->GetStageInfo();
-	QuestInfo.PastStagesInfo.Empty();
+	FQuestInfo QuestInfoToReturn = QuestInfo;
+	QuestInfoToReturn.CurrentStageInfo = ActiveStage->GetStageInfo();
+	QuestInfoToReturn.PastStagesInfo.Empty();
 	for (UStage* Stage : PastStages)
 	{
-		QuestInfo.PastStagesInfo.Add(Stage->GetStageInfo());
+		QuestInfoToReturn.PastStagesInfo.Add(Stage->GetStageInfo());
 	}
-	return QuestInfo;
+	return QuestInfoToReturn;
 }
 
 void UQuest::Complete_Implementation()

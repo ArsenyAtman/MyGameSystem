@@ -83,10 +83,10 @@ public:
 	void UnmarkObjectives();
 
 	UFUNCTION(BlueprintPure, Category = "Stage|Info")
-	FStageInfo GetStageInfo();
+	FStageInfo GetStageInfo() const;
 
 	UFUNCTION(BlueprintPure, Category = "Stage|OwningQuest")
-	FORCEINLINE class UQuest* GetOwningQuest() { return OwningQuest; }
+	FORCEINLINE class UQuest* GetOwningQuest() const { return OwningQuest; }
 
 protected:
 
@@ -95,11 +95,11 @@ protected:
 	virtual void CheckCondition_Implementation() { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
-	void Complete(class UClass* NextStage);
+	void Complete(TSubclassOf<class UStage> NextStage);
 	virtual void Complete_Implementation(TSubclassOf<class UStage> NextStage);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
-	void Fail(class UClass* NextStage);
+	void Fail(TSubclassOf<class UStage> NextStage);
 	virtual void Fail_Implementation(TSubclassOf<class UStage> NextStage);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
@@ -123,20 +123,20 @@ protected:
 	virtual void AbortAllObjectives_Implementation() { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Objectives")
-	TArray<class UObjective*> GetStageObjectives();
-	virtual TArray<class UObjective*> GetStageObjectives_Implementation() { return TArray<class UObjective*>(); }
+	TArray<class UObjective*> GetStageObjectives() const;
+	virtual TArray<class UObjective*> GetStageObjectives_Implementation() const { return TArray<class UObjective*>(); }
 
 	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
-	bool IsAllObjectivesCompleted(TArray<class UObjective*> Objectives);
+	bool IsAllObjectivesCompleted(const TArray<class UObjective*>& Objectives) const;
 
 	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
-	bool IsAllObjectivesFailed(TArray<class UObjective*> Objectives);
+	bool IsAllObjectivesFailed(const TArray<class UObjective*>& Objectives) const;
 
 	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
-	bool IsOneObjectiveCompleted(TArray<class UObjective*> Objectives);
+	bool IsOneObjectiveCompleted(const TArray<class UObjective*>& Objectives) const;
 
 	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
-	bool IsOneObjectiveFailed(TArray<class UObjective*> Objectives);
+	bool IsOneObjectiveFailed(const TArray<class UObjective*>& Objectives) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Info")
 	FStageInfo StageInfo;

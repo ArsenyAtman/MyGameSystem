@@ -22,6 +22,12 @@ protected:
 
 private:
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection_WithTimer|Timer", meta = (AllowPrivateAccess = true))
+	float Time = -1.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection_WithTimer|DefaultOption", meta = (AllowPrivateAccess = true))
+    int DefaultOption = 0;
+
     FTimerHandle SelectionEndTimer;
 
 };

@@ -63,11 +63,6 @@ void UObjective::Update_Implementation()
 	OwningStage->Update();
 }
 
-FObjectiveInfo UObjective::GetObjectiveInfo()
-{
-	return ObjectiveInfo;
-}
-
 void UObjective::Complete_Implementation()
 {
 	ObjectiveInfo.Condition = ETaskCondition::Completed;
@@ -84,7 +79,7 @@ void UObjective::Fail_Implementation()
 	OwningStage->ObjectiveFailed(this);
 }
 
-FReferencesForQuest UObjective::FindReferencesForQuest()
+FReferencesForQuest UObjective::FindReferencesForQuest() const
 {
 	TArray<AActor*> FoundReferencers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AQuestActorsReferencer::StaticClass(), FoundReferencers);

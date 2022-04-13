@@ -14,7 +14,7 @@ void UQuest::Activate_Implementation(UQuestComponent* QuestComponent)
 		ActiveStage = NewObject<UStage>(this, InitialStageClass);
 		if (IsValid(ActiveStage))
 		{
-			QuestInfo.Condition = ETaskCondition::InProcess;
+			Condition = ETaskCondition::InProcess;
 			ActiveStage->Activate(this);
 		}
 	}
@@ -24,7 +24,7 @@ void UQuest::Activate_Implementation(UQuestComponent* QuestComponent)
 
 void UQuest::SetIsBeingTracked(bool bNewIsBeingTracked)
 {
-	if (QuestInfo.Condition == ETaskCondition::InProcess)
+	if (Condition == ETaskCondition::InProcess)
 	{
 		if (bNewIsBeingTracked)
 		{
@@ -35,7 +35,7 @@ void UQuest::SetIsBeingTracked(bool bNewIsBeingTracked)
 			ActiveStage->UnmarkObjectives();
 		}
 
-		QuestInfo.bIsBeingTracked = bNewIsBeingTracked;
+		bIsBeingTracked = bNewIsBeingTracked;
 	}
 }
 
@@ -48,7 +48,7 @@ void UQuest::StagePassed_Implementation(UStage* Stage, TSubclassOf<UStage> NextS
 		{
 			ActiveStage = NewObject<UStage>(this, NextStageClass);
 			ActiveStage->Activate(this);
-			SetIsBeingTracked(QuestInfo.bIsBeingTracked);
+			SetIsBeingTracked(bIsBeingTracked);
 
 			Update();
 		}
@@ -74,14 +74,12 @@ void UQuest::Update_Implementation()
 
 FQuestInfo UQuest::GetQuestInfo() const
 {
-	FQuestInfo QuestInfoToReturn = QuestInfo;
-	QuestInfoToReturn.CurrentStageInfo = ActiveStage->GetStageInfo();
-	QuestInfoToReturn.PastStagesInfo.Empty();
+	TArray<FStageInfo> PastStageInfos;
 	for (const UStage* Stage : PastStages)
 	{
-		QuestInfoToReturn.PastStagesInfo.Add(Stage->GetStageInfo());
+		PastStageInfos.Add(Stage->GetStageInfo());
 	}
-	return QuestInfoToReturn;
+	return FQuestInfo(QuestData, Condition, bIsBeingTracked, ActiveStage->GetStageInfo(), PastStageInfos);
 }
 
 void UQuest::Complete_Implementation()
@@ -91,7 +89,7 @@ void UQuest::Complete_Implementation()
 		OwningQuestComponent->AddQuest(NextQuestIfCompleted);
 	}
 	SetIsBeingTracked(false);
-	QuestInfo.Condition = ETaskCondition::Completed;
+	Condition = ETaskCondition::Completed;
 	OnQuestCompleted();
 	OwningQuestComponent->QuestCompleted(this);
 }
@@ -103,7 +101,7 @@ void UQuest::Fail_Implementation()
 		OwningQuestComponent->AddQuest(NextQuestIfFailed);
 	}
 	SetIsBeingTracked(false);
-	QuestInfo.Condition = ETaskCondition::Failed;
+	Condition = ETaskCondition::Failed;
 	OnQuestFailed();
 	OwningQuestComponent->QuestFailed(this);
 }

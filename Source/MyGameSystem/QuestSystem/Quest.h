@@ -50,14 +50,15 @@ struct FQuestInfo
 	struct FStageInfo CurrentStageInfo;
 
 	UPROPERTY(BlueprintReadWrite)
-	TArray<struct FStageInfo> PastStagesInfo;
+	TArray<struct FStageInfo> PastStageInfos;
 
-	FQuestInfo(class UQuestData* Data = nullptr, ETaskCondition QuestCondition = ETaskCondition::InProcess, bool bIsTracking = false, float ObjectiveProgress = 0.0f)
+	FQuestInfo(class UQuestData* Data = nullptr, ETaskCondition QuestCondition = ETaskCondition::InProcess, bool bIsTracking = false, struct FStageInfo CurrentStage = FStageInfo(), TArray<struct FStageInfo> PastStages = TArray<struct FStageInfo>())
 	{
 		QuestData = Data;
 		Condition = QuestCondition;
 		bIsBeingTracked = bIsTracking;
-		Progress = ObjectiveProgress;
+		CurrentStageInfo = CurrentStage;
+		PastStageInfos = PastStages;
 	}
 
 	friend bool operator == (const FQuestInfo& Info1, const FQuestInfo& Info2)
@@ -67,7 +68,7 @@ struct FQuestInfo
 				Info1.bIsBeingTracked == Info2.bIsBeingTracked &&
 				Info1.Progress == Info2.Progress &&
 				Info1.CurrentStageInfo == Info2.CurrentStageInfo &&
-				Info1.PastStagesInfo == Info2.PastStagesInfo;
+				Info1.PastStageInfos == Info2.PastStageInfos;
 	}
 
 	friend bool operator != (const FQuestInfo& Info1, const FQuestInfo& Info2)
@@ -131,7 +132,7 @@ protected:
 	virtual void OnQuestUpdated_Implementation() { return; }
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Info")
-	FQuestInfo QuestInfo;
+	UQuestData* QuestData;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Stages")
 	TSubclassOf<class UStage> InitialStageClass;
@@ -151,5 +152,8 @@ protected:
 private:
 
 	class UQuestComponent* OwningQuestComponent;
+
+	ETaskCondition Condition = ETaskCondition::Aborted;
+	bool bIsBeingTracked = false;
 	
 };

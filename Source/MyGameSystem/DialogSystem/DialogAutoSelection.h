@@ -14,20 +14,18 @@ class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogSelection
 
 public:
 
-	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
-
 	virtual class UDialogAutoSelectionDataAsset* GetDialogUnitData_Implementation() const override;
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bCheckFromEnd = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bSelectFalseCondition = false;
+	virtual void OnSelectionStarted_Implementation() override;
 
 private:
 
-	// ...
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|DialogFlow", meta = (AllowPrivateAccess = true))
+	bool bCheckFromEnd = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|DialogFlow", meta = (AllowPrivateAccess = true))
+	bool bSelectFalseCondition = false;
 	
 };

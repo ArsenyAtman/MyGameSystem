@@ -2,25 +2,25 @@
 
 #include "DialogAutoSelection.h"
 #include "Dialog.h"
-#include "DialogCue.h"
+#include "DialogUnit.h"
 #include "DialogAutoSelectionDataAsset.h"
 
-void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
+void UDialogAutoSelection::OnSelectionStarted_Implementation()
 {
-	TArray<TSubclassOf<UDialogCue>> DialogCueOptions = GetDialogUnitData_Implementation()->Options;
+	TArray<TSubclassOf<UDialogUnit>> DialogUnitOptions = GetAvailableOptions();
 	if (bCheckFromEnd)
 	{
-		Algo::Reverse(DialogCueOptions);
+		Algo::Reverse(DialogUnitOptions);
 	}
 
-	for (const TSubclassOf<UDialogCue>& DialogCueClass : DialogCueOptions)
+	for (const TSubclassOf<UDialogUnit>& DialogUnitClass : DialogUnitOptions)
 	{
-		if (IsValid(DialogCueClass))
+		if (IsValid(DialogUnitClass))
 		{
-			UDialogCue* DialogCueObject = Cast<UDialogCue>(DialogCueClass->GetDefaultObject());
-			if (IsValid(DialogCueObject))
+			UDialogUnit* DialogUnitObject = Cast<UDialogUnit>(DialogUnitClass->GetDefaultObject());
+			if (IsValid(DialogUnitObject))
 			{
-				bool bConditionResult = DialogCueObject->CheckAvailabilityCondition(OwnDialog);
+				bool bConditionResult = DialogUnitObject->CheckAvailabilityCondition(GetOwningDialog());
 				if (bSelectFalseCondition)
 				{
 					bConditionResult = !bConditionResult;
@@ -28,18 +28,18 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 
 				if (bConditionResult)
 				{
-					OwnDialog->OnDialogUnitPassed(this, DialogCueClass);
+					GetOwningDialog()->OnDialogUnitPassed(this, DialogUnitClass);
 					return;
 				}
 			}
 			else
 			{
-				OwnDialog->OnDialogUnitPassed(this, DialogCueClass);
+				GetOwningDialog()->OnDialogUnitPassed(this, DialogUnitClass);
 				return;
 			}
 		}
 	}
-	OwnDialog->OnDialogUnitPassed(this, nullptr);
+	GetOwningDialog()->OnDialogUnitPassed(this, nullptr);
 }
 
 UDialogAutoSelectionDataAsset* UDialogAutoSelection::GetDialogUnitData_Implementation() const

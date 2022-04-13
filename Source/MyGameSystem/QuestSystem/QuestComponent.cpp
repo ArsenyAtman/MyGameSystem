@@ -139,7 +139,7 @@ void UQuestComponent::QuestUpdated(UQuest* Quest)
 	}
 }
 
-TArray<UQuest*> UQuestComponent::GetAllQuests()
+TArray<UQuest*> UQuestComponent::GetAllQuests() const
 {
 	TArray<UQuest*> AllQuests = TArray<UQuest*>();
 	AllQuests.Append(GetActiveQuests());
@@ -148,7 +148,7 @@ TArray<UQuest*> UQuestComponent::GetAllQuests()
 	return AllQuests;
 }
 
-bool UQuestComponent::HasTrackedQuest()
+bool UQuestComponent::HasTrackedQuest() const
 {
 	return TrackedQuestInfo != FQuestInfo();
 }
@@ -170,20 +170,20 @@ void UQuestComponent::UpdateAllQuestsInfo()
 	}
 }
 
-TArray<FQuestInfo> UQuestComponent::GetQuestsInfo(TArray<UQuest*> Quests)
+TArray<FQuestInfo> UQuestComponent::GetQuestsInfo(const TArray<UQuest*>& Quests) const
 {
 	TArray<FQuestInfo> QuestsInfo;
-	for (UQuest* Quest : Quests)
+	for (const UQuest* Quest : Quests)
 	{
 		QuestsInfo.Add(Quest->GetQuestInfo());
 	}
 	return QuestsInfo;
 }
 
-bool UQuestComponent::CheckQuestOnDuplication(TSubclassOf<UQuest> QuestClass)
+bool UQuestComponent::CheckQuestOnDuplication(TSubclassOf<UQuest> QuestClass) const
 {
 	TArray<UQuest*> AllQuests = GetAllQuests();
-	for (UQuest* QuestObject : AllQuests)
+	for (const UQuest* QuestObject : AllQuests)
 	{
 		if (QuestObject->GetClass() == QuestClass)
 		{

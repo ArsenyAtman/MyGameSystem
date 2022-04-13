@@ -46,7 +46,7 @@ void UStageList::AbortAllObjectives_Implementation()
 	}
 }
 
-TArray<class UObjective*> UStageList::GetStageObjectives_Implementation()
+TArray<class UObjective*> UStageList::GetStageObjectives_Implementation() const
 {
 	return ActiveObjectives;
 }

@@ -75,10 +75,10 @@ public:
 	void Unmark();
 
 	UFUNCTION(BlueprintPure, Category = "Objective|Info")
-	FObjectiveInfo GetObjectiveInfo();
+	FObjectiveInfo GetObjectiveInfo() const { return ObjectiveInfo; }
 
 	UFUNCTION(BlueprintPure, Category = "Objective|OwningStage")
-	FORCEINLINE class UStage* GetOwningStage() { return OwningStage; }
+	FORCEINLINE class UStage* GetOwningStage() const { return OwningStage; }
 
 protected:
 
@@ -121,21 +121,21 @@ protected:
 	virtual void OnObjectiveUpdated_Implementation() { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Progress")
-	float RecalculateProgress();
-	virtual float RecalculateProgress_Implementation() { return -1.0f; }
+	float RecalculateProgress() const;
+	virtual float RecalculateProgress_Implementation() const { return -1.0f; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|RelatedActors")
-	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark);
-	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) { return ActorsToMark; }
+	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark) const;
+	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) const { return ActorsToMark; }
 
 	UFUNCTION(BlueprintGetter, Category = "Objective|RelatedActors")
-	FReferencesForQuest GetReferencesForQuest() { return ReferencesForQuest; }
+	FReferencesForQuest GetReferencesForQuest() const { return ReferencesForQuest; }
 
 private:
 
 	class UStage* OwningStage;
 
-	FReferencesForQuest FindReferencesForQuest();
+	FReferencesForQuest FindReferencesForQuest() const;
 
 	UPROPERTY(BlueprintGetter = GetReferencesForQuest)
 	FReferencesForQuest ReferencesForQuest;

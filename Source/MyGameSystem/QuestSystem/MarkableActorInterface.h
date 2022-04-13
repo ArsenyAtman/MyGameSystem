@@ -24,6 +24,6 @@ class MYGAMESYSTEM_API IMarkableActorInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MarkableActorInterface")
-	FTransform GetMarkerRelativeTransform();
-	virtual FTransform GetMarkerRelativeTransfrom_Implementation() { return FTransform(); }
+	FTransform GetMarkerRelativeTransform() const;
+	virtual FTransform GetMarkerRelativeTransfrom_Implementation() const { return FTransform(); }
 };

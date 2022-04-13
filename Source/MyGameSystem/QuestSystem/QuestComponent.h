@@ -44,34 +44,34 @@ public:
 	void QuestUpdated(class UQuest* Quest);
 
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<class UQuest*> GetActiveQuests() { return ActiveQuests; }
+	TArray<class UQuest*> GetActiveQuests() const { return ActiveQuests; }
 
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<class UQuest*> GetCompletedQuests() { return CompletedQuests; }
+	TArray<class UQuest*> GetCompletedQuests() const { return CompletedQuests; }
 
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<class UQuest*> GetFailedQuests() { return FailedQuests; }
+	TArray<class UQuest*> GetFailedQuests() const { return FailedQuests; }
 
 	UFUNCTION(BlueprintPure, Category = "QuestComponent|Quests")
-	TArray<class UQuest*> GetAllQuests();
+	TArray<class UQuest*> GetAllQuests() const;
 
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<struct FQuestInfo> GetActiveQuestsInfo() { return ActiveQuestsInfo; }
+	TArray<struct FQuestInfo> GetActiveQuestsInfo() const { return ActiveQuestsInfo; }
 
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<struct FQuestInfo> GetCompletedQuestsInfo() { return CompletedQuestsInfo; }
+	TArray<struct FQuestInfo> GetCompletedQuestsInfo() const { return CompletedQuestsInfo; }
 
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<struct FQuestInfo> GetFailedQuestsInfo() { return FailedQuestsInfo; }
+	TArray<struct FQuestInfo> GetFailedQuestsInfo() const { return FailedQuestsInfo; }
 
 	UFUNCTION(BlueprintPure, Category = "QuestComponent|Quests")
-	bool HasTrackedQuest();
+	bool HasTrackedQuest() const;
 
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	class UQuest* GetTrackedQuest() { return TrackedQuest; }
+	class UQuest* GetTrackedQuest() const { return TrackedQuest; }
 
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	struct FQuestInfo GetTrackedQuestInfo() { return TrackedQuestInfo; }
+	struct FQuestInfo GetTrackedQuestInfo() const { return TrackedQuestInfo; }
 
 	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestInfoEventDelegate OnQuestAdded;
@@ -108,10 +108,10 @@ protected:
 	void UpdateAllQuestsInfo();
 
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
-	TArray<struct FQuestInfo> GetQuestsInfo(TArray<class UQuest*> Quests);
+	TArray<struct FQuestInfo> GetQuestsInfo(const TArray<class UQuest*>& Quests) const;
 
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
-	bool CheckQuestOnDuplication(TSubclassOf<class UQuest> QuestClass);
+	bool CheckQuestOnDuplication(TSubclassOf<class UQuest> QuestClass) const;
 
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	void SetTrackedQuest(class UQuest* NewTrackedQuest);

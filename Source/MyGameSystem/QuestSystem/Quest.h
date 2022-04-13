@@ -99,10 +99,10 @@ public:
 	virtual void Update_Implementation();
 
 	UFUNCTION(BlueprintPure, Category = "Quest|Info")
-	FQuestInfo GetQuestInfo();
+	FQuestInfo GetQuestInfo() const;
 
 	UFUNCTION(BlueprintPure, Category = "Quest|OwningQuestComponent")
-	FORCEINLINE class UQuestComponent* GetOwningQuestComponent() { return OwningQuestComponent; }
+	FORCEINLINE class UQuestComponent* GetOwningQuestComponent() const { return OwningQuestComponent; }
 
 protected:
 

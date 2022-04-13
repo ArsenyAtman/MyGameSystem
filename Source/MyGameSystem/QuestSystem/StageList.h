@@ -24,7 +24,7 @@ protected:
 
 	virtual void AbortAllObjectives_Implementation() override;
 
-	TArray<class UObjective*> GetStageObjectives_Implementation() override;
+	TArray<class UObjective*> GetStageObjectives_Implementation() const override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageList|Objectives")
 	TArray<TSubclassOf<class UObjective>> InitialObjectives;

@@ -55,15 +55,16 @@ void UStage::UnmarkObjectives()
 	}
 }
 
-FStageInfo UStage::GetStageInfo()
+FStageInfo UStage::GetStageInfo() const
 {
-	StageInfo.ObjectivesInfo.Empty();
+	FStageInfo StageInfoToReturn;
+	StageInfoToReturn = StageInfo;
 	TArray<UObjective*> Objectives = GetStageObjectives();
-	for (UObjective* Objective : Objectives)
+	for (const UObjective* Objective : Objectives)
 	{
-		StageInfo.ObjectivesInfo.Add(Objective->GetObjectiveInfo());
+		StageInfoToReturn.ObjectivesInfo.Add(Objective->GetObjectiveInfo());
 	}
-	return StageInfo;
+	return StageInfoToReturn;
 }
 
 void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)
@@ -82,9 +83,9 @@ void UStage::Fail_Implementation(TSubclassOf<UStage> NextStage)
 	OwningQuest->StagePassed(this, NextStage);
 }
 
-bool UStage::IsAllObjectivesCompleted(TArray<UObjective*> Objectives)
+bool UStage::IsAllObjectivesCompleted(const TArray<UObjective*>& Objectives) const
 {
-	for (UObjective* Objective : Objectives)
+	for (const UObjective* Objective : Objectives)
 	{
 		if (Objective->GetObjectiveInfo().Condition != ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{
@@ -94,9 +95,9 @@ bool UStage::IsAllObjectivesCompleted(TArray<UObjective*> Objectives)
 	return true;
 }
 
-bool UStage::IsAllObjectivesFailed(TArray<UObjective*> Objectives)
+bool UStage::IsAllObjectivesFailed(const TArray<UObjective*>& Objectives) const
 {
-	for (UObjective* Objective : Objectives)
+	for (const UObjective* Objective : Objectives)
 	{
 		if (Objective->GetObjectiveInfo().Condition != ETaskCondition::Failed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{
@@ -106,9 +107,9 @@ bool UStage::IsAllObjectivesFailed(TArray<UObjective*> Objectives)
 	return true;
 }
 
-bool UStage::IsOneObjectiveCompleted(TArray<UObjective*> Objectives)
+bool UStage::IsOneObjectiveCompleted(const TArray<UObjective*>& Objectives) const
 {
-	for (UObjective* Objective : Objectives)
+	for (const UObjective* Objective : Objectives)
 	{
 		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{
@@ -118,9 +119,9 @@ bool UStage::IsOneObjectiveCompleted(TArray<UObjective*> Objectives)
 	return false;
 }
 
-bool UStage::IsOneObjectiveFailed(TArray<UObjective*> Objectives)
+bool UStage::IsOneObjectiveFailed(const TArray<UObjective*>& Objectives) const
 {
-	for (UObjective* Objective : Objectives)
+	for (const UObjective* Objective : Objectives)
 	{
 		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Failed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
 		{

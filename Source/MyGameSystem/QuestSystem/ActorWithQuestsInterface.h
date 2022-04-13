@@ -24,10 +24,10 @@ class MYGAMESYSTEM_API IActorWithQuestsInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithQuestsInterface")
-	class UQuestComponent* GetActorQuestComponent();
-	virtual class UQuestComponent* GetActorQuestComponent_Implementation() { return nullptr; }
+	class UQuestComponent* GetActorQuestComponent() const;
+	virtual class UQuestComponent* GetActorQuestComponent_Implementation() const { return nullptr; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithQuestsInterface")
-	class UMarkersManagerComponent* GetActorMarkersManagerComponent();
-	virtual class UMarkersManagerComponent* GetActorMarkersManagerComponent_Implementation() { return nullptr; }
+	class UMarkersManagerComponent* GetActorMarkersManagerComponent() const;
+	virtual class UMarkersManagerComponent* GetActorMarkersManagerComponent_Implementation() const { return nullptr; }
 };

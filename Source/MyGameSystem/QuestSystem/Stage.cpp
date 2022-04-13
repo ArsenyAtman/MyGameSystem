@@ -60,7 +60,7 @@ FStageInfo UStage::GetStageInfo() const
 	FStageInfo StageInfoToReturn;
 	StageInfoToReturn = StageInfo;
 	TArray<UObjective*> Objectives = GetStageObjectives();
-	for (UObjective* Objective : Objectives)
+	for (const UObjective* Objective : Objectives)
 	{
 		StageInfoToReturn.ObjectivesInfo.Add(Objective->GetObjectiveInfo());
 	}

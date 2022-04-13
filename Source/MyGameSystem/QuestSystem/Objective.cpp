@@ -13,16 +13,16 @@
 void UObjective::Activate_Implementation(UStage* RelatedStage)
 {
 	OwningStage = RelatedStage;
-	ObjectiveInfo.Condition = ETaskCondition::InProcess;
+	Condition = ETaskCondition::InProcess;
 	ReferencesForQuest = FindReferencesForQuest();
 	OnObjectiveActivated();
 }
 
 void UObjective::Abort_Implementation()
 {
-	if (ObjectiveInfo.Condition == ETaskCondition::InProcess)
+	if (Condition == ETaskCondition::InProcess)
 	{
-		ObjectiveInfo.Condition = ETaskCondition::Aborted;
+		Condition = ETaskCondition::Aborted;
 		Unmark();
 	}
 	OnObjectiveAborted();
@@ -55,9 +55,15 @@ void UObjective::Unmark()
 	}
 }
 
+FObjectiveInfo UObjective::GetObjectiveInfo() const
+{
+	return FObjectiveInfo(ObjectiveData, Condition, Progress);
+}
+
 void UObjective::Update_Implementation()
 {
 	Unmark();
+	Progress = RecalculateProgress();
 	Mark();
 	OnObjectiveUpdated();
 	OwningStage->Update();
@@ -65,7 +71,7 @@ void UObjective::Update_Implementation()
 
 void UObjective::Complete_Implementation()
 {
-	ObjectiveInfo.Condition = ETaskCondition::Completed;
+	Condition = ETaskCondition::Completed;
 	Unmark();
 	OnObjectiveCompleted();
 	OwningStage->ObjectiveCompleted(this);
@@ -73,7 +79,7 @@ void UObjective::Complete_Implementation()
 
 void UObjective::Fail_Implementation()
 {
-	ObjectiveInfo.Condition = ETaskCondition::Failed;
+	Condition = ETaskCondition::Failed;
 	Unmark();
 	OnObjectiveFailed();
 	OwningStage->ObjectiveFailed(this);

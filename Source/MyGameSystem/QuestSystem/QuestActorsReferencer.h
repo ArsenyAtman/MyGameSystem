@@ -17,7 +17,7 @@ public:
 	AQuestActorsReferencer();
 
 	UFUNCTION(BlueprintPure)
-	FReferencesForQuest GetReferencesForQuest(TSubclassOf<class UObjective> ObjectiveClass);
+	FReferencesForQuest GetReferencesForQuest(TSubclassOf<class UObjective> ObjectiveClass) const;
 
 private:
 

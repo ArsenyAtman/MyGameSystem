@@ -25,6 +25,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "DialogSelection|Data")
 	TArray<TSubclassOf<class UDialogCue>> GetAvailableOptions() const;
 
+	UFUNCTION(BlueprintPure, Category = "DialogSelection|OwningDialog")
+	class UDialog* GetOwningDialog() const { return OwningDialog; }
+
 protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
@@ -37,7 +40,7 @@ protected:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Options", meta = (AllowPrivateAccess = true))
 	TArray<TSubclassOf<class UDialogCue>> Options;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Data", meta = (AllowPrivateAccess = true))

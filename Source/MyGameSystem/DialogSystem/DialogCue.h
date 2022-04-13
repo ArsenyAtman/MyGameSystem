@@ -22,10 +22,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Availability")
-	bool CheckAvailabilityCondition(class UDialog* CheckingDialog) const;
-	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog) const { return true; }
-
 	UFUNCTION(BlueprintGetter, Category = "DialogCue|Dialog")
 	class UDialog* GetOwningDialog() const { return OwningDialog; }
 

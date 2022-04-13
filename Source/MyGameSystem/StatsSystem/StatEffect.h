@@ -17,7 +17,7 @@ class MYGAMESYSTEM_API UStatEffect : public UEffect
 public:
 
 	UFUNCTION(BlueprintPure, Category = "StatEffect|RelatedStats")
-	TArray<class UStat*> GetRelatedStats() { return RelatedStats; }
+	TArray<class UStat*> GetRelatedStats() const { return RelatedStats; }
 	
 protected:
 

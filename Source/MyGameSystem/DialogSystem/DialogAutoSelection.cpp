@@ -13,7 +13,7 @@ void UDialogAutoSelection::Activate_Implementation(UDialog* OwnDialog)
 		Algo::Reverse(DialogCueOptions);
 	}
 
-	for (TSubclassOf<UDialogCue>& DialogCueClass : DialogCueOptions)
+	for (const TSubclassOf<UDialogCue>& DialogCueClass : DialogCueOptions)
 	{
 		if (IsValid(DialogCueClass))
 		{

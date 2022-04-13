@@ -33,7 +33,7 @@ void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions() const
 {
 	TArray<TSubclassOf<UDialogCue>> AvailableOptions;
-	for (TSubclassOf<UDialogCue>& Cue : SelectionData->Options)
+	for (const TSubclassOf<UDialogCue>& Cue : SelectionData->Options)
 	{
 		UDialogCue* CueObject = Cast<UDialogCue>(Cue.GetDefaultObject());
 		if (IsValid(CueObject) && CueObject->CheckAvailabilityCondition(OwningDialog))

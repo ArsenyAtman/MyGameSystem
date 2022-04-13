@@ -24,6 +24,6 @@ class MYGAMESYSTEM_API IActorWithStatsInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithStatsInterface")
-	class UStatsComponent* GetStatsComponent();
-	virtual class UStatsComponent* GetStatsComponent_Implementation() = 0;
+	class UStatsComponent* GetStatsComponent() const;
+	virtual class UStatsComponent* GetStatsComponent_Implementation() const = 0;
 };

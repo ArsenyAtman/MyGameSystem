@@ -22,6 +22,6 @@ public:
 	virtual FStatValues ApplyDelta_Implementation(FStatValues Delta, class UEffect* OfEffect) { return FStatValues(); }
 
 	UFUNCTION(BlueprintPure, Category = "StatDeltaApplier|OwningStat")
-	class UStat* GetOwningStat();
+	class UStat* GetOwningStat() const;
 	
 };

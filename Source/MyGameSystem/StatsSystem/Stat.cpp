@@ -76,16 +76,16 @@ void UStat::RemoveEffect(UEffect* Effect)
 	}
 }
 
-UStatsComponent* UStat::GetOwningStatsComponent()
+UStatsComponent* UStat::GetOwningStatsComponent() const
 {
 	return Cast<UStatsComponent>(GetOuter());
 }
 
-FStatInfo UStat::GetStatInfo()
+FStatInfo UStat::GetStatInfo() const
 {
 	TArray<FEffectInfo> EffectInfos;
 
-	for (UEffect* Effect : GetEffects())
+	for (const UEffect* Effect : GetEffects())
 	{
 		EffectInfos.Add(Effect->GetEffectInfo());
 	}

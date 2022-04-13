@@ -12,7 +12,7 @@ AQuestActorsReferencer::AQuestActorsReferencer()
 
 }
 
-FReferencesForQuest AQuestActorsReferencer::GetReferencesForQuest(TSubclassOf<UObjective> ObjectiveClass)
+FReferencesForQuest AQuestActorsReferencer::GetReferencesForQuest(TSubclassOf<UObjective> ObjectiveClass) const
 {
 	return ReferencesForQuests[ObjectiveClass];
 }

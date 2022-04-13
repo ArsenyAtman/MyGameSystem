@@ -24,10 +24,10 @@ class MYGAMESYSTEM_API IInteractingActorInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InteractingActorInterface")
-	class USceneComponent* GetTraceSceneComponent();
-	virtual class USceneComponent* GetTraceSceneComponent_Implementation() = 0;
+	class USceneComponent* GetTraceSceneComponent() const;
+	virtual class USceneComponent* GetTraceSceneComponent_Implementation() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InteractingActorInterface")
-	class UInteractionComponent* GetInteractionComponent();
-	virtual class UInteractionComponent* GetInteractionComponent_Implementation() = 0;
+	class UInteractionComponent* GetInteractionComponent() const;
+	virtual class UInteractionComponent* GetInteractionComponent_Implementation() const = 0;
 };

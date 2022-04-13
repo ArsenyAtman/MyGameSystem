@@ -24,14 +24,14 @@ class MYGAMESYSTEM_API IInteractableActorInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionInterface")
-	void Interact(class AActor* Actor);
-	virtual void Interact_Implementation(class AActor* Actor) = 0;
+	void Interact(class AActor* Actor) const;
+	virtual void Interact_Implementation(class AActor* Actor) const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionInterface")
-	bool CanInteract(class AActor* Actor);
-	virtual bool CanInteract_Implementation(class AActor* Actor);
+	bool CanInteract(class AActor* Actor) const;
+	virtual bool CanInteract_Implementation(class AActor* Actor) const { return true; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionInterface")
-	FText GetActionDescription();
-	virtual FText GetActionDescription_Implementation();
+	FText GetActionDescription() const;
+	virtual FText GetActionDescription_Implementation() const { return FText::FromString("None"); }
 };

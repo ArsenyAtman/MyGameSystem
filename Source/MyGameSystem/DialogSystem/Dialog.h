@@ -37,19 +37,19 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Dialog|OwningDialogComponent")
 	FORCEINLINE class UDialogComponent* GetOwningDialogComponent() const { return OwningDialogComponent; }
 
-	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void BeginDialogForInterlocutors(class UDialogComponent* MasterDialogComponent);
-
-	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void EndDialogForInterlocutors();
-
-	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void UnitStartedForInterlocutors(class UDialogUnit* DialogUnit);
-
-	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void UnitEndedForInterlocutors(class UDialogUnit* DialogUnit);
-
 protected:
+
+	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
+	void BeginDialogForInterlocutors(class UDialogComponent* MasterDialogComponent, const TArray<class AActor*>& DialogInterlocutors);
+
+	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
+	void EndDialogForInterlocutors(const TArray<class AActor*>& DialogInterlocutors);
+
+	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
+	void UnitStartedForInterlocutors(class UDialogUnit* DialogUnit, const TArray<class AActor*>& DialogInterlocutors);
+
+	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
+	void UnitEndedForInterlocutors(class UDialogUnit* DialogUnit, const TArray<class AActor*>& DialogInterlocutors);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dialog|InitialDialogUnit")
 	TSubclassOf<UDialogUnit> InitialDialogUnit;

@@ -24,18 +24,18 @@ class MYGAMESYSTEM_API IDialogWavePlayableActorInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
-	class UDialogWavePlayerComponent* GetDialogWavePlayerComponent();
-	virtual class UDialogWavePlayerComponent* GetDialogWaveComponent_Implementation() = 0;
+	class UDialogWavePlayerComponent* GetDialogWavePlayerComponent() const;
+	virtual class UDialogWavePlayerComponent* GetDialogWaveComponent_Implementation() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
-	class USceneComponent* GetMouthComponent();
-	virtual class USceneComponent* GetMouthComponent_Implementation() = 0;
+	class USceneComponent* GetMouthComponent() const;
+	virtual class USceneComponent* GetMouthComponent_Implementation() const = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
-	FName GetMouthPoint();
-	virtual FName GetMouthPoint_Implementation() { return "None"; }
+	FName GetMouthPoint() const;
+	virtual FName GetMouthPoint_Implementation() const { return "None"; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
-	FVector GetMouthRelativeLocation();
-	virtual FVector GetMouthRelativeLocation_Implementation() { return FVector(); }
+	FVector GetMouthRelativeLocation() const;
+	virtual FVector GetMouthRelativeLocation_Implementation() const { return FVector(); }
 };

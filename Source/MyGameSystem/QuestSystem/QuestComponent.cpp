@@ -173,7 +173,7 @@ void UQuestComponent::UpdateAllQuestsInfo()
 TArray<FQuestInfo> UQuestComponent::GetQuestsInfo(const TArray<UQuest*>& Quests) const
 {
 	TArray<FQuestInfo> QuestsInfo;
-	for (UQuest* Quest : Quests)
+	for (const UQuest* Quest : Quests)
 	{
 		QuestsInfo.Add(Quest->GetQuestInfo());
 	}
@@ -183,7 +183,7 @@ TArray<FQuestInfo> UQuestComponent::GetQuestsInfo(const TArray<UQuest*>& Quests)
 bool UQuestComponent::CheckQuestOnDuplication(TSubclassOf<UQuest> QuestClass) const
 {
 	TArray<UQuest*> AllQuests = GetAllQuests();
-	for (UQuest* QuestObject : AllQuests)
+	for (const UQuest* QuestObject : AllQuests)
 	{
 		if (QuestObject->GetClass() == QuestClass)
 		{

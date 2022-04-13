@@ -32,7 +32,7 @@ void UEffect::Deactivate()
 	}
 }
 
-AActor* UEffect::GetRelatedActor()
+AActor* UEffect::GetRelatedActor() const
 {
 	if (IsValid(GetRelatedStatsComponent()))
 	{
@@ -44,7 +44,7 @@ AActor* UEffect::GetRelatedActor()
 	}
 }
 
-FEffectInfo UEffect::GetEffectInfo()
+FEffectInfo UEffect::GetEffectInfo() const
 {
 	return FEffectInfo(EffectData);
 }

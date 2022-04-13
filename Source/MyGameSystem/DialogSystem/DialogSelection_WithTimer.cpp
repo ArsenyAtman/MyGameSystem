@@ -9,10 +9,10 @@ void UDialogSelection_WithTimer::OnSelectionStarted_Implementation()
 {
     Super::OnSelectionStarted_Implementation();
 
-    if (IsValid(GetDialogUnitData_Implementation()))
+    if (Time > 0.0f)
 	{
-		FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &UDialogSelection::SelectNextCue, GetDialogUnitData_Implementation()->DefaultOption);
-		GetWorld()->GetTimerManager().SetTimer(SelectionEndTimer, Delegate, GetDialogUnitData_Implementation()->Time, false);
+		FTimerDelegate Delegate = FTimerDelegate::CreateUObject(this, &UDialogSelection::SelectNextCue, DefaultOption);
+		GetWorld()->GetTimerManager().SetTimer(SelectionEndTimer, Delegate, Time, false);
 	}
 }
 

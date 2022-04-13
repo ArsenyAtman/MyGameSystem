@@ -6,7 +6,7 @@
 #include "ActionDriverComponent.h"
 #include "ActionDrivenActorInterface.h"
 
-UActorAction* UAnimNotify_ActorAction::GetActorAction(USkeletalMeshComponent* MeshComponent)
+UActorAction* UAnimNotify_ActorAction::GetActorAction(const USkeletalMeshComponent* MeshComponent) const
 {
 	if (IsValid(MeshComponent))
 	{

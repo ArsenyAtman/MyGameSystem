@@ -49,7 +49,7 @@ void UActorAction::EndAction()
 	OnActionEnded();
 }
 
-AActor* UActorAction::GetControlledActor()
+AActor* UActorAction::GetControlledActor() const
 {
 	if (IsValid(GetActionDriverComponent()))
 	{
@@ -58,7 +58,7 @@ AActor* UActorAction::GetControlledActor()
 	return nullptr;
 }
 
-UActionDriverComponent* UActorAction::GetActionDriverComponent()
+UActionDriverComponent* UActorAction::GetActionDriverComponent() const
 {
 	return Cast<UActionDriverComponent>(GetOuter());
 }

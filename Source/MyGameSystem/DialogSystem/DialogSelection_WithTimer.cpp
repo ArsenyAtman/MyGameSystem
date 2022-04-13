@@ -1,6 +1,6 @@
 #include "DialogSelection_WithTimer.h"
 
-UDialogSelectionDataAsset_WithTimer* UDialogSelection_WithTimer::GetDialogUnitData_Implementation()
+UDialogSelectionDataAsset_WithTimer* UDialogSelection_WithTimer::GetDialogUnitData_Implementation() const
 {
     return Cast<UDialogSelectionDataAsset_WithTimer>(Super::GetDialogUnitData_Implementation());
 }

@@ -25,7 +25,7 @@ public:
 	void BeginDialogue(class AActor* Initiator, const TArray<class AActor*>& AdditionalInterlocutors);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "DialogComponent|Control")
-	void SelectDialogCue(int CueIndex);
+	void SelectDialogCue(const int CueIndex);
 
 	// SkipCurrentCue
 
@@ -36,28 +36,28 @@ public:
 	void DialogEnded();
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	class UDialog* GetCurrentDialog() { return CurrentDialog; }
+	class UDialog* GetCurrentDialog() const { return CurrentDialog; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	class UDialogComponent* GetMasterDialogComponent() { return MasterDialogComponent; }
+	class UDialogComponent* GetMasterDialogComponent() const { return MasterDialogComponent; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	class UDialogUnitDataAsset* GetCurrentDialogUnitData() { return CurrentDialogUnitData; }
+	class UDialogUnitDataAsset* GetCurrentDialogUnitData() const { return CurrentDialogUnitData; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	TSubclassOf<UDialog> GetDialogClass() { return DialogClass; }
+	TSubclassOf<UDialog> GetDialogClass() const { return DialogClass; }
 
 	UFUNCTION(BlueprintSetter, Category = "DialogComponent|Dialog")
 	void SetDialogClass(TSubclassOf<UDialog> NewDialogClass) { DialogClass = NewDialogClass; }
 
 	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
-	void AddNote(FString NoteToAdd);
+	void AddNote(const FString& NoteToAdd);
 
 	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
-	void RemoveNote(FString NoteToRemove);
+	void RemoveNote(const FString& NoteToRemove);
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	TArray<FString> GetNotes() { return Notepad; }
+	TArray<FString> GetNotes() const { return Notepad; }
 
 	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
 	FDialogUnitConditionDelegate OnDialogUnitStarted;

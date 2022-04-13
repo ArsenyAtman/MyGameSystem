@@ -17,25 +17,25 @@ class MYGAMESYSTEM_API UDialog : public UObject
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void Begin(class UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, TArray<class AActor*> OtherInterlocutors);
+	void Begin(class UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, const TArray<class AActor*>& OtherInterlocutors);
 
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
 	void OnDialogUnitPassed(class UDialogUnit* DialogUnit, TSubclassOf<UDialogUnit> NextDialogUnitClass);
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|CurrentDialogUnit")
-	FORCEINLINE class UDialogUnit* GetCurrentDialogUnit() {return ActiveDialogUnit; }
+	FORCEINLINE class UDialogUnit* GetCurrentDialogUnit() const {return ActiveDialogUnit; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
-	FORCEINLINE TArray<class AActor*> GetInterlocutors() { return Interlocutors; }
+	FORCEINLINE TArray<class AActor*> GetInterlocutors() const { return Interlocutors; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
-	FORCEINLINE class AActor* GetDialogMaster() { return DialogMaster; }
+	FORCEINLINE class AActor* GetDialogMaster() const { return DialogMaster; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
-	FORCEINLINE class AActor* GetDialogInitiator() { return DialogInitiator; }
+	FORCEINLINE class AActor* GetDialogInitiator() const { return DialogInitiator; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|OwningDialogComponent")
-	FORCEINLINE class UDialogComponent* GetOwningDialogComponent() { return OwningDialogComponent; }
+	FORCEINLINE class UDialogComponent* GetOwningDialogComponent() const { return OwningDialogComponent; }
 
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
 	void BeginDialogForInterlocutors(class UDialogComponent* MasterDialogComponent);

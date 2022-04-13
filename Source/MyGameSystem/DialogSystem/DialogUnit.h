@@ -18,8 +18,8 @@ public:
 	virtual void Activate_Implementation(class UDialog* OwnDialog) { return; }
 
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "DialogUnit|Data")
-	class UDialogUnitDataAsset* GetDialogUnitData();
-	virtual class UDialogUnitDataAsset* GetDialogUnitData_Implementation() { return nullptr; }
+	class UDialogUnitDataAsset* GetDialogUnitData() const;
+	virtual class UDialogUnitDataAsset* GetDialogUnitData_Implementation() const { return nullptr; }
 
 private:
 

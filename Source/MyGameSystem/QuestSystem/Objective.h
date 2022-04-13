@@ -75,7 +75,7 @@ public:
 	void Unmark();
 
 	UFUNCTION(BlueprintPure, Category = "Objective|Info")
-	FObjectiveInfo GetObjectiveInfo() const { return ObjectiveInfo; }
+	FObjectiveInfo GetObjectiveInfo() const;
 
 	UFUNCTION(BlueprintPure, Category = "Objective|OwningStage")
 	FORCEINLINE class UStage* GetOwningStage() const { return OwningStage; }
@@ -83,7 +83,7 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Info")
-	FObjectiveInfo ObjectiveInfo;
+	UObjectiveData* ObjectiveData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Marker")
 	class TSubclassOf<AActor> MarkerClass;
@@ -133,7 +133,10 @@ protected:
 
 private:
 
-	class UStage* OwningStage;
+	class UStage* OwningStage = nullptr;
+
+	ETaskCondition Condition = ETaskCondition::Aborted;
+	float Progress = 0.0f;
 
 	FReferencesForQuest FindReferencesForQuest() const;
 

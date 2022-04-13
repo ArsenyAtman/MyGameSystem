@@ -21,6 +21,10 @@ public:
 	class UDialogUnitDataAsset* GetDialogUnitData() const;
 	virtual class UDialogUnitDataAsset* GetDialogUnitData_Implementation() const { return nullptr; }
 
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "DialogUnit|Availability")
+	bool CheckAvailabilityCondition(class UDialog* CheckingDialog) const;
+	virtual bool CheckAvailabilityCondition_Implementation(class UDialog* CheckingDialog) const { return true; }
+
 private:
 
 };

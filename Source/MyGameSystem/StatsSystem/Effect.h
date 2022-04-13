@@ -37,16 +37,16 @@ public:
 	void Deactivate();
 
 	UFUNCTION(BlueprintPure, Category = "Effect|RelatedStatsComponent")
-	class UStatsComponent* GetRelatedStatsComponent() { return RelatedStatsComponent; }
+	class UStatsComponent* GetRelatedStatsComponent() const { return RelatedStatsComponent; }
 
 	UFUNCTION(BlueprintPure, Category = "Effect|RelatedActor")
-	class AActor* GetRelatedActor();
+	class AActor* GetRelatedActor() const;
 
 	UFUNCTION(BlueprintPure, Category = "Effect|Condition")
-	FEffectInfo GetEffectInfo();
+	FEffectInfo GetEffectInfo() const;
 
 	UFUNCTION(BlueprintPure, Category = "Effect|Condition")
-	bool GetIsActive() { return bIsActive; }
+	bool GetIsActive() const { return bIsActive; }
 
 protected:
 

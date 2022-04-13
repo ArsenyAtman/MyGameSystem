@@ -5,7 +5,7 @@
 #include "Stat.h"
 #include "Effect.h"
 
-UStat* UStatDeltaApplier::GetOwningStat()
+UStat* UStatDeltaApplier::GetOwningStat() const
 {
 	return Cast<UStat>(GetOuter());
 }

@@ -36,19 +36,19 @@ public:
 	void RemoveEffect(class UEffect* Effect);
 
 	UFUNCTION(BlueprintGetter, Category = "StatComponent|Effects")
-	TArray<class UEffect*> GetEffects() { return Effects; }
+	TArray<class UEffect*> GetEffects() const { return Effects; }
 
 	UFUNCTION(BlueprintGetter, Category = "StatComponent|Stats")
-	TArray<class UStat*> GetStats() { return Stats; }
+	TArray<class UStat*> GetStats() const { return Stats; }
 
 	UFUNCTION(BlueprintPure, Category = "StatComponent|Stats")
-	TArray<class UStat*> GetStatsOfClass(TSubclassOf<class UStat> StatClass);
+	TArray<class UStat*> GetStatsOfClass(TSubclassOf<class UStat> StatClass) const;
 
 	UFUNCTION(BlueprintGetter, Category = "StatComponent|Effects")
-	TArray<struct FEffectInfo> GetEffectsInfo() { return EffectsInfo; }
+	TArray<struct FEffectInfo> GetEffectsInfo() const { return EffectsInfo; }
 
 	UFUNCTION(BlueprintGetter, Category = "StatComponent|Stats")
-	TArray<struct FStatInfo> GetStatsInfo() { return StatsInfo; }
+	TArray<struct FStatInfo> GetStatsInfo() const { return StatsInfo; }
 
 	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
 	FStatsComponentUpdateDelegate OnEffectsUpdated;

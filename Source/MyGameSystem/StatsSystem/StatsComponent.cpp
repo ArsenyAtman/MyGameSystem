@@ -100,7 +100,7 @@ void UStatsComponent::RemoveEffect(UEffect* Effect)
 	}
 }
 
-TArray<UStat*> UStatsComponent::GetStatsOfClass(TSubclassOf<UStat> StatClass)
+TArray<UStat*> UStatsComponent::GetStatsOfClass(TSubclassOf<UStat> StatClass) const
 {
 	TArray<UStat*> FoundStats;
 
@@ -130,7 +130,7 @@ void UStatsComponent::UpdateStatsInfo()
 {
 	StatsInfo.Empty();
 
-	for (UStat* Stat : GetStats())
+	for (const UStat* Stat : GetStats())
 	{
 		StatsInfo.Add(Stat->GetStatInfo());
 	}
@@ -153,7 +153,7 @@ void UStatsComponent::UpdateEffectsInfo()
 {
 	EffectsInfo.Empty();
 
-	for (UEffect* Effect : GetEffects())
+	for (const UEffect* Effect : GetEffects())
 	{
 		EffectsInfo.Add(Effect->GetEffectInfo());
 	}

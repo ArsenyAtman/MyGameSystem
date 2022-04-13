@@ -45,19 +45,19 @@ void UStageOptions::AbortAllObjectives_Implementation()
 	}
 }
 
-TArray<class UObjective*> UStageOptions::GetStageObjectives_Implementation()
+TArray<class UObjective*> UStageOptions::GetStageObjectives_Implementation() const
 {
 	TArray<UObjective*> Objectives;
-	for (FOption& Option : Options)
+	for (const FOption& Option : Options)
 	{
 		Objectives.Add(Option.Objective);
 	}
 	return Objectives;
 }
 
-class UClass* UStageOptions::GetNextStage(UObjective* OfObjective, TArray<FOption> FromOptions)
+class UClass* UStageOptions::GetNextStage(UObjective* OfObjective, const TArray<FOption>& FromOptions) const
 {
-	for (FOption& Option : Options)
+	for (const FOption& Option : FromOptions)
 	{
 		if (Option.Objective == OfObjective)
 		{
@@ -67,7 +67,7 @@ class UClass* UStageOptions::GetNextStage(UObjective* OfObjective, TArray<FOptio
 	return nullptr;
 }
 
-UObjective* UStageOptions::GetCompletedObjective(TArray<UObjective*> Objectives)
+UObjective* UStageOptions::GetCompletedObjective(const TArray<UObjective*>& Objectives) const
 {
 	for (UObjective* Objective : Objectives)
 	{

@@ -36,13 +36,13 @@ protected:
 
 	virtual void AbortAllObjectives_Implementation() override;
 
-	TArray<class UObjective*> GetStageObjectives_Implementation() override;
+	TArray<class UObjective*> GetStageObjectives_Implementation() const override;
 
 	UFUNCTION(BlueprintPure, Category = "StageOptions|QuestFlow")
-	class UClass* GetNextStage(class UObjective* OfObjective, TArray<FOption> FromOptions);
+	class UClass* GetNextStage(class UObjective* OfObjective, const TArray<FOption>& FromOptions) const;
 
 	UFUNCTION(BlueprintPure, Category = "StageOptions|Objectives")
-	UObjective* GetCompletedObjective(TArray<class UObjective*> Objectives);
+	UObjective* GetCompletedObjective(const TArray<class UObjective*>& Objectives) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageOptions|QuestFlow")
 	TArray<FOption> Options;

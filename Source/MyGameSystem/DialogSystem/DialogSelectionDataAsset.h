@@ -11,7 +11,6 @@ class MYGAMESYSTEM_API UDialogSelectionDataAsset : public UDialogUnitDataAsset
 
 public:
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSubclassOf<class UDialogCue>> Options;
+    // ...
 
 };

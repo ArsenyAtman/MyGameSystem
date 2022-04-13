@@ -12,9 +12,6 @@ class MYGAMESYSTEM_API UDialogCueDataAsset : public UDialogUnitDataAsset
 
 public:
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<class UDialogUnit> NextDialogUnit = nullptr;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EDialogCueType DialogCueType = EDialogCueType::Usual;
 };

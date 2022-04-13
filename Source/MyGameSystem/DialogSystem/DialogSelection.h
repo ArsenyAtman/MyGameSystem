@@ -37,6 +37,9 @@ protected:
 
 private:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSubclassOf<class UDialogCue>> Options;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Data", meta = (AllowPrivateAccess = true))
 	class UDialogSelectionDataAsset* SelectionData;
 

@@ -17,6 +17,6 @@ class MYGAMESYSTEM_API UAnimNotify_ActorAction : public UAnimNotify
 protected:
 
 	UFUNCTION(BlueprintCallable)
-	class UActorAction* GetActorAction(class USkeletalMeshComponent* MeshComponent);
+	class UActorAction* GetActorAction(const class USkeletalMeshComponent* MeshComponent) const;
 	
 };

@@ -20,7 +20,11 @@ public:
 
 protected:
 
-	// ...
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bCheckFromEnd = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bSelectFalseCondition = false;
 
 private:
 

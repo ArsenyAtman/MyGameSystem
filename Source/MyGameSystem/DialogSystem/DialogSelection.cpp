@@ -3,7 +3,7 @@
 
 #include "DialogSelection.h"
 #include "Dialog.h"
-#include "DialogCue.h"
+#include "DialogUnit.h"
 #include "DialogComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "DialogSelectionDataAsset.h"
@@ -17,7 +17,7 @@ void UDialogSelection::Activate_Implementation(UDialog* OwnDialog)
 
 void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 {
-	TArray<TSubclassOf<UDialogCue>> AvailableOptions = GetAvailableOptions();
+	TArray<TSubclassOf<UDialogUnit>> AvailableOptions = GetAvailableOptions();
 	if (AvailableOptions.IsValidIndex(CueIndex))
 	{
 		OwningDialog->OnDialogUnitPassed(this, AvailableOptions[CueIndex]);
@@ -30,15 +30,15 @@ void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 	OnSelectionEnded();
 }
 
-TArray<TSubclassOf<UDialogCue>> UDialogSelection::GetAvailableOptions() const
+TArray<TSubclassOf<UDialogUnit>> UDialogSelection::GetAvailableOptions() const
 {
-	TArray<TSubclassOf<UDialogCue>> AvailableOptions;
-	for (const TSubclassOf<UDialogCue>& Cue : Options)
+	TArray<TSubclassOf<UDialogUnit>> AvailableOptions;
+	for (const TSubclassOf<UDialogUnit>& DialogUnitClass : Options)
 	{
-		UDialogCue* CueObject = Cast<UDialogCue>(Cue.GetDefaultObject());
-		if (IsValid(CueObject) && CueObject->CheckAvailabilityCondition(OwningDialog))
+		UDialogUnit* DialogUnitObject = Cast<UDialogUnit>(DialogUnitClass.GetDefaultObject());
+		if (IsValid(DialogUnitObject) && DialogUnitObject->CheckAvailabilityCondition(GetOwningDialog()))
 		{
-			AvailableOptions.Add(Cue);
+			AvailableOptions.Add(DialogUnitClass);
 		}
 	}
 	return AvailableOptions;

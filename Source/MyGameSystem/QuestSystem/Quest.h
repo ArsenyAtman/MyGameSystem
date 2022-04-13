@@ -44,9 +44,6 @@ struct FQuestInfo
 	bool bIsBeingTracked;
 
 	UPROPERTY(BlueprintReadWrite)
-	float Progress;
-
-	UPROPERTY(BlueprintReadWrite)
 	struct FStageInfo CurrentStageInfo;
 
 	UPROPERTY(BlueprintReadWrite)
@@ -66,7 +63,6 @@ struct FQuestInfo
 		return 	Info1.QuestData == Info2.QuestData &&
 				Info1.Condition == Info2.Condition &&
 				Info1.bIsBeingTracked == Info2.bIsBeingTracked &&
-				Info1.Progress == Info2.Progress &&
 				Info1.CurrentStageInfo == Info2.CurrentStageInfo &&
 				Info1.PastStageInfos == Info2.PastStageInfos;
 	}

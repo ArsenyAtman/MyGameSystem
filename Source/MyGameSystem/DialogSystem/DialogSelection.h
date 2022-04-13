@@ -23,7 +23,7 @@ public:
 	virtual void SelectNextCue_Implementation(int CueIndex);
 
 	UFUNCTION(BlueprintPure, Category = "DialogSelection|Data")
-	TArray<TSubclassOf<class UDialogCue>> GetAvailableOptions() const;
+	TArray<TSubclassOf<class UDialogUnit>> GetAvailableOptions() const;
 
 	UFUNCTION(BlueprintPure, Category = "DialogSelection|OwningDialog")
 	class UDialog* GetOwningDialog() const { return OwningDialog; }
@@ -41,7 +41,7 @@ protected:
 private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Options", meta = (AllowPrivateAccess = true))
-	TArray<TSubclassOf<class UDialogCue>> Options;
+	TArray<TSubclassOf<class UDialogUnit>> Options;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Data", meta = (AllowPrivateAccess = true))
 	class UDialogSelectionDataAsset* SelectionData;

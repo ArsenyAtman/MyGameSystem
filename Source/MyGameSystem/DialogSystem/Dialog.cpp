@@ -18,13 +18,13 @@ void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, 
 	Interlocutors.Add(DialogMaster);
 	Interlocutors.Add(DialogInitiator);
 
-	BeginDialogForInterlocutors(OwningDialogComponent);
+	BeginDialogForInterlocutors(OwningDialogComponent, Interlocutors);
 
 	ActiveDialogUnit = NewObject<UDialogUnit>(this, InitialDialogUnit);
 	if (IsValid(ActiveDialogUnit))
 	{
 		ActiveDialogUnit->Activate(this);
-		UnitStartedForInterlocutors(ActiveDialogUnit);
+		UnitStartedForInterlocutors(ActiveDialogUnit, Interlocutors);
 	}
 }
 
@@ -33,7 +33,7 @@ void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUni
 	if (ActiveDialogUnit == DialogUnit)
 	{
 		UDialogUnit* PrevDialogUnit = ActiveDialogUnit;
-		UnitEndedForInterlocutors(PrevDialogUnit);
+		UnitEndedForInterlocutors(PrevDialogUnit, Interlocutors);
 
 		if (IsValid(NextDialogUnitClass))
 		{
@@ -41,20 +41,20 @@ void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUni
 			if (IsValid(ActiveDialogUnit))
 			{
 				ActiveDialogUnit->Activate(this);
-				UnitStartedForInterlocutors(ActiveDialogUnit);
+				UnitStartedForInterlocutors(ActiveDialogUnit, Interlocutors);
 			}
 		}
 		else
 		{
 			ActiveDialogUnit = nullptr;
-			EndDialogForInterlocutors();
+			EndDialogForInterlocutors(Interlocutors);
 		}
 	}
 }
 
-void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponent)
+void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponent, const TArray<AActor*>& DialogInterlocutors)
 {
-	for (const AActor* Interlocutor : Interlocutors)
+	for (const AActor* Interlocutor : DialogInterlocutors)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
@@ -67,9 +67,9 @@ void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponen
 	}
 }
 
-void UDialog::EndDialogForInterlocutors()
+void UDialog::EndDialogForInterlocutors(const TArray<AActor*>& DialogInterlocutors)
 {
-	for (const AActor* Interlocutor : Interlocutors)
+	for (const AActor* Interlocutor : DialogInterlocutors)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
@@ -82,9 +82,9 @@ void UDialog::EndDialogForInterlocutors()
 	}
 }
 
-void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit)
+void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit, const TArray<AActor*>& DialogInterlocutors)
 {
-	for (const AActor* Interlocutor : Interlocutors)
+	for (const AActor* Interlocutor : DialogInterlocutors)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
@@ -97,9 +97,9 @@ void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit)
 	}
 }
 
-void UDialog::UnitEndedForInterlocutors(UDialogUnit* DialogUnit)
+void UDialog::UnitEndedForInterlocutors(UDialogUnit* DialogUnit, const TArray<AActor*>& DialogInterlocutors)
 {
-	for (const AActor* Interlocutor : Interlocutors)
+	for (const AActor* Interlocutor : DialogInterlocutors)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{

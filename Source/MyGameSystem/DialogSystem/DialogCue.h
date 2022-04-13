@@ -48,7 +48,7 @@ protected:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|DialogFlow", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class UDialogUnit> NextDialogUnit = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Data", meta = (AllowPrivateAccess = true))

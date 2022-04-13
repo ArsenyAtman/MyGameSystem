@@ -77,7 +77,7 @@ FQuestInfo UQuest::GetQuestInfo() const
 	FQuestInfo QuestInfoToReturn = QuestInfo;
 	QuestInfoToReturn.CurrentStageInfo = ActiveStage->GetStageInfo();
 	QuestInfoToReturn.PastStagesInfo.Empty();
-	for (UStage* Stage : PastStages)
+	for (const UStage* Stage : PastStages)
 	{
 		QuestInfoToReturn.PastStagesInfo.Add(Stage->GetStageInfo());
 	}

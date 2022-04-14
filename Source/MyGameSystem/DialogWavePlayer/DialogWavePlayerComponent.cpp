@@ -18,6 +18,7 @@ UDialogWavePlayerComponent::UDialogWavePlayerComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	SetIsReplicatedByDefault(true);
+	
 }
 
 UAudioComponent* UDialogWavePlayerComponent::PlayDialogWaveReplicated(UDialogueWave* DialogWave, const TArray<UDialogueVoice*>& Interlocutors, bool bStopWhenAttachedToDestroyed, float VolumeMultiplier, float PitchMultiplier, float StartTime, bool bAutoDestroy)

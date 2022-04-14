@@ -109,7 +109,7 @@ void UDialogCue_AnimationAndSound::PlayAnimation_Implementation()
 		this->AnimationPlayed(nullptr, true);
 	}
 
-	if (IsValid(GetDialogUnitData()) && !HasAudioStartAnimNotify(GetDialogUnitData_Implementation()->Animation))
+	if (IsValid(GetDialogUnitData_Implementation()) && !HasAudioStartAnimNotify(GetDialogUnitData_Implementation()->Animation))
 	{
 		PlayAudio();
 	}

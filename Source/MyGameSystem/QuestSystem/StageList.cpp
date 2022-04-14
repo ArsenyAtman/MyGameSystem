@@ -4,7 +4,7 @@
 #include "StageList.h"
 #include "Objective.h"
 
-void UStageList::Activate_Implementation(UQuest* RelatedQuest)
+void UStageList::ActivateObjectives_Implementation()
 {
 	for (UClass* ObjectiveClass : InitialObjectives)
 	{
@@ -18,8 +18,6 @@ void UStageList::Activate_Implementation(UQuest* RelatedQuest)
 			}
 		}
 	}
-
-	Super::Activate_Implementation(RelatedQuest);
 }
 
 void UStageList::CheckCondition_Implementation()

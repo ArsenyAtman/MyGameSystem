@@ -90,6 +90,10 @@ public:
 
 protected:
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
+	void ActivateObjectives();
+	virtual void ActivateObjectives_Implementation() { return; }
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
 	void CheckCondition();
 	virtual void CheckCondition_Implementation() { return; }

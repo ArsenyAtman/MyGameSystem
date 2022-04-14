@@ -4,7 +4,7 @@
 #include "StageOptions.h"
 #include "Objective.h"
 
-void UStageOptions::Activate_Implementation(UQuest* RelatedQuest)
+void UStageOptions::ActivateObjectives_Implementation()
 {
 	for (FOption& Option : Options)
 	{
@@ -15,8 +15,6 @@ void UStageOptions::Activate_Implementation(UQuest* RelatedQuest)
 			Option.Objective->Activate(this);
 		}
 	}
-
-	Super::Activate_Implementation(RelatedQuest);
 }
 
 void UStageOptions::CheckCondition_Implementation()

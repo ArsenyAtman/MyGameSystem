@@ -16,9 +16,11 @@ class MYGAMESYSTEM_API UStageList : public UStage
 
 public:
 
-	virtual void Activate_Implementation(class UQuest* RelatedQuest) override;
+	// ...
 
 protected:
+
+	virtual void ActivateObjectives_Implementation() override;
 
 	virtual void CheckCondition_Implementation() override;
 

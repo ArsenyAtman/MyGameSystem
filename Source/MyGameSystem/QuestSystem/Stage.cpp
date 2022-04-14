@@ -11,6 +11,7 @@ void UStage::Activate_Implementation(UQuest* RelatedQuest)
 {
 	OwningQuest = RelatedQuest;
 	Condition = ETaskCondition::InProcess;
+	ActivateObjectives();
 	OnStageActivated();
 }
 

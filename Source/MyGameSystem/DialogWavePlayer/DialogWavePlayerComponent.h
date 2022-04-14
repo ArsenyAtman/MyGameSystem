@@ -25,17 +25,20 @@ public:
 	void PlayDialogWaveOnClients(class UDialogueWave* DialogWave, const TArray<class UDialogueVoice*>& Interlocutors, bool bStopWhenAttachedToDestroyed = false, float VolumeMultiplier = 1.0f, float PitchMultiplier = 1.0f, float StartTime = 0.0f, bool bAutoDestroy = true);
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
-	void StopDialogWave();
+	void StopDialogWaveReplicated();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintCallable, Category = "MontagePlayerComponent")
+	void StopDialogWaveLocally();
+
+	UFUNCTION(BlueprintPure, Category = "MontagePlayerComponent")
 	bool IsPlaying() const;
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter, Category = "MontagePlayerComponent")
 	class UDialogueVoice* GetSpeakerVoice() const { return SpeakerVoice; }
 	
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetSpeakerVoice)
 	class UDialogueVoice* SpeakerVoice;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

@@ -17,7 +17,7 @@ UDialogWavePlayerComponent::UDialogWavePlayerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	SetIsReplicatedByDefault(true);
 }
 
 UAudioComponent* UDialogWavePlayerComponent::PlayDialogWaveReplicated(UDialogueWave* DialogWave, const TArray<UDialogueVoice*>& Interlocutors, bool bStopWhenAttachedToDestroyed, float VolumeMultiplier, float PitchMultiplier, float StartTime, bool bAutoDestroy)
@@ -25,15 +25,14 @@ UAudioComponent* UDialogWavePlayerComponent::PlayDialogWaveReplicated(UDialogueW
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		PlayDialogWaveOnClients(DialogWave, Interlocutors, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, bAutoDestroy);
-		PlayingAudioComponent = PlayDialogWaveLocally(DialogWave, Interlocutors, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, bAutoDestroy);
-		return PlayingAudioComponent;
+		return PlayDialogWaveLocally(DialogWave, Interlocutors, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, bAutoDestroy);
 	}
 	return nullptr;
 }
 
 UAudioComponent* UDialogWavePlayerComponent::PlayDialogWaveLocally(UDialogueWave* DialogWave, const TArray<UDialogueVoice*>& Interlocutors, bool bStopWhenAttachedToDestroyed, float VolumeMultiplier, float PitchMultiplier, float StartTime, bool bAutoDestroy)
 {
-	StopDialogWave();
+	StopDialogWaveLocally();
 
 	AActor* Actor = this->GetOwner();
 	if (IsValid(Actor) && Actor->Implements<UDialogWavePlayableActorInterface>())
@@ -44,7 +43,8 @@ UAudioComponent* UDialogWavePlayerComponent::PlayDialogWaveLocally(UDialogueWave
 		USceneComponent* AttachComponent = IDialogWavePlayableActorInterface::Execute_GetMouthComponent(Actor);
 		FName AttachPoint = IDialogWavePlayableActorInterface::Execute_GetMouthPoint(Actor);
 		FVector RelativeLocation = IDialogWavePlayableActorInterface::Execute_GetMouthRelativeLocation(Actor);
-		return UGameplayStatics::SpawnDialogueAttached(DialogWave, Context, AttachComponent, AttachPoint, RelativeLocation, EAttachLocation::KeepRelativeOffset, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, Attenuation, bAutoDestroy);
+		PlayingAudioComponent = UGameplayStatics::SpawnDialogueAttached(DialogWave, Context, AttachComponent, AttachPoint, RelativeLocation, EAttachLocation::SnapToTarget, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime);
+		return PlayingAudioComponent;
 	}
 	return nullptr;
 }
@@ -53,11 +53,16 @@ void UDialogWavePlayerComponent::PlayDialogWaveOnClients_Implementation(UDialogu
 {
 	if (GetOwnerRole() != ENetRole::ROLE_Authority)
 	{
-		PlayingAudioComponent = this->PlayDialogWaveLocally(DialogWave, Interlocutors, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, bAutoDestroy);
+		this->PlayDialogWaveLocally(DialogWave, Interlocutors, bStopWhenAttachedToDestroyed, VolumeMultiplier, PitchMultiplier, StartTime, bAutoDestroy);
 	}
 }
 
-void UDialogWavePlayerComponent::StopDialogWave_Implementation()
+void UDialogWavePlayerComponent::StopDialogWaveReplicated_Implementation()
+{
+	StopDialogWaveLocally();
+}
+
+void UDialogWavePlayerComponent::StopDialogWaveLocally()
 {
 	if (IsValid(PlayingAudioComponent))
 	{

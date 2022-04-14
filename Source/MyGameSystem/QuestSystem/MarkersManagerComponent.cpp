@@ -4,27 +4,38 @@
 #include "MarkersManagerComponent.h"
 #include "MarkableActorInterface.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+
 // Sets default values
 UMarkersManagerComponent::UMarkersManagerComponent()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryComponentTick.bCanEverTick = false;
 
+	SetIsReplicatedByDefault(true);
+
 }
 
-TArray<AActor*> UMarkersManagerComponent::MarkActorsReplicated(TSubclassOf<AActor> MarkerClass, const TArray<AActor*>& ActorsToMark)
+void UMarkersManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		MarkActorsOnClients(MarkerClass, ActorsToMark);
-		return MarkActorsLocally(MarkerClass, ActorsToMark);
-	}
-	return TArray<AActor*>();
+	DeleteAllMarkersLocally();
+
+	Super::EndPlay(EndPlayReason);
 }
 
-TArray<AActor*> UMarkersManagerComponent::MarkActorsLocally(TSubclassOf<AActor> MarkerClass, const TArray<AActor*>& ActorsToMark)
+void UMarkersManagerComponent::MarkActors_Implementation(const TArray<AActor*>& ActorsToMark)
 {
-	TArray<AActor*> Markers;
+	MarkActorsLocally(ActorsToMark);
+}
+
+void UMarkersManagerComponent::DeleteAllMarkers_Implementation()
+{
+	DeleteAllMarkersLocally();
+}
+
+void UMarkersManagerComponent::MarkActorsLocally(const TArray<AActor*>& ActorsToMark)
+{
+	DeleteAllMarkersLocally();
 
 	for (AActor* ActorToMark : ActorsToMark)
 	{
@@ -40,19 +51,9 @@ TArray<AActor*> UMarkersManagerComponent::MarkActorsLocally(TSubclassOf<AActor> 
 			Markers.Add(NewMarker);
 		}
 	}
-
-	return Markers;
 }
 
-void UMarkersManagerComponent::MarkActorsOnClients_Implementation(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToMark)
-{
-	if (GetOwnerRole() != ENetRole::ROLE_Authority)
-	{
-		MarkActorsLocally(MarkerClass, ActorsToMark);
-	}
-}
-
-void UMarkersManagerComponent::UnmarkActors(const TArray<AActor*>& Markers)
+void UMarkersManagerComponent::DeleteAllMarkersLocally()
 {
 	for (int i = Markers.Num() - 1; i >= 0; --i)
 	{
@@ -63,4 +64,6 @@ void UMarkersManagerComponent::UnmarkActors(const TArray<AActor*>& Markers)
 			Marker->Destroy();
 		}
 	}
+
+	Markers.Empty();
 }

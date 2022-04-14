@@ -15,16 +15,28 @@ public:
 	// Sets default values for this actor's properties
 	UMarkersManagerComponent();
 
-	UFUNCTION(BlueprintCallable)
-	TArray<class AActor*> MarkActorsReplicated(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToMark);
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UFUNCTION(BlueprintCallable)
-	TArray<class AActor*> MarkActorsLocally(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToMark);
+	UFUNCTION(BlueprintCallable, Client, Reliable, Category = "MarkersManagerComponent")
+	void MarkActors(const TArray<class AActor*>& ActorsToMark);
 
-	UFUNCTION(BlueprintCallable, Client, Reliable)
-	void MarkActorsOnClients(TSubclassOf<class AActor> MarkerClass, const TArray<class AActor*>& ActorsToMark);
+	UFUNCTION(BlueprintCallable, Client, Reliable, Category = "MarkersManagerComponent")
+	void DeleteAllMarkers();
 
-	UFUNCTION(BlueprintCallable)
-	void UnmarkActors(const TArray<class AActor*>& Markers);
+	UFUNCTION(BlueprintCallable, Category = "MarkersManagerComponent")
+	void MarkActorsLocally(const TArray<class AActor*>& ActorsToMark);
+
+	UFUNCTION(BlueprintCallable, Category = "MarkersManagerComponent")
+	void DeleteAllMarkersLocally();
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MarkersManagerComponent")
+	class TSubclassOf<AActor> MarkerClass;
+
+private:
+
+	UPROPERTY()
+	TArray<class AActor*> Markers;
 
 };

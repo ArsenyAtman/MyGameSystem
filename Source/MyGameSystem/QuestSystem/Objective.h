@@ -85,8 +85,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Info")
 	UObjectiveData* ObjectiveData;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Marker")
-	class TSubclassOf<AActor> MarkerClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|MarkersManager")
+	class TSubclassOf<class UMarkersManagerComponent> MarkersManagerComponentClass;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Complete();
@@ -99,6 +99,10 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Update();
 	virtual void Update_Implementation();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	void EndObjective();
+	virtual void EndObjective_Implementation();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
 	void OnObjectiveActivated();
@@ -143,5 +147,8 @@ private:
 	UPROPERTY(BlueprintGetter = GetReferencesForQuest)
 	FReferencesForQuest ReferencesForQuest;
 
-	TArray<class AActor*> Markers;
+	class UMarkersManagerComponent* CreateMarkersManager() const;
+
+	UPROPERTY()
+	class UMarkersManagerComponent* MarkersManager = nullptr;
 };

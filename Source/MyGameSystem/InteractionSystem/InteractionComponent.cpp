@@ -15,7 +15,8 @@ UInteractionComponent::UInteractionComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	SetIsReplicatedByDefault(true);
+	
 }
 
 // Called when the game starts

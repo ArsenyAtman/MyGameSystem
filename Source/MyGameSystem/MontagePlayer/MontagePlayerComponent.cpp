@@ -12,7 +12,8 @@ UMontagePlayerComponent::UMontagePlayerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	SetIsReplicatedByDefault(true);
+	
 }
 
 UAnimInstance* UMontagePlayerComponent::PlayAnimationMontageReplicated(UAnimMontage* Montage, float InPlayRate, float StartTime, bool bStopAllMontages)

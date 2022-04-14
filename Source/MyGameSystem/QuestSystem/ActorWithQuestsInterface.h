@@ -27,7 +27,4 @@ public:
 	class UQuestComponent* GetActorQuestComponent() const;
 	virtual class UQuestComponent* GetActorQuestComponent_Implementation() const { return nullptr; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithQuestsInterface")
-	class UMarkersManagerComponent* GetActorMarkersManagerComponent() const;
-	virtual class UMarkersManagerComponent* GetActorMarkersManagerComponent_Implementation() const { return nullptr; }
 };

@@ -15,6 +15,7 @@ void UObjective::Activate_Implementation(UStage* RelatedStage)
 	OwningStage = RelatedStage;
 	Condition = ETaskCondition::InProcess;
 	ReferencesForQuest = FindReferencesForQuest();
+	MarkersManager = CreateMarkersManager();
 	OnObjectiveActivated();
 }
 
@@ -23,35 +24,24 @@ void UObjective::Abort_Implementation()
 	if (Condition == ETaskCondition::InProcess)
 	{
 		Condition = ETaskCondition::Aborted;
-		Unmark();
+		EndObjective();
 	}
 	OnObjectiveAborted();
 }
 
 void UObjective::Mark()
 {
-	AActor* QuestActor = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetOwner();
-	if (IsValid(QuestActor) && QuestActor->Implements<UActorWithQuestsInterface>())
+	if(IsValid(MarkersManager))
 	{
-		UMarkersManagerComponent* MarkersManager = IActorWithQuestsInterface::Execute_GetActorMarkersManagerComponent(QuestActor);
-		if(IsValid(MarkersManager))
-		{
-			Markers = MarkersManager->MarkActorsReplicated(MarkerClass, FilterActorsForMarking(ReferencesForQuest.ActorsToMark));
-		}
+		MarkersManager->MarkActors(FilterActorsForMarking(ReferencesForQuest.ActorsToMark));
 	}
 }
 
 void UObjective::Unmark()
 {
-	AActor* QuestActor = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetOwner();
-	if (IsValid(QuestActor) && QuestActor->Implements<UActorWithQuestsInterface>())
+	if(IsValid(MarkersManager))
 	{
-		UMarkersManagerComponent* MarkersManager = IActorWithQuestsInterface::Execute_GetActorMarkersManagerComponent(QuestActor);
-		if(IsValid(MarkersManager))
-		{
-			MarkersManager->UnmarkActors(Markers);
-			Markers.Empty();
-		}
+		MarkersManager->DeleteAllMarkers();
 	}
 }
 
@@ -63,16 +53,24 @@ FObjectiveInfo UObjective::GetObjectiveInfo() const
 void UObjective::Update_Implementation()
 {
 	Unmark();
-	Progress = RecalculateProgress();
 	Mark();
 	OnObjectiveUpdated();
+	Progress = RecalculateProgress();
 	OwningStage->Update();
+}
+
+void UObjective::EndObjective_Implementation()
+{
+	if(IsValid(MarkersManager))
+	{
+		MarkersManager->DestroyComponent();
+	}
 }
 
 void UObjective::Complete_Implementation()
 {
 	Condition = ETaskCondition::Completed;
-	Unmark();
+	EndObjective();
 	OnObjectiveCompleted();
 	OwningStage->ObjectiveCompleted(this);
 }
@@ -80,7 +78,7 @@ void UObjective::Complete_Implementation()
 void UObjective::Fail_Implementation()
 {
 	Condition = ETaskCondition::Failed;
-	Unmark();
+	EndObjective();
 	OnObjectiveFailed();
 	OwningStage->ObjectiveFailed(this);
 }
@@ -100,4 +98,15 @@ FReferencesForQuest UObjective::FindReferencesForQuest() const
 	}
 
 	return FReferencesForQuest();
+}
+
+UMarkersManagerComponent* UObjective::CreateMarkersManager() const
+{
+	AActor* QuestActor = OwningStage->GetOwningQuest()->GetOwningQuestComponent()->GetOwner();
+	if (IsValid(QuestActor))
+	{
+		return Cast<UMarkersManagerComponent>(QuestActor->AddComponentByClass(MarkersManagerComponentClass, false, FTransform::Identity, false));
+	}
+
+	return nullptr;
 }

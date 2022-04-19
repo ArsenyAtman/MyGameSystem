@@ -17,10 +17,8 @@ class MYGAMESYSTEM_API UReplicator : public UObject
 
 public:
 
-	/**
-	 * Setup this object for its owner.
-	 */
-	virtual void Initialize(class UObject* ReplicatorOwner);
+	// Override for the initial object setup.
+	virtual void PostInitProperties() override;
 
 	/**
 	 * Replicate subobjects of the owner.
@@ -36,7 +34,5 @@ private:
 	
 	TArray<class FObjectProperty*> ObjectProperties;
 	TArray<class FArrayProperty*> ArrayProperties;
-
-	class UObject* Owner = nullptr;
 
 };

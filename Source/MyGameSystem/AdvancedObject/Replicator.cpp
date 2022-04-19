@@ -7,13 +7,12 @@
 #include "ReplicableObject.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void UReplicator::Initialize(class UObject* ReplicatorOwner)
+void UReplicator::PostInitProperties()
 {
-	Owner = ReplicatorOwner;
+	Super::PostInitProperties();
 
-	UClass* Class = Owner->GetClass();
+	UClass* Class = GetOuter()->GetClass();
 	FindPropertiesForReplication(Class);
-
 }
 
 void UReplicator::ReplicateSubobjectsOfOwner(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
@@ -21,7 +20,7 @@ void UReplicator::ReplicateSubobjectsOfOwner(UActorChannel* Channel, FOutBunch* 
 	for (FObjectProperty* ObjectProperty : ObjectProperties)
 	{
 		// Replicate the property.
-		UObject* Object = ObjectProperty->GetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Owner));
+		UObject* Object = ObjectProperty->GetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(GetOuter()));
 		OutWroteSomething |= Channel->ReplicateSubobject(Object, *Bunch, *RepFlags);
 
 		// If the property contains a replicable object...
@@ -36,7 +35,7 @@ void UReplicator::ReplicateSubobjectsOfOwner(UActorChannel* Channel, FOutBunch* 
 	for(FArrayProperty* ArrayProperty : ArrayProperties)
 	{
 		// Replicate the property.
-		TArray<UObject*> Array = *ArrayProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Owner);
+		TArray<UObject*> Array = *ArrayProperty->ContainerPtrToValuePtr<TArray<UObject*>>(GetOuter());
 		OutWroteSomething |= Channel->ReplicateSubobjectList(Array, *Bunch, *RepFlags);
 
 		for(UObject* Object : Array)

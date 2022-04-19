@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "MyGameSystem/AdvancedObject/ReplicatingActorComponent.h"
 #include "ConditionComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FConditionComponentDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UConditionComponent : public UActorComponent
+class MYGAMESYSTEM_API UConditionComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 
@@ -27,9 +27,6 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "ConditionComponent|CurrentCondition")
 	class UCondition* GetCurrentCondition() const { return CurrentCondition; }
 
-	UFUNCTION(BlueprintGetter, Category = "ConditionComponent|CurrentCondition")
-	TSubclassOf<class UCondition> GetCurrentConditionClass() const { return CurrentConditionClass; }
-
 	UPROPERTY(BlueprintAssignable, Category = "ConditionComponent|Delegates")
 	FConditionComponentDelegate OnConditionChanged;
 
@@ -43,13 +40,10 @@ protected:
 
 private:
 
-	UPROPERTY(BlueprintGetter = GetCurrentCondition, BlueprintSetter = SetCurrentCondition)
+	UPROPERTY(BlueprintGetter = GetCurrentCondition, BlueprintSetter = SetCurrentCondition, ReplicatedUsing = OnRep_CurrentCondition)
 	class UCondition* CurrentCondition;
 
-	UPROPERTY(BlueprintGetter = GetCurrentConditionClass, ReplicatedUsing = OnRep_CurrentConditionClass)
-	TSubclassOf<class UCondition> CurrentConditionClass;
-
 	UFUNCTION()
-	void OnRep_CurrentConditionClass();
+	void OnRep_CurrentCondition();
 		
 };

@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
 #include "Condition.generated.h"
 
 /**
  * 
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UCondition : public UObject
+class MYGAMESYSTEM_API UCondition : public UAdvancedObject
 {
 	GENERATED_BODY()
 

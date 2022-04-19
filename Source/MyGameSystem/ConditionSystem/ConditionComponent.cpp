@@ -20,7 +20,7 @@ void UConditionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UConditionComponent, CurrentConditionClass);
+	DOREPLIFETIME(UConditionComponent, CurrentCondition);
 }
 
 void UConditionComponent::BeginPlay()
@@ -51,8 +51,11 @@ void UConditionComponent::SetCurrentCondition(UCondition* NewCondition)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
+		if(IsValid(CurrentCondition))
+		{
+			CurrentCondition->Destroy();
+		}
 		CurrentCondition = NewCondition;
-		CurrentConditionClass = CurrentCondition->GetClass();
 		CurrentCondition->StartCondition();
 		if (OnConditionChanged.IsBound())
 		{
@@ -61,7 +64,7 @@ void UConditionComponent::SetCurrentCondition(UCondition* NewCondition)
 	}
 }
 
-void UConditionComponent::OnRep_CurrentConditionClass()
+void UConditionComponent::OnRep_CurrentCondition()
 {
 	if (OnConditionChanged.IsBound())
 	{

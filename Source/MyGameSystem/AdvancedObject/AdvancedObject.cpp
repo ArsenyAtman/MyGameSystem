@@ -3,38 +3,14 @@
 
 #include "AdvancedObject.h"
 
-void UAdvancedObject::Tick(float DeltaTime)
-{
-    ObjectTick(DeltaTime);
-}
-
-bool UAdvancedObject::IsTickable() const
-{
-    return bCanEverTick;
-}
-
-TStatId UAdvancedObject::GetStatId() const
-{
-    return TStatId();
-}
-
 void UAdvancedObject::PostInitProperties()
 {
     Super::PostInitProperties();
 
-    if(IsValid(GetFirstOuterActor()) && IsValid(GetFirstOuterActor()->GetWorld()))
+    if(IsValid(GetWorld()))
     {
+        SetupTick();
         BeginPlay();
-    }
-}
-
-void UAdvancedObject::BeginDestroy()
-{
-    Super::BeginDestroy();
-
-    if(IsValid(GetFirstOuterActor()) && IsValid(GetFirstOuterActor()->GetWorld()))
-    {
-        EndPlay();
     }
 }
 
@@ -50,5 +26,32 @@ UWorld* UAdvancedObject::GetWorld() const
 
 void UAdvancedObject::Destroy()
 {
+    MulticastBeginDestroy();
+}
+
+void UAdvancedObject::MulticastBeginDestroy_Implementation()
+{
+    RemoveTick();
+    EndPlay();
     this->ConditionalBeginDestroy();
+}
+
+void UAdvancedObject::SetupTick()
+{
+    if(bCanEverTick)
+    {
+        TickDelegate = FTickerDelegate::CreateUObject(this, &UAdvancedObject::TickerTick);
+        TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate);
+    }
+}
+
+void UAdvancedObject::RemoveTick()
+{
+    FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
+}
+
+bool UAdvancedObject::TickerTick(float DeltaTime)
+{
+    ObjectTick(DeltaTime);
+    return true;
 }

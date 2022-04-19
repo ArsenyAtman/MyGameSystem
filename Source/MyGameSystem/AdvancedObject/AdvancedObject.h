@@ -15,22 +15,14 @@
  * - Destroy
  */
 UCLASS()
-class MYGAMESYSTEM_API UAdvancedObject : public UReplicableObject, public FTickableGameObject
+class MYGAMESYSTEM_API UAdvancedObject : public UReplicableObject
 {
 	GENERATED_BODY()
 	
 public:
 
-	// Overrides for the support of the ObjectTick method.
-	virtual void Tick(float DeltaTime) override;
-	virtual bool IsTickable() const override;
-	virtual TStatId GetStatId() const override;
-
 	// Overrides for the support of the BeginPlay and EventConstruct methods.
 	virtual void PostInitProperties() override;
-
-	// Override for the EndPlay method.
-	virtual void BeginDestroy() override;
 
 	// Override for the support of static functions in BP's.
 	virtual class UWorld* GetWorld() const override;
@@ -69,5 +61,18 @@ protected:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bCanEverTick = true;
+
+private:
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastBeginDestroy();
+
+	void SetupTick();
+	void RemoveTick();
+	
+	bool TickerTick(float DeltaTime);
+
+	FTickerDelegate TickDelegate;
+	FTSTicker::FDelegateHandle TickDelegateHandle;
 
 };

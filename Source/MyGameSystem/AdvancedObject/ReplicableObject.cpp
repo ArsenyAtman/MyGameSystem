@@ -7,6 +7,12 @@
 #include "Replicator.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+UReplicableObject::UReplicableObject()
+{
+    // Create a replicator subobject.
+    Replicator = CreateDefaultSubobject<UReplicator>(TEXT("Replicator"), false);
+}
+
 void UReplicableObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -25,13 +31,6 @@ void UReplicableObject::PostInitProperties()
 
     // Find and set the first outer actor for this object.
     FirstOuterActor = FindFirstOuterActor();
-
-    // Setup the replicator if the FirstOuterActor is valid.
-    if(GetFirstOuterActor() && GetFirstOuterActor()->GetWorld())
-    {
-        Replicator = NewObject<UReplicator>(this);
-        Replicator->Initialize(this);
-    }
     
 }
 

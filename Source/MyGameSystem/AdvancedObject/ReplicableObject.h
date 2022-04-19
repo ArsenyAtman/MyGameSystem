@@ -16,6 +16,8 @@ class MYGAMESYSTEM_API UReplicableObject : public UObject
 
 public:
 
+	UReplicableObject();
+
 	// Override for the initial setup of this object.
 	virtual void PostInitProperties() override;
 

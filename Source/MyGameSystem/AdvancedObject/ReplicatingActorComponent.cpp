@@ -15,15 +15,8 @@ UReplicatingActorComponent::UReplicatingActorComponent()
 	// This component is replicated by default.
 	SetIsReplicatedByDefault(true);
 
-}
-
-void UReplicatingActorComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// Setup the replicatior.
-	Replicator = NewObject<UReplicator>(this);
-	Replicator->Initialize(this);
+	// Create a replicator subobject.
+	Replicator = CreateDefaultSubobject<UReplicator>(TEXT("Replicator"), false);
 
 }
 

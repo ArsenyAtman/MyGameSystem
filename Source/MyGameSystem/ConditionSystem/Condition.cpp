@@ -6,7 +6,10 @@
 
 void UCondition::StartCondition()
 {
-	OnConditionStarted();
+	if(HasAuthority())
+	{
+		OnConditionStarted();
+	}
 }
 
 AActor* UCondition::GetControlledActor() const
@@ -29,9 +32,12 @@ UConditionComponent* UCondition::GetConditionComponent() const
 
 void UCondition::ChangeCondition(UCondition* NextCondition)
 {
-	if (IsValid(GetConditionComponent()) && IsValid(NextCondition))
+	if(HasAuthority())
 	{
-		GetConditionComponent()->ConditionChange(NextCondition);
-		OnConditionEnded();
+		if (IsValid(GetConditionComponent()) && IsValid(NextCondition))
+		{
+			GetConditionComponent()->ConditionChange(NextCondition);
+			OnConditionEnded();
+		}
 	}
 }

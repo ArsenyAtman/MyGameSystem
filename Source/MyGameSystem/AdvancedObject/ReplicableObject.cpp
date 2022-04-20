@@ -66,6 +66,21 @@ int32 UReplicableObject::GetFunctionCallspace(UFunction * Function, FFrame * Sta
     return FunctionCallspace::Local;
 }
 
+bool UReplicableObject::HasAuthority() const
+{
+    return GetNetRole() == ENetRole::ROLE_Authority;
+}
+
+ENetRole UReplicableObject::GetNetRole() const
+{
+    if(IsValid(GetFirstOuterActor()))
+    {
+        return GetFirstOuterActor()->GetLocalRole();
+    }
+
+    return ENetRole::ROLE_None;
+}
+
 AActor* UReplicableObject::FindFirstOuterActor()
 {
     UObject* Outer = GetOuter();

@@ -42,6 +42,18 @@ protected:
 	UFUNCTION(BlueprintGetter)
 	class AActor* GetFirstOuterActor() const { return FirstOuterActor; }
 
+	/**
+	 * Returns whether the owner actor of this object has network authority.
+	 */
+	UFUNCTION(BlueprintPure)
+	bool HasAuthority() const;
+
+	/**
+	 * Returns the NetRole of the owner actor of this object.
+	 */
+	UFUNCTION(BlueprintPure)
+	ENetRole GetNetRole() const;
+
 private:
 
 	UPROPERTY()

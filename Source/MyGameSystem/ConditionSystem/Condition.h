@@ -9,6 +9,7 @@
 
 /**
  * An object that implements a behaviour of the controlled actor.
+ * @see ConditionComponent
  */
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UCondition : public UAdvancedObject
@@ -41,18 +42,18 @@ public:
 protected:
 
 	/**
-	 * Abort this condition and start a new one.
-	 * @param NextCondition - A new condition with the same ConditionComponent as this condition has.
+	 * Abort this condition and start a new one. See the NextCondition description.
+	 * @param NextCondition - A new condition with the same outer as this condition has (the same ConditionComponent).
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Condition|Control")
+	UFUNCTION(BlueprintCallable, Category = "Condition|Control", meta = (BlueprintProtected))
 	void ChangeCondition(class UCondition* NextCondition);
 
 	/**
 	 * Called once after the start of this condition.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Condition|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Condition|Control", meta = (BlueprintProtected))
 	void OnConditionStarted();
 	virtual void OnConditionStarted_Implementation() { return; }
 
@@ -60,7 +61,7 @@ protected:
 	 * Called once before the end of this condition.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Condition|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Condition|Control", meta = (BlueprintProtected))
 	void OnConditionEnded();
 	virtual void OnConditionEnded_Implementation() { return; }
 

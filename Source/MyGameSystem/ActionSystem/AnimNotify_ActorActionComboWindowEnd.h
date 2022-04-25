@@ -7,7 +7,7 @@
 #include "AnimNotify_ActorActionComboWindowEnd.generated.h"
 
 /**
- * 
+ * Notify the current action about the combo window end.
  */
 UCLASS()
 class MYGAMESYSTEM_API UAnimNotify_ActorActionComboWindowEnd : public UAnimNotify_ActorAction

@@ -7,7 +7,7 @@
 #include "AnimNotify_ActorActionComboWindowStart.generated.h"
 
 /**
- * 
+ * Notify the current action about the combo window start.
  */
 UCLASS()
 class MYGAMESYSTEM_API UAnimNotify_ActorActionComboWindowStart : public UAnimNotify_ActorAction

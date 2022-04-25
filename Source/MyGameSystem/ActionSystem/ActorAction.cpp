@@ -3,50 +3,76 @@
 
 #include "ActorAction.h"
 #include "ActionDriverComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
+
+void UActorAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UActorAction, bEventStarted);
+	DOREPLIFETIME(UActorAction, bComboWindowStarted);
+}
 
 void UActorAction::StartAction()
 {
-	OnActionStarted();
+	if(HasAuthority())
+	{
+		OnActionStarted();
+	}
 }
 
 void UActorAction::StartActionEvent()
 {
-	bEventStarted = true;
-	OnEventStarted();
+	if(HasAuthority())
+	{
+		bEventStarted = true;
+		OnEventStarted();
+	}
 }
 
 void UActorAction::EndActionEvent()
 {
-	bEventStarted = false;
-	OnEventEnded();
+	if(HasAuthority())
+	{
+		bEventStarted = false;
+		OnEventEnded();
+	}
 }
 
 void UActorAction::StartComboWindow()
 {
-	bComboWindowStarted = true;
-	OnComboWindowStarted();
+	if(HasAuthority())
+	{
+		bComboWindowStarted = true;
+		OnComboWindowStarted();
+	}
 }
 
 void UActorAction::EndComboWindow()
 {
-	bComboWindowStarted = false;
-	OnComboWindowEnded();
+	if(HasAuthority())
+	{
+		bComboWindowStarted = false;
+		OnComboWindowEnded();
+	}
 }
 
 void UActorAction::EndAction()
 {
-	if (bEventStarted)
+	if(HasAuthority())
 	{
-		EndActionEvent();
-	}
+		if (bEventStarted)
+		{
+			EndActionEvent();
+		}
 
-	if (IsValid(GetActionDriverComponent()))
-	{
-		GetActionDriverComponent()->ActionCompleted(this);
-	}
+		if (IsValid(GetActionDriverComponent()))
+		{
+			GetActionDriverComponent()->ActionCompleted(this);
+		}
 
-	OnActionEnded();
+		OnActionEnded();
+	}
 }
 
 AActor* UActorAction::GetControlledActor() const

@@ -7,7 +7,7 @@
 #include "AnimNotify_ActorActionEventStart.generated.h"
 
 /**
- * 
+ * Notify the current action about the action event start.
  */
 UCLASS()
 class MYGAMESYSTEM_API UAnimNotify_ActorActionEventStart : public UAnimNotify_ActorAction

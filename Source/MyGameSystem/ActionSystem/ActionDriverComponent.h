@@ -3,61 +3,90 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "MyGameSystem/AdvancedObject/ReplicatingActorComponent.h"
 #include "ActionDriverComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FActionStartDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FActionEndDelegate, UClass*, ActionClass);
+/**
+ * Delegate for tracking changes of current actions of an ActionDriverComponent.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FActionChangeDelegate);
 
+/**
+ * ActorComponent that handles actor actions.
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UActionDriverComponent : public UActorComponent
+class MYGAMESYSTEM_API UActionDriverComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
+	// Sets default values for this component's properties.
 	UActionDriverComponent();
 
+	// Setup the replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	/**
+	 * Start an action. See the Action parameter description.
+	 * @param Action - A new action with this ActionDriverComponent as the outer.
+	 * @warning Server-only!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "ActionDriver|ActionControl")
 	void StartAction(class UActorAction* Action);
 
+	/**
+	 * Abort the current action.
+	 * @warning Server-only!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "ActionDriver|ActionControl")
 	void AbortAction();
 
+	/**
+	 * Called by the current action when it ends.
+	 * @param Action - The action that is ending.
+	 * @warning Use this function only if you know what you are doing!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "ActionDriver|Internal")
 	void ActionCompleted(class UActorAction* Action);
 
+	/**
+	 * Get the current action.
+	 * @return The current action.
+	 */
 	UFUNCTION(BlueprintGetter, Category = "ActionDriver|CurrentAction")
 	class UActorAction* GetCurrentAction() const{ return CurrentAction; }
 
-	UFUNCTION(BlueprintGetter, Category = "ActionDriver|CurrentAction")
-	class UClass* GetCurrentActionClass() const { return CurrentActionClass; }
-
+	/**
+	 * Called after the start of the current action.
+	 */
 	UPROPERTY(BlueprintAssignable, Category = "ActionDriver|Delegates")
-	FActionStartDelegate OnActionStarted;
+	FActionChangeDelegate OnActionStarted;
 
+	/**
+	 * Called after the end of the current action.
+	 */
 	UPROPERTY(BlueprintAssignable, Category = "ActionDriver|Delegates")
-	FActionEndDelegate OnActionEnded;
+	FActionChangeDelegate OnActionEnded;
 
 protected:
 
+	/**
+	 * Set the current action.
+	 * @param NewAction - A new action with this ActionDriverComponent as the outer.
+	 * @warning Server-only!
+	 */
 	UFUNCTION(BlueprintSetter, Category = "ActionDriver|CurrentAction")
 	void SetCurrentAction(class UActorAction* NewAction);
 
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ActionDriver|Internal")
-	void ActionStarted(class UClass* ActionClass);
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "ActionDriver|Internal")
-	void ActionEnded(class UClass* ActionClass);
-
 private:	
 	
-	UPROPERTY(BlueprintGetter = GetCurrentAction, BlueprintSetter = SetCurrentAction)
+	/**
+	 * The current playing action.
+	 */
+	UPROPERTY(BlueprintGetter = GetCurrentAction, BlueprintSetter = SetCurrentAction, ReplicatedUsing = OnRep_CurrentAction)
 	class UActorAction* CurrentAction;
 
-	UPROPERTY(BlueprintGetter = GetCurrentActionClass)
-	class UClass* CurrentActionClass;
+	UFUNCTION()
+	void OnRep_CurrentAction();
 		
 };

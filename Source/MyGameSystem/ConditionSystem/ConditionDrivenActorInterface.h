@@ -14,7 +14,7 @@ class UConditionDrivenActorInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for actors with a condition component.
  */
 class MYGAMESYSTEM_API IConditionDrivenActorInterface
 {
@@ -23,6 +23,9 @@ class MYGAMESYSTEM_API IConditionDrivenActorInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Get a ConditionComponent of this actor.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ConditionDrivenActorInterface")
 	class UConditionComponent* GetConditionComponent() const;
 	virtual class UConditionComponent* GetConditionComponent_Implementation() const = 0;

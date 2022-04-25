@@ -14,7 +14,7 @@ class UActionDrivenActorInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for an actor with ActionDriverComponent.
  */
 class MYGAMESYSTEM_API IActionDrivenActorInterface
 {
@@ -23,6 +23,10 @@ class MYGAMESYSTEM_API IActionDrivenActorInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Get the ActionDriver of this actor.
+	 * @return The ActionDriverComponent that controls this actor.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionDrivenActorInterface")
 	class UActionDriverComponent* GetActionDriverComponent() const;
 	virtual class UActionDriverComponent* GetActionDriverComponent_Implementation() const = 0;

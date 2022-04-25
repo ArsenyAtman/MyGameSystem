@@ -31,16 +31,17 @@ void UActionDriverComponent::StartAction(UActorAction* Action)
 	{
 		if (IsValid(Action) && Action->GetOuter() == this)
 		{
+			// If the current action is valid and running...
 			if (IsValid(GetCurrentAction()))
 			{
+				// than notify it about the new action.
 				GetCurrentAction()->NewActionTriedToStart(Action);
 			}
 			else
 			{
+				// else set the new action as current.
 				SetCurrentAction(Action);
 				GetCurrentAction()->StartAction();
-				GetCurrentAction()->GetEventStarted();
-				ActionStarted(GetCurrentActionClass());
 			}
 		}
 	}
@@ -63,9 +64,8 @@ void UActionDriverComponent::ActionCompleted(UActorAction* Action)
 	{
 		if (Action == GetCurrentAction())
 		{
-			UClass* ActionClass = GetCurrentActionClass();
+			// Now there is no current action.
 			SetCurrentAction(nullptr);
-			ActionEnded(ActionClass);
 		}
 	}
 }
@@ -75,39 +75,17 @@ void UActionDriverComponent::SetCurrentAction(class UActorAction* NewAction)
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		CurrentAction = NewAction;
-		if (IsValid(CurrentAction))
-		{
-			CurrentActionClass = CurrentAction->GetClass();
-		}
-		else
-		{
-			CurrentActionClass = nullptr;
-		}
 	}
 }
 
-void UActionDriverComponent::ActionStarted_Implementation(UClass* ActionClass)
+void UActionDriverComponent::OnRep_CurrentAction()
 {
-	if (GetOwnerRole() != ENetRole::ROLE_Authority)
-	{
-		CurrentActionClass = ActionClass;
-	}
-
-	if (OnActionStarted.IsBound())
+	if(IsValid(CurrentAction))
 	{
 		OnActionStarted.Broadcast();
 	}
-}
-
-void UActionDriverComponent::ActionEnded_Implementation(UClass* ActionClass)
-{
-	if (GetOwnerRole() != ENetRole::ROLE_Authority)
+	else
 	{
-		CurrentActionClass = nullptr;
-	}
-
-	if (OnActionEnded.IsBound())
-	{
-		OnActionEnded.Broadcast(ActionClass);
+		OnActionEnded.Broadcast();
 	}
 }

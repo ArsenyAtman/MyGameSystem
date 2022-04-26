@@ -75,7 +75,7 @@ protected:
 	 * @param NewAction - A new action with this ActionDriverComponent as the outer.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintSetter, Category = "ActionDriver|CurrentAction")
+	UFUNCTION(BlueprintSetter, Category = "ActionDriver|CurrentAction", meta = (BlueprintProtected))
 	void SetCurrentAction(class UActorAction* NewAction);
 
 private:	

@@ -105,7 +105,7 @@ protected:
 	 * Called once after the action start.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnActionStarted();
 	virtual void OnActionStarted_Implementation() { return; }
 
@@ -113,7 +113,7 @@ protected:
 	 * Called once before the action end.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnActionEnded();
 	virtual void OnActionEnded_Implementation() { return; }
 
@@ -121,7 +121,7 @@ protected:
 	 * Called when the action event starts.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnEventStarted();
 	virtual void OnEventStarted_Implementation() { return; }
 
@@ -129,7 +129,7 @@ protected:
 	 * Called when the action event ends.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnEventEnded();
 	virtual void OnEventEnded_Implementation() { return; }
 
@@ -137,7 +137,7 @@ protected:
 	 * Called when the combo window starts.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnComboWindowStarted();
 	virtual void OnComboWindowStarted_Implementation() { return; }
 
@@ -145,7 +145,7 @@ protected:
 	 * Called when the combo window ends.
 	 * @warning Server-only!
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnComboWindowEnded();
 	virtual void OnComboWindowEnded_Implementation() { return; }
 

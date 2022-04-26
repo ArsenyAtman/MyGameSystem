@@ -4,7 +4,9 @@
 #include "Engine/DataAsset.h"
 #include "ReplicableDataAsset.generated.h"
 
-/** DataAsset class, that fixes DataAssets replication issue. (Warning: FNetGUIDCache::SupportsObject: SomeDataAsset NOT Supported.)*/
+/**
+ * DataAsset class, that fixes DataAssets replication issue. (Warning: FNetGUIDCache::SupportsObject: SomeDataAsset NOT Supported.)
+ */
 UCLASS()
 class MYGAMESYSTEM_API UReplicableDataAsset : public UDataAsset
 {

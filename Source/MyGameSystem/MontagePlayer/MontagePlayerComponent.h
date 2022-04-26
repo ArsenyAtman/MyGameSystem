@@ -6,7 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "MontagePlayerComponent.generated.h"
 
-
+/**
+ * An actor component for playing animation montages over the network.
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UMontagePlayerComponent : public UActorComponent
 {
@@ -16,15 +18,38 @@ public:
 	// Sets default values for this component's properties
 	UMontagePlayerComponent();
 
+	/**
+	 * Play a new animation montage on all machines.
+	 * @param Montage - A new animation to play.
+	 * @param InPlayRate - The rate of the animation.
+	 * @param StartTime - The start time of the animation
+	 * @param bStopAllMontages - Whether or not to stop all the currently playing montages.
+	 * @return A new playing animation instance of the new AnimMontage.
+	 * @warning Server-only!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "MontagePlayerComponent")
 	class UAnimInstance* PlayAnimationMontageReplicated(class UAnimMontage* Montage, float InPlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = true);
 
+	/**
+	 * Play a new animation on this machine.
+	 * @param Montage - A new animation to play.
+	 * @param InPlayRate - The rate of the animation.
+	 * @param StartTime - The start time of the animation
+	 * @param bStopAllMontages - Whether or not to stop all the currently playing montages.
+	 * @return A new playing animation instance of the new AnimMontage.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "MontagePlayerComponent")
 	class UAnimInstance* PlayAnimationMontageLocally(class UAnimMontage* Montage, float InPlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = true);
 
+	/**
+	 * Play a new animation on clients.
+	 */
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
 	void PlayAnimationMontageOnClients(class UAnimMontage* Montage, float InPlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = true);
 
+	/**
+	 * Stop the currently playing animation montage on all machines.
+	 */
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
 	void StopAnimationMontage(class UAnimMontage* Montage);
 		

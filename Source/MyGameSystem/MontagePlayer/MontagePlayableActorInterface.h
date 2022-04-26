@@ -14,19 +14,26 @@ class UMontagePlayableActorInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for actors with a montage player component.
  */
 class MYGAMESYSTEM_API IMontagePlayableActorInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Get a montage player component of this actor.
+	 * @return The MontagePlayerComponent.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MontagePlayableActorInterface")
 	class UMontagePlayerComponent* GetMontagePlayerComponent() const;
 	virtual class UMontagePlayerComponent* GetMontagePlayerComponent_Implementation() const = 0;
 
+	/**
+	 * Get a skeletal mesh of this actor for montage playing.
+	 * @return The SkeletalMesh of the actor.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MontagePlayableActorInterface")
 	class USkeletalMeshComponent* GetSkeletalMeshForMontagePlaying() const;
 	virtual class USkeletalMeshComponent* GetSkeletalMeshForMontagePlaying_Implementation() const = 0;

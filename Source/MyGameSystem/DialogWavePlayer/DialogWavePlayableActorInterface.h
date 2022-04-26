@@ -14,27 +14,42 @@ class UDialogWavePlayableActorInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for an actor that can play dialog waves.
  */
 class MYGAMESYSTEM_API IDialogWavePlayableActorInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Get a dialog player component of this actor.
+	 * @return The DialogWavePlayer.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
 	class UDialogWavePlayerComponent* GetDialogWavePlayerComponent() const;
 	virtual class UDialogWavePlayerComponent* GetDialogWaveComponent_Implementation() const = 0;
 
+	/**
+	 * Get a component for attaching dialog waves.
+	 * @return The mouth component.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
 	class USceneComponent* GetMouthComponent() const;
 	virtual class USceneComponent* GetMouthComponent_Implementation() const = 0;
 
+	/**
+	 * Get a point of the mouth component to attach dialog waves to.
+	 * @return The mouth point name.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
 	FName GetMouthPoint() const;
 	virtual FName GetMouthPoint_Implementation() const { return "None"; }
 
+	/**
+	 * Get a correction of the mouth point position.
+	 * @return The correction.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogWavePlayableActorInterface")
 	FVector GetMouthRelativeLocation() const;
 	virtual FVector GetMouthRelativeLocation_Implementation() const { return FVector(); }

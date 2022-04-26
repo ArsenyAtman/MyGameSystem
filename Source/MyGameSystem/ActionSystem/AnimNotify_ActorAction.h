@@ -20,7 +20,7 @@ protected:
 	 * Get the current actor action (only if it has an authority!).
 	 * @return The current actor action.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	class UActorAction* GetActorAction(const class USkeletalMeshComponent* MeshComponent) const;
 	
 };

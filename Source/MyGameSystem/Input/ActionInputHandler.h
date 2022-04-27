@@ -6,10 +6,13 @@
 #include "InputHandler.h"
 #include "ActionInputHandler.generated.h"
 
+/**
+ * A delegate type for acton input handlers.
+ */
 DECLARE_DELEGATE(FActionFunctionDelegate);
 
 /**
- * 
+ * InputHandlers for the action input type.
  */
 UCLASS()
 class MYGAMESYSTEM_API UActionInputHandler : public UInputHandler
@@ -18,16 +21,24 @@ class MYGAMESYSTEM_API UActionInputHandler : public UInputHandler
 
 public:
 
+	// Bind this handler.
 	virtual void Bind_Implementation(class APlayerController* PlayerController, class UObject* Object) override;
 
+	// Unbind this handler.
 	virtual void Unbind_Implementation() override;
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SimpleDisplay, meta = (ExposeOnSpawn = true))
+	/**
+	 * Determines which input to respond to this handler
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SimpleDisplay, meta = (ExposeOnSpawn = true, BlueprintProtected))
 	TEnumAsByte<EInputEvent> KeyEvent;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	/**
+	 * Handle the input.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 	void HandleActionInput();
 	virtual void HandleActionInput_Implementation();
 

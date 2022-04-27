@@ -7,7 +7,7 @@
 #include "InputHandler.generated.h"
 
 /**
- * 
+ * A base class for user input handlers with a spam-protection.
  */
 UCLASS(DefaultToInstanced, EditInlineNew, BlueprintType, Blueprintable, Abstract)
 class MYGAMESYSTEM_API UInputHandler : public UObject
@@ -16,32 +16,58 @@ class MYGAMESYSTEM_API UInputHandler : public UObject
 
 public:
 
+	/**
+	 * Bind this handler.
+	 * @param PlayerController - A controller with an input event to bind.
+	 * @param Object - An object with a function to call.
+	 * @see InputMappingName & RelatedFunctionName.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Bind(class APlayerController* PlayerController, class UObject* Object);
 	virtual void Bind_Implementation(class APlayerController* PlayerController, class UObject* Object) { return; }
 
+	/**
+	 * Unbind this handler.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Unbind();
 	virtual void Unbind_Implementation() { return; }
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SimpleDisplay, meta = (ExposeOnSpawn = true))
+	/**
+	 * Input mapping name.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SimpleDisplay, meta = (ExposeOnSpawn = true, BlueprintProtected))
 	FName InputMappingName = "";
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SimpleDisplay, meta = (ExposeOnSpawn = true))
+	/**
+	 * Name of the function to call.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SimpleDisplay, meta = (ExposeOnSpawn = true, BlueprintProtected))
 	FName RelatedFunctionName = "";
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SimpleDisplay, meta = (ExposeOnSpawn = true))
+	/**
+	 * Delay after each call to protect this handler against input event spam.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SimpleDisplay, meta = (ExposeOnSpawn = true, BlueprintProtected))
 	float PauseDuration = 0.1f;
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Called after the input event has been processed.
+	 */
+	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	void InputHandled();
 
-	UFUNCTION(BlueprintPure)
+	/**
+	 * Is the input pause currently active.
+	 * @return Can handle the input event call.
+	 */
+	UFUNCTION(BlueprintPure, meta = (BlueprintProtected))
 	bool GetCanHandleInput();
 
 private:
 
+	// Timer for the spam protection.
 	FTimerHandle InputPauseTimer;
 };

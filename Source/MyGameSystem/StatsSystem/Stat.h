@@ -11,34 +11,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatPassiveEffectDelegate, class UE
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, FStatValues, Delta, class UEffect*, Effect);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStatConditionChangeDelegate);
 
-USTRUCT(BlueprintType, Blueprintable)
-struct FStatInfo
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UStatDataAsset* StatData;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FStatValues StatBaseValues;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FStatValues StatValues;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<struct FEffectInfo> AppliedEffects;
-
-	FStatInfo(class UStatDataAsset* Data = nullptr, FStatValues BaseValues = FStatValues(), FStatValues Values = FStatValues(), TArray<struct FEffectInfo> Effects = TArray<struct FEffectInfo>())
-	{
-		StatData = Data;
-		StatBaseValues = BaseValues;
-		StatValues = Values;
-		AppliedEffects = Effects;
-	}
-};
-
 UCLASS(BlueprintType, Blueprintable, EditInlineNew)
 class MYGAMESYSTEM_API UStat : public UObject
 {

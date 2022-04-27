@@ -6,10 +6,13 @@
 #include "InputHandler.h"
 #include "AxisInputHandler.generated.h"
 
+/**
+ * A delegate type for axis input handlers.
+ */
 DECLARE_DELEGATE_OneParam(FAxisFunctionDelegate, float);
 
 /**
- * 
+ * InputHandler for the axis input type.
  */
 UCLASS()
 class MYGAMESYSTEM_API UAxisInputHandler : public UInputHandler
@@ -18,13 +21,19 @@ class MYGAMESYSTEM_API UAxisInputHandler : public UInputHandler
 
 public:
 
+	// Bind this handler.
 	virtual void Bind_Implementation(class APlayerController* PlayerController, UObject* Object) override;
 
+	// Unbind this handler.
 	virtual void Unbind_Implementation() override;
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	/**
+	 * Handle the axis input.
+	 * @param Value - An input value of the input axis.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 	void HandleAxisInput(float Value);
 	virtual void HandleAxisInput_Implementation(float Value);
 

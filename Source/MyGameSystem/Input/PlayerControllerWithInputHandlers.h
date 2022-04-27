@@ -7,7 +7,7 @@
 #include "PlayerControllerWithInputHandlers.generated.h"
 
 /**
- * 
+ * Advanced player controller with an array of user input handlers.
  */
 UCLASS()
 class MYGAMESYSTEM_API APlayerControllerWithInputHandlers : public APlayerController
@@ -16,13 +16,18 @@ class MYGAMESYSTEM_API APlayerControllerWithInputHandlers : public APlayerContro
 
 public:
 
+	// Constructor
 	APlayerControllerWithInputHandlers();
 
 protected:
 
+	// Override to bind all input handlers of this controller.
 	virtual void SetupInputComponent() override;
 
-	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	/**
+	 * An array of input handlers.
+	 */
+	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly, Category = "Input", meta = (BlueprintProtected))
 	TArray<class UInputHandler*> InputHandlers;
 	
 };

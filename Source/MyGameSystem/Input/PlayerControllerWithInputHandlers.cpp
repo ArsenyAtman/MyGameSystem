@@ -18,6 +18,7 @@ void APlayerControllerWithInputHandlers::SetupInputComponent()
 
 	check(InputComponent)
 	{
+		// Bind all the input handlers.
 		for (UInputHandler* InputHandler : InputHandlers)
 		{
 			InputHandler->Bind(this, this);

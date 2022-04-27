@@ -15,13 +15,17 @@ void UAxisActionInputHandler::HandleAxisInput_Implementation(float Value)
 {
 	if (GetCanHandleInput())
 	{
+		// If the value is greater than the "border" and the axis was released...
 		if (Value > ActionAxisValue && bWasReleased)
 		{
+			// than handle this as a press action.
 			Super::HandleAxisInput_Implementation(Value);
 			bWasReleased = false;
 		}
+		// Else if the value is lower then the "border" and the axis was pressed...
 		else if (Value < ActionAxisValue && !bWasReleased)
 		{
+			// than handle this as a release action.
 			bWasReleased = true;
 			HandleReleaseAction();
 		}

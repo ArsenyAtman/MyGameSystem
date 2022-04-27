@@ -7,22 +7,6 @@
 #include "StatsSystemTypes.h"
 #include "Effect.generated.h"
 
-USTRUCT(BlueprintType, Blueprintable)
-struct FEffectInfo
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UEffectDataAsset* EffectData;
-
-	FEffectInfo(class UEffectDataAsset* Data = nullptr)
-	{
-		EffectData = Data;
-	}
-};
-
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UEffect : public UObject
 {

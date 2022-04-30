@@ -15,6 +15,7 @@ UInteractionComponent::UInteractionComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
+	// This component is replicated by default.
 	SetIsReplicatedByDefault(true);
 	
 }
@@ -24,6 +25,7 @@ void UInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Initiate a tracing logic.
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		SetIsTracing(bIsTracing);
@@ -40,10 +42,13 @@ void UInteractionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 
 void UInteractionComponent::Interact_Implementation()
 {
+	// If this is a server...
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
+		// and an actor for interaction is valid...
 		if (IsValid(GetActorForInteraction()))
 		{
+			// than interact with it.
 			IInteractableActorInterface::Execute_Interact(GetActorForInteraction(), GetOwner());
 		}
 	}
@@ -51,10 +56,13 @@ void UInteractionComponent::Interact_Implementation()
 
 void UInteractionComponent::SetIsTracing(bool NewIsTracing)
 {
+	// If this is a server...
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
+		// Set IsTracing.
 		bIsTracing = NewIsTracing;
 
+		// Start or end the tracing process.
 		if (bIsTracing)
 		{
 			StartTracing();
@@ -64,6 +72,7 @@ void UInteractionComponent::SetIsTracing(bool NewIsTracing)
 			EndTracing();
 		}
 
+		// Reset an actor for interaction.
 		SetActorForInteraction(nullptr);
 	}
 }
@@ -75,38 +84,49 @@ bool UInteractionComponent::CanInteract() const
 
 void UInteractionComponent::StartTracing()
 {
+	// If this is a server...
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
+		// than setup a timer for the tracing.
 		GetWorld()->GetTimerManager().SetTimer(TraceTimer, this, &UInteractionComponent::Trace, TraceInterval, true);
 	}
 }
 
 void UInteractionComponent::EndTracing()
 {
+	// Clear the trace timer.
 	GetWorld()->GetTimerManager().ClearTimer(TraceTimer);
 }
 
 void UInteractionComponent::Trace()
 {
+	// If this is a server...
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
+		// and this component is attached to an interacting actor...
 		if (GetOwner()->Implements<UInteractingActorInterface>())
 		{
+			// and a scene component for tracing of the owner is vaild...
 			USceneComponent* TraceComponent = IInteractingActorInterface::Execute_GetTraceSceneComponent(GetOwner());
-
 			if (IsValid(TraceComponent))
 			{
+				// Find points of a tracing line.
 				FVector TraceStart = TraceComponent->GetComponentLocation() + TraceComponent->GetForwardVector() * TraceRadius;
 				FVector TraceEnd = TraceStart + TraceComponent->GetForwardVector() * TraceLength;
 
+				// Find actors to ignore.
 				TArray<AActor*> ActorsToIgnore;
 				GetOwner()->GetAllChildActors(ActorsToIgnore, true);
 				ActorsToIgnore.Add(GetOwner());
 
-				FHitResult OutHit;
+				// Create a sphere collision.
 				FCollisionShape CollisionShape = FCollisionShape::MakeSphere(TraceRadius);
+
+				// Sweep the sphere.
+				FHitResult OutHit;
 				bool bWasHit = GetWorld()->SweepSingleByChannel(OutHit, TraceStart, TraceEnd, FQuat::Identity, TraceCollisionChannel, CollisionShape);
 
+				// Draw debug lines if required.
 				if (bDrawDebugTrace)
 				{
 					if (bWasHit)
@@ -120,20 +140,22 @@ void UInteractionComponent::Trace()
 					}
 				}
 
-				// = UKismetSystemLibrary::SphereTraceSingle(GetWorld(), TraceStart, TraceEnd, TraceRadius, UCollisionProfile::ConvertToTraceType(ECollisionChannel::ECC_Visibility), false, ActorsToIgnore, ( ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None), OutHit, true);
-
+				// If there is a hit...
 				if (bWasHit && IsValid(OutHit.GetActor()))
 				{
+					// than set a hitted actor as a possible interactable.
 					SetActorForInteraction(OutHit.GetActor());
 				}
 				else
 				{
+					// else there is nothing.
 					SetActorForInteraction(nullptr);
 				}
 			}
 		}
 		else
 		{
+			// else this component can't trace.
 			SetIsTracing(false);
 		}
 	}
@@ -141,12 +163,16 @@ void UInteractionComponent::Trace()
 
 void UInteractionComponent::SetActorForInteraction(class AActor* Actor)
 {
+	// If this is a server...
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
+		// and an actor for interaction isn't the same...
 		if (Actor != ActorForInteraction)
 		{
+			// than set it.
 			ActorForInteraction = Actor;
 
+			// And notify the owning client about the available/unavailable interaction.
 			if (IsValid(GetActorForInteraction()))
 			{
 				InteractionAvailable(IInteractableActorInterface::Execute_GetActionDescription(Actor));
@@ -161,14 +187,18 @@ void UInteractionComponent::SetActorForInteraction(class AActor* Actor)
 
 AActor* UInteractionComponent::GetActorForInteraction() const
 {
+	// If the actor for interaction is valid and implements the interactable interface...
 	if (IsValid(ActorForInteraction) && ActorForInteraction->Implements<UInteractableActorInterface>())
 	{
+		// and an interaction is possible for the owner of this component...
 		if (IInteractableActorInterface::Execute_CanInteract(ActorForInteraction, GetOwner()))
 		{
+			// than return the actor.
 			return ActorForInteraction;
 		}
 	}
 
+	// else don't.
 	return nullptr;
 }
 

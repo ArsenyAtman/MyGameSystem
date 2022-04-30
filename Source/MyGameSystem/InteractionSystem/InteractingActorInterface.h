@@ -14,19 +14,26 @@ class UInteractingActorInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for actors that can interact.
  */
 class MYGAMESYSTEM_API IInteractingActorInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Get a component that defines a line trace direction (to find an interactive object).
+	 * @return A SceneComponent for the line tracing process.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InteractingActorInterface")
 	class USceneComponent* GetTraceSceneComponent() const;
 	virtual class USceneComponent* GetTraceSceneComponent_Implementation() const = 0;
 
+	/**
+	 * Get an interaction component of this actor.
+	 * @return An InteractionComponent of this actor.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InteractingActorInterface")
 	class UInteractionComponent* GetInteractionComponent() const;
 	virtual class UInteractionComponent* GetInteractionComponent_Implementation() const = 0;

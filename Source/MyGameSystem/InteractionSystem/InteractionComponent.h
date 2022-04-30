@@ -6,9 +6,19 @@
 #include "Components/ActorComponent.h"
 #include "InteractionComponent.generated.h"
 
+/**
+ * 
+ */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractionAvailableDelegate, FText, Descriprion);
+
+/**
+ * 
+ */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractionUnavailableDelegate);
 
+/**
+ * 
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UInteractionComponent : public UActorComponent
 {
@@ -18,73 +28,138 @@ public:
 	// Sets default values for this component's properties
 	UInteractionComponent();
 
+	// Override for the replication setup.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	/**
+	 * Interact with a possible interactable.
+	 */
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "InteractionComponent|Interaction")
 	void Interact();
 
-	UFUNCTION(BlueprintSetter)
+	/**
+	 * Set is tracing for an interactable.
+	 * @param NewIsTracing - Trace or not.
+	 */
+	UFUNCTION(BlueprintSetter, Category = "InteractionComponent|Tracing")
 	void SetIsTracing(bool NewIsTracing);
 
-	UFUNCTION(BlueprintGetter)
+	/**
+	 * Get is tracing for an interactable now.
+	 * @return Is tracing.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "InteractionComponent|Tracing")
 	bool GetIsTracing() const { return bIsTracing; }
 
-	UFUNCTION(BlueprintPure)
+	/**
+	 * Can interact with a possible interactable.
+	 * @return Can interact.
+	 */
+	UFUNCTION(BlueprintPure, Category = "InteractionComponent|Interaction")
 	bool CanInteract() const;
 
-	UPROPERTY(BlueprintAssignable)
+	/**
+	 * Called when an interactable is found and the owner can interact with it.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "InteractionComponent|Delegates")
 	FInteractionAvailableDelegate OnInteractionAvailable;
 
-	UPROPERTY(BlueprintAssignable)
+	/**
+	 * Called when an interactable is lost or the owner can't interact with it.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "InteractionComponent|Delegates")
 	FInteractionUnavailableDelegate OnInteractionUnavailable;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable, Category = "InteractionComponent|Internal")
+	/**
+	 * Start tracing for interactables.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "InteractionComponent|Internal", meta = (BlueprintProtected))
 	void StartTracing();
 
-	UFUNCTION(BlueprintCallable, Category = "InteractionComponent|Internal")
+	/**
+	 * End tracing for interactables.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "InteractionComponent|Internal", meta = (BlueprintProtected))
 	void EndTracing();
 
-	UFUNCTION(BlueprintCallable, Category = "InteractionComponent|Internal")
+	/**
+	 * A single trace logic.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "InteractionComponent|Internal", meta = (BlueprintProtected))
 	void Trace();
 
-	UFUNCTION(BlueprintSetter)
+	/**
+	 * Set a possible interactable.
+	 * @param Actor - A new interactable.
+	 */
+	UFUNCTION(BlueprintSetter, Category = "InteractionComponent|Internal", meta = (BlueprintProtected))
 	void SetActorForInteraction(class AActor* Actor);
 
-	UFUNCTION(BlueprintGetter)
+	/**
+	 * Get a possible interactable.
+	 * @return A possible interactable.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "InteractionComponent|Interactable", meta = (BlueprintProtected))
 	class AActor* GetActorForInteraction() const;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing")
+	/**
+	 * An interval between sphere traces.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing", meta = (BlueprintProtected))
 	float TraceInterval = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing")
+	/**
+	 * A length of the tracing line.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing", meta = (BlueprintProtected))
 	float TraceLength = 300.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing")
+	/**
+	 * A radius of the tracing sphere.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing", meta = (BlueprintProtected))
 	float TraceRadius = 15.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing")
+	/**
+	 * A collision channel for the tracing process.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Tracing", meta = (BlueprintProtected))
 	TEnumAsByte<ECollisionChannel> TraceCollisionChannel = ECollisionChannel::ECC_Visibility;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Debug")
+	/**
+	 * Whether or not to draw a debug lines.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Debug", meta = (BlueprintProtected))
 	bool bDrawDebugTrace = false;
 
 private:
 
+	/**
+	 * Notify the owning client of a possible interaction.
+	 */
 	UFUNCTION(Client, Reliable)
 	void InteractionAvailable(const FText& Description);
 
+	/**
+	 * Notify the owning client that interactions are currently unavailable.
+	 */
 	UFUNCTION(Client, Reliable)
 	void InteractionUnavailable();
 
+	/**
+	 * Is tracing for interactables.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintSetter = SetIsTracing, BlueprintGetter = GetIsTracing, Replicated, meta = (AllowPrivateAccess = true), Category = "InteractionComponent|Tracing")
 	bool bIsTracing = true;
 
+	// A timer for a delay between single traces.
 	FTimerHandle TraceTimer;
 
+	// An interactable actor.
 	class AActor* ActorForInteraction;
 		
 };

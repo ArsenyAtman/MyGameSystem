@@ -38,28 +38,29 @@ protected:
 	/**
 	 * Called after object creation.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 	void BeginPlay();
 	virtual void BeginPlay_Implementation() { return; }
 
 	/**
 	 * Called before object destruction.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 	void EndPlay();
 	virtual void EndPlay_Implementation() { return; }
 
 	/**
 	 * Called every frame.
+	 * @param DeltaTime - A tick delta time in seconds.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 	void ObjectTick(float DeltaTime);
 	virtual void ObjectTick_Implementation(float DeltaTime) { return; }
 
 	/**
 	 * Enable/Disable the ObjectTick method.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected))
 	bool bCanEverTick = true;
 
 private:

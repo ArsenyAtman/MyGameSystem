@@ -38,20 +38,23 @@ protected:
 
 	/**
 	 * The first outer actor that was found by following the chain of outers for this object.
+	 * @return The first outer actor.
 	 */
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, meta = (BlueprintProtected))
 	class AActor* GetFirstOuterActor() const { return FirstOuterActor; }
 
 	/**
 	 * Returns whether the owner actor of this object has network authority.
+	 * @return Has this object authority.
 	 */
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, meta = (BlueprintProtected))
 	bool HasAuthority() const;
 
 	/**
 	 * Returns the NetRole of the owner actor of this object.
+	 * @return The net role of the owner.
 	 */
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, meta = (BlueprintProtected))
 	ENetRole GetNetRole() const;
 
 private:

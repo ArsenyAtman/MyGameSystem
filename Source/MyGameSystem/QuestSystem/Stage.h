@@ -3,62 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
 #include "QuestSystemTypes.h"
 #include "Objective.h"
 #include "Stage.generated.h"
 
-UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UStageData : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-
-	// ...
-
-};
-
-USTRUCT(Blueprintable, BlueprintType)
-struct FStageInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UStageData* StageData;
-
-	UPROPERTY(BlueprintReadWrite)
-	ETaskCondition Condition;
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FObjectiveInfo> ObjectivesInfo;
-
-	FStageInfo(class UStageData* Data = nullptr, ETaskCondition StageCondition = ETaskCondition::InProcess, TArray<FObjectiveInfo> Objectives = TArray<FObjectiveInfo>())
-	{
-		StageData = Data;
-		Condition = StageCondition;
-		ObjectivesInfo = Objectives;
-	}
-
-	friend bool operator == (const FStageInfo& Info1, const FStageInfo& Info2)
-	{
-		return 	Info1.StageData == Info2.StageData &&
-				Info1.Condition == Info2.Condition &&
-				Info1.ObjectivesInfo == Info2.ObjectivesInfo;
-	}
-
-	friend bool operator != (const FStageInfo& Info1, const FStageInfo& Info2)
-	{
-		return !(Info1 == Info2);
-	}
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStageConditionDelegate, class UStage*, Stage);
 
 UCLASS(Blueprintable, BlueprintType, Abstract)
-class MYGAMESYSTEM_API UStage : public UObject
+class MYGAMESYSTEM_API UStage : public UAdvancedObject
 {
 	GENERATED_BODY()
 
 public:
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void Activate(class UQuest* RelatedQuest);
@@ -72,23 +31,31 @@ public:
 	void ObjectiveFailed(class UObjective* Objective);
 	virtual void ObjectiveFailed_Implementation(class UObjective* Objective);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
-	void Update();
-	virtual void Update_Implementation();
-
 	UFUNCTION(BlueprintCallable, Category = "Stage|Internal")
 	void MarkObjectives();
 
 	UFUNCTION(BlueprintCallable, Category = "Stage|Internal")
 	void UnmarkObjectives();
 
-	UFUNCTION(BlueprintPure, Category = "Stage|Info")
-	FStageInfo GetStageInfo() const;
+	UFUNCTION(BlueprintGetter, Category = "Stage|OwningQuest")
+	class UQuest* GetOwningQuest() const;
 
-	UFUNCTION(BlueprintPure, Category = "Stage|OwningQuest")
-	FORCEINLINE class UQuest* GetOwningQuest() const { return OwningQuest; }
+	UFUNCTION(BlueprintGetter)
+	ETaskCondition GetCondition() const { return Condition; }
+
+	UPROPERTY(BlueprintAssignable)
+	FStageConditionDelegate OnActivated;
+
+	UPROPERTY(BlueprintAssignable)
+	FStageConditionDelegate OnCompleted;
+
+	UPROPERTY(BlueprintAssignable)
+	FStageConditionDelegate OnFailed;
 
 protected:
+
+	UFUNCTION(BlueprintSetter)
+	void SetCondition(ETaskCondition NewCondition);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void ActivateObjectives();
@@ -118,13 +85,9 @@ protected:
 	void OnStageFailed();
 	virtual void OnStageFailed_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
-	void OnStageUpdated();
-	virtual void OnStageUpdated_Implementation() { return; }
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void AbortAllObjectives();
-	virtual void AbortAllObjectives_Implementation() { return; }
+	virtual void AbortAllObjectives_Implementation();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Objectives")
 	TArray<class UObjective*> GetStageObjectives() const;
@@ -142,13 +105,15 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
 	bool IsOneObjectiveFailed(const TArray<class UObjective*>& Objectives) const;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Info")
-	UStageData* StageData;
-
 private:
 
-	class UQuest* OwningQuest;
-
+	UPROPERTY(BlueprintGetter = GetCondition, BlueprintSetter = SetCondition, Replicated = OnRep_Condition)
 	ETaskCondition Condition = ETaskCondition::Aborted;
+
+	UFUNCTION()
+	void OnRep_Condition();
+
+	UFUNCTION()
+	void ConditionChangeBroadcast(ETaskCondition CurrentCondition);
 	
 };

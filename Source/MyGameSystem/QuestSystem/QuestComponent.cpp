@@ -23,9 +23,9 @@ void UQuestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(UQuestComponent, ActiveQuestsInfo, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(UQuestComponent, CompletedQuestsInfo, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(UQuestComponent, FailedQuestsInfo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UQuestComponent, ActiveQuests, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UQuestComponent, CompletedQuests, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UQuestComponent, FailedQuests, COND_OwnerOnly);
 
 }
 
@@ -45,48 +45,8 @@ void UQuestComponent::AddQuest(TSubclassOf<UQuest> QuestClass)
 			UQuest* NewQuest = NewObject<UQuest>(this, QuestClass);
 			ActiveQuests.Add(NewQuest);
 			NewQuest->Activate(this);
-			UpdateAllQuestsInfo();
-			QuestAddedNotify(NewQuest->GetQuestInfo());
+			QuestAddedNotify(NewQuest);
 		}
-	}
-}
-
-void UQuestComponent::SelectQuestToTrackByIndex_Implementation(int QuestIndex)
-{
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		if (ActiveQuests.IsValidIndex(QuestIndex))
-		{
-			SetTrackedQuest(ActiveQuests[QuestIndex]);
-		}
-		else
-		{
-			SetTrackedQuest(nullptr);
-		}
-	}
-}
-
-void UQuestComponent::SelectQuestToTrackByInfo_Implementation(FQuestInfo Info)
-{
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		int QuestIndex = ActiveQuestsInfo.Find(Info);
-		if (QuestIndex != INDEX_NONE)
-		{
-			SetTrackedQuest(ActiveQuests[QuestIndex]);
-		}
-		else
-		{
-			SetTrackedQuest(nullptr);
-		}
-	}
-}
-
-void UQuestComponent::UntrackQuest_Implementation()
-{
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		SetTrackedQuest(nullptr);
 	}
 }
 
@@ -94,17 +54,10 @@ void UQuestComponent::QuestCompleted(UQuest* Quest)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (Quest == TrackedQuest)
-		{
-			SetTrackedQuest(nullptr);
-			TrackedQuestCompletedNotify(Quest->GetQuestInfo());
-		}
-
 		if (ActiveQuests.Remove(Quest) > 0)
 		{
 			CompletedQuests.Add(Quest);
-			UpdateAllQuestsInfo();
-			QuestCompletedNotify(Quest->GetQuestInfo());
+			QuestCompletedNotify(Quest);
 		}
 	}
 }
@@ -113,30 +66,11 @@ void UQuestComponent::QuestFailed(UQuest* Quest)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (Quest == TrackedQuest)
-		{
-			SetTrackedQuest(nullptr);
-			TrackedQuestFailedNotify(Quest->GetQuestInfo());
-		}
-
 		if (ActiveQuests.Remove(Quest) > 0)
 		{
 			FailedQuests.Add(Quest);
-			UpdateAllQuestsInfo();
-			QuestFailedNotify(Quest->GetQuestInfo());
+			QuestFailedNotify(Quest);
 		}
-	}
-}
-
-void UQuestComponent::QuestUpdated(UQuest* Quest)
-{
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		if (Quest == TrackedQuest)
-		{
-			TrackedQuestUpdatedNotify(Quest->GetQuestInfo());
-		}
-		UpdateAllQuestsInfo();
 	}
 }
 
@@ -147,38 +81,6 @@ TArray<UQuest*> UQuestComponent::GetAllQuests() const
 	AllQuests.Append(GetCompletedQuests());
 	AllQuests.Append(GetFailedQuests());
 	return AllQuests;
-}
-
-bool UQuestComponent::HasTrackedQuest() const
-{
-	return TrackedQuestInfo != FQuestInfo();
-}
-
-void UQuestComponent::UpdateAllQuestsInfo()
-{
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		ActiveQuestsInfo.Empty();
-		ActiveQuestsInfo = GetQuestsInfo(ActiveQuests);
-
-		CompletedQuestsInfo.Empty();
-		CompletedQuestsInfo = GetQuestsInfo(CompletedQuests);
-
-		FailedQuestsInfo.Empty();
-		FailedQuestsInfo = GetQuestsInfo(FailedQuests);
-
-		OnQuestsUpdated.Broadcast();
-	}
-}
-
-TArray<FQuestInfo> UQuestComponent::GetQuestsInfo(const TArray<UQuest*>& Quests) const
-{
-	TArray<FQuestInfo> QuestsInfo;
-	for (const UQuest* Quest : Quests)
-	{
-		QuestsInfo.Add(Quest->GetQuestInfo());
-	}
-	return QuestsInfo;
 }
 
 bool UQuestComponent::CheckQuestOnDuplication(TSubclassOf<UQuest> QuestClass) const
@@ -194,87 +96,32 @@ bool UQuestComponent::CheckQuestOnDuplication(TSubclassOf<UQuest> QuestClass) co
 	return true;
 }
 
-void UQuestComponent::SetTrackedQuest(UQuest* NewTrackedQuest)
+void UQuestComponent::QuestAddedNotify_Implementation(UQuest* Quest)
 {
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		if (IsValid(TrackedQuest))
-		{
-			TrackedQuest->SetIsBeingTracked(false);
-		}
-		TrackedQuest = NewTrackedQuest;
-
-		if (IsValid(TrackedQuest))
-		{
-			TrackedQuest->SetIsBeingTracked(true);
-			FQuestInfo QuestInfo = TrackedQuest->GetQuestInfo();
-			UpdateAllQuestsInfo();
-			TrackedQuestSelectedNotify(QuestInfo);
-		}
-		else
-		{
-			TrackedQuestDeselectedNotify();
-		}
-		
-	}
+	OnQuestAdded.Broadcast(Quest);
 }
 
-void UQuestComponent::TrackedQuestSelectedNotify_Implementation(FQuestInfo NewTrackedQuestInfo)
+void UQuestComponent::QuestCompletedNotify_Implementation(UQuest* Quest)
 {
-	TrackedQuestInfo = NewTrackedQuestInfo;
-	OnTrackedQuestSelected.Broadcast();
+	OnQuestCompleted.Broadcast(Quest);
 }
 
-void UQuestComponent::TrackedQuestDeselectedNotify_Implementation()
+void UQuestComponent::QuestFailedNotify_Implementation(UQuest* Quest)
 {
-	TrackedQuestInfo = FQuestInfo();
-	OnTrackedQuestDeselected.Broadcast();
+	OnQuestFailed.Broadcast(Quest);
 }
 
-void UQuestComponent::TrackedQuestUpdatedNotify_Implementation(FQuestInfo NewTrackedQuestInfo)
+void UQuestComponent::OnRep_ActiveQuests()
 {
-	TrackedQuestInfo = NewTrackedQuestInfo;
-	OnTrackedQuestUpdated.Broadcast();
+	OnActiveQuestsUpdated.Broadcast();
 }
 
-void UQuestComponent::TrackedQuestCompletedNotify_Implementation(FQuestInfo QuestInfo)
+void UQuestComponent::OnRep_CompletedQuests()
 {
-	TrackedQuestInfo = FQuestInfo();
-	OnTrackedQuestCompleted.Broadcast(QuestInfo);
+	OnCompletedQuestsUpdated.Broadcast();
 }
 
-void UQuestComponent::TrackedQuestFailedNotify_Implementation(FQuestInfo QuestInfo)
+void UQuestComponent::OnRep_FailedQuests()
 {
-	TrackedQuestInfo = FQuestInfo();
-	OnTrackedQuestFailed.Broadcast(QuestInfo);
-}
-
-void UQuestComponent::QuestAddedNotify_Implementation(FQuestInfo QuestInfo)
-{
-	OnQuestAdded.Broadcast(QuestInfo);
-}
-
-void UQuestComponent::QuestCompletedNotify_Implementation(FQuestInfo QuestInfo)
-{
-	OnQuestCompleted.Broadcast(QuestInfo);
-}
-
-void UQuestComponent::QuestFailedNotify_Implementation(FQuestInfo QuestInfo)
-{
-	OnQuestFailed.Broadcast(QuestInfo);
-}
-
-void UQuestComponent::OnRep_ActiveQuestsInfo()
-{
-	OnQuestsUpdated.Broadcast();
-}
-
-void UQuestComponent::OnRep_CompletedQuestsInfo()
-{
-	OnQuestsUpdated.Broadcast();
-}
-
-void UQuestComponent::OnRep_FailedQuestsInfo()
-{
-	OnQuestsUpdated.Broadcast();
+	OnFailedQuestsUpdated.Broadcast();
 }

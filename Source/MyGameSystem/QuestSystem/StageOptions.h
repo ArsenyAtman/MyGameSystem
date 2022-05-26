@@ -28,7 +28,7 @@ class MYGAMESYSTEM_API UStageOptions : public UStage
 
 public:
 
-	// ...
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 
@@ -46,7 +46,7 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "StageOptions|Objectives")
 	UObjective* GetCompletedObjective(const TArray<class UObjective*>& Objectives) const;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageOptions|QuestFlow")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "StageOptions|QuestFlow")
 	TArray<FOption> Options;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "StageOptions|QuestFlow")

@@ -3,62 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
 #include "QuestSystemTypes.h"
 #include "Objective.generated.h"
 
-UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UObjectiveData : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bIsOptional = false;
-
-};
-
-USTRUCT(Blueprintable, BlueprintType)
-struct FObjectiveInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UObjectiveData* ObjectiveData;
-
-	UPROPERTY(BlueprintReadWrite)
-	ETaskCondition Condition;
-
-	UPROPERTY(BlueprintReadWrite)
-	float Progress;
-
-	FObjectiveInfo(class UObjectiveData* Data = nullptr, ETaskCondition ObjectiveCondition = ETaskCondition::InProcess, float ObjectiveProgress = 0.0f)
-	{
-		ObjectiveData = Data;
-		Condition = ObjectiveCondition;
-		Progress = ObjectiveProgress;
-	}
-
-	friend bool operator == (const FObjectiveInfo& Info1, const FObjectiveInfo& Info2)
-	{
-		return 	Info1.ObjectiveData == Info2.ObjectiveData &&
-				Info1.Condition == Info2.Condition &&
-				Info1.Progress == Info2.Progress;
-	}
-
-	friend bool operator != (const FObjectiveInfo& Info1, const FObjectiveInfo& Info2)
-	{
-		return !(Info1 == Info2);
-	}
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FObjectiveConditionDelegate, class UObjective*, Objective);
 
 UCLASS(Blueprintable, BlueprintType)
-class MYGAMESYSTEM_API UObjective : public UObject
+class MYGAMESYSTEM_API UObjective : public UAdvancedObject
 {
 	GENERATED_BODY()
 
 public:
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Activate(class UStage* RelatedStage);
@@ -74,29 +32,50 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Objective|Internal")
 	void Unmark();
 
-	UFUNCTION(BlueprintPure, Category = "Objective|Info")
-	FObjectiveInfo GetObjectiveInfo() const;
+	UFUNCTION(BlueprintGetter, Category = "Objective|OwningStage")
+	class UStage* GetOwningStage() const;
 
-	UFUNCTION(BlueprintPure, Category = "Objective|OwningStage")
-	FORCEINLINE class UStage* GetOwningStage() const { return OwningStage; }
+	UFUNCTION(BlueprintGetter)
+	ETaskCondition GetCondition() const { return Condition; }
+
+	UFUNCTION(BlueprintGetter)
+	bool GetIsOptional() const { return bIsOptional; }
+
+	UPROPERTY(BlueprintAssignable)
+	FObjectiveConditionDelegate OnActivated;
+
+	UPROPERTY(BlueprintAssignable)
+	FObjectiveConditionDelegate OnCompleted;
+
+	UPROPERTY(BlueprintAssignable)
+	FObjectiveConditionDelegate OnFailed;
+
+	UPROPERTY(BlueprintAssignable)
+	FObjectiveConditionDelegate OnAborted;
+
+	UPROPERTY(BlueprintAssignable)
+	FObjectiveConditionDelegate OnUpdated;
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Info")
-	UObjectiveData* ObjectiveData;
+	UFUNCTION(BlueprintSetter)
+	void SetCondition(ETaskCondition NewCondition);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|MarkersManager")
 	class TSubclassOf<class UMarkersManagerComponent> MarkersManagerComponentClass;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsOptional)
+	bool bIsOptional = false;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
 	void Complete();
 	virtual void Complete_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
 	void Fail();
 	virtual void Fail_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
 	void Update();
 	virtual void Update_Implementation();
 
@@ -120,14 +99,6 @@ protected:
 	void OnObjectiveFailed();
 	virtual void OnObjectiveFailed_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
-	void OnObjectiveUpdated();
-	virtual void OnObjectiveUpdated_Implementation() { return; }
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Progress")
-	float RecalculateProgress() const;
-	virtual float RecalculateProgress_Implementation() const { return -1.0f; }
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|RelatedActors")
 	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark) const;
 	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) const { return ActorsToMark; }
@@ -137,18 +108,25 @@ protected:
 
 private:
 
-	class UStage* OwningStage = nullptr;
-
-	ETaskCondition Condition = ETaskCondition::Aborted;
-	float Progress = 0.0f;
-
 	FReferencesForQuest FindReferencesForQuest() const;
-
-	UPROPERTY(BlueprintGetter = GetReferencesForQuest)
-	FReferencesForQuest ReferencesForQuest;
 
 	class UMarkersManagerComponent* CreateMarkersManager() const;
 
+	UPROPERTY(BlueprintGetter = GetCondition, BlueprintSetter = SetCondition, ReplicatedUsing = OnRep_Condition)
+	ETaskCondition Condition = ETaskCondition::Aborted;
+
+	UPROPERTY(BlueprintGetter = GetReferencesForQuest, Replicated)
+	FReferencesForQuest ReferencesForQuest;
+
 	UPROPERTY()
 	class UMarkersManagerComponent* MarkersManager = nullptr;
+
+	UFUNCTION()
+	void OnRep_Condition();
+
+	UFUNCTION()
+	void ConditionChangeBroadcast(ETaskCondition CurrentCondition);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void OnUpdatedNotify();
 };

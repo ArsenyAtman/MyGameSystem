@@ -16,7 +16,7 @@ class MYGAMESYSTEM_API UStageList : public UStage
 
 public:
 
-	// ...
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 
@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageList|QuestFlow")
 	TSubclassOf<class UStage> NextStageIfFailed;
 
-	UPROPERTY(BlueprintReadOnly, Category = "StageList|Objectives")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "StageList|Objectives")
 	TArray<class UObjective*> ActiveObjectives;
 	
 };

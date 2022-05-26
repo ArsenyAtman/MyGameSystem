@@ -2,7 +2,16 @@
 
 
 #include "StageList.h"
+
 #include "Objective.h"
+#include "Net/UnrealNetwork.h"
+
+void UStageList::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UStageList, ActiveObjectives);
+}
 
 void UStageList::ActivateObjectives_Implementation()
 {
@@ -30,10 +39,6 @@ void UStageList::CheckCondition_Implementation()
 	{
 		Fail(NextStageIfFailed);
 	}
-	else
-	{
-		Update();
-	}
 }
 
 void UStageList::AbortAllObjectives_Implementation()
@@ -42,6 +47,8 @@ void UStageList::AbortAllObjectives_Implementation()
 	{
 		Objective->Abort();
 	}
+
+	Super::AbortAllObjectives_Implementation();
 }
 
 TArray<class UObjective*> UStageList::GetStageObjectives_Implementation() const

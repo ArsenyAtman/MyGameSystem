@@ -3,105 +3,64 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
 #include "QuestSystemTypes.h"
 #include "Stage.h"
 #include "Quest.generated.h"
 
-UENUM(Blueprintable, BlueprintType)
-enum class EQuestType : uint8
-{
-	Usual		UMETA(DisplayName = "Usual"),
-	Main		UMETA(DisplayName = "Main"),
-	Secondary	UMETA(DisplayName = "Secondary"),
-	Challenge	UMETA(DisplayName = "Challenge")
-};
-
-UCLASS(BlueprintType, Blueprintable, Abstract)
-class MYGAMESYSTEM_API UQuestData : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EQuestType Type = EQuestType::Usual;
-
-};
-
-USTRUCT(Blueprintable, BlueprintType)
-struct FQuestInfo
-{
-	GENERATED_BODY();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UQuestData* QuestData;
-
-	UPROPERTY(BlueprintReadWrite)
-	ETaskCondition Condition;
-
-	UPROPERTY(BlueprintReadWrite)
-	bool bIsBeingTracked;
-
-	UPROPERTY(BlueprintReadWrite)
-	struct FStageInfo CurrentStageInfo;
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<struct FStageInfo> PastStageInfos;
-
-	FQuestInfo(class UQuestData* Data = nullptr, ETaskCondition QuestCondition = ETaskCondition::InProcess, bool bIsTracking = false, struct FStageInfo CurrentStage = FStageInfo(), TArray<struct FStageInfo> PastStages = TArray<struct FStageInfo>())
-	{
-		QuestData = Data;
-		Condition = QuestCondition;
-		bIsBeingTracked = bIsTracking;
-		CurrentStageInfo = CurrentStage;
-		PastStageInfos = PastStages;
-	}
-
-	friend bool operator == (const FQuestInfo& Info1, const FQuestInfo& Info2)
-	{
-		return 	Info1.QuestData == Info2.QuestData &&
-				Info1.Condition == Info2.Condition &&
-				Info1.bIsBeingTracked == Info2.bIsBeingTracked &&
-				Info1.CurrentStageInfo == Info2.CurrentStageInfo &&
-				Info1.PastStageInfos == Info2.PastStageInfos;
-	}
-
-	friend bool operator != (const FQuestInfo& Info1, const FQuestInfo& Info2)
-	{
-		return !(Info1 == Info2);
-	}
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQuestConditionDelegate, class UQuest*, Quest);
 
 UCLASS(Blueprintable, BlueprintType)
-class MYGAMESYSTEM_API UQuest : public UObject
+class MYGAMESYSTEM_API UQuest : public UAdvancedObject
 {
 	GENERATED_BODY()
 
 public:
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
 	void Activate(class UQuestComponent* QuestComponent);
 	virtual void Activate_Implementation(class UQuestComponent* QuestComponent);
 
-	UFUNCTION(BlueprintCallable, Category = "Quest|Internal")
+	UFUNCTION(BlueprintSetter, Category = "Quest|Internal")
 	void SetIsBeingTracked(bool bNewIsBeingTracked);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
 	void StagePassed(class UStage* Stage, TSubclassOf<class UStage> NextStageClass);
 	virtual void StagePassed_Implementation(class UStage* Stage, TSubclassOf<class UStage> NextStage);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
-	void Update();
-	virtual void Update_Implementation();
+	UFUNCTION(BlueprintGetter, Category = "Quest|OwningQuestComponent")
+	class UQuestComponent* GetOwningQuestComponent() const;
 
-	UFUNCTION(BlueprintPure, Category = "Quest|Info")
-	FQuestInfo GetQuestInfo() const;
+	UFUNCTION(BlueprintGetter, Category = "Quest|Info")
+	ETaskCondition GetCondition() const { return Condition; }
 
-	UFUNCTION(BlueprintPure, Category = "Quest|OwningQuestComponent")
-	FORCEINLINE class UQuestComponent* GetOwningQuestComponent() const { return OwningQuestComponent; }
+	UFUNCTION(BlueprintGetter, Category = "Quest|Info")
+	bool GetIsBeingTracked() const { return bIsBeingTracked; }
+
+	UPROPERTY(BlueprintAssignable)
+	FQuestConditionDelegate OnActiveStageChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FQuestConditionDelegate OnActivated;
+
+	UPROPERTY(BlueprintAssignable)
+	FQuestConditionDelegate OnCompleted;
+
+	UPROPERTY(BlueprintAssignable)
+	FQuestConditionDelegate OnFailed;
+
+	UPROPERTY(BlueprintAssignable)
+	FQuestConditionDelegate OnBecomeTracked;
+
+	UPROPERTY(BlueprintAssignable)
+	FQuestConditionDelegate OnBecomeUntracked;
 
 protected:
+
+	UFUNCTION(BlueprintSetter)
+	void SetCondition(ETaskCondition NewCondition);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
 	void Complete();
@@ -123,20 +82,13 @@ protected:
 	void OnQuestFailed();
 	virtual void OnQuestFailed_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
-	void OnQuestUpdated();
-	virtual void OnQuestUpdated_Implementation() { return; }
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Info")
-	UQuestData* QuestData;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Stages")
 	TSubclassOf<class UStage> InitialStageClass;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Quest|Stages")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ActiveStage, Category = "Quest|Stages")
 	class UStage* ActiveStage;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Quest|Stages")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Quest|Stages")
 	TArray<class UStage*> PastStages;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|QuestsFlow")
@@ -147,9 +99,25 @@ protected:
 
 private:
 
-	class UQuestComponent* OwningQuestComponent;
-
+	UPROPERTY(BlueprintGetter = GetCondition, BlueprintSetter = SetCondition, ReplicatedUsing = OnRep_Condition)
 	ETaskCondition Condition = ETaskCondition::Aborted;
+
+	UPROPERTY(BlueprintGetter = GetIsBeingTracked, BlueprintSetter = SetIsBeingTracked, ReplicatedUsing = OnRep_IsBeingTracked)
 	bool bIsBeingTracked = false;
+
+	UFUNCTION()
+	void OnRep_ActiveStage();
+
+	UFUNCTION()
+	void OnRep_Condition();
+
+	UFUNCTION()
+	void OnRep_IsBeingTracked();
+
+	UFUNCTION()
+	void ConditionChangeBroadcast(ETaskCondition CurrentCondition);
+
+	UFUNCTION()
+	void IsBeingTrackedChangeBroadcast(bool CurrentIsBeingTracked);
 	
 };

@@ -2,7 +2,16 @@
 
 
 #include "StageOptions.h"
+
 #include "Objective.h"
+#include "Net/UnrealNetwork.h"
+
+void UStageOptions::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UStageOptions, Options);
+}
 
 void UStageOptions::ActivateObjectives_Implementation()
 {
@@ -29,10 +38,6 @@ void UStageOptions::CheckCondition_Implementation()
 	{
 		Fail(NextStageClassIfFailed);
 	}
-	else
-	{
-		Update();
-	}
 }
 
 void UStageOptions::AbortAllObjectives_Implementation()
@@ -41,6 +46,8 @@ void UStageOptions::AbortAllObjectives_Implementation()
 	{
 		Option.Objective->Abort();
 	}
+
+	Super::AbortAllObjectives_Implementation();
 }
 
 TArray<class UObjective*> UStageOptions::GetStageObjectives_Implementation() const
@@ -69,7 +76,7 @@ UObjective* UStageOptions::GetCompletedObjective(const TArray<UObjective*>& Obje
 {
 	for (UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
+		if (Objective->GetCondition() == ETaskCondition::Completed && !Objective->GetIsOptional())
 		{
 			return Objective;
 		}

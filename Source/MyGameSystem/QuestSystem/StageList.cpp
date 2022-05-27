@@ -23,7 +23,7 @@ void UStageList::ActivateObjectives_Implementation()
 			if (IsValid(NewObjective))
 			{
 				ActiveObjectives.Add(NewObjective);
-				NewObjective->Activate(this);
+				NewObjective->Activate();
 			}
 		}
 	}
@@ -51,7 +51,7 @@ void UStageList::AbortAllObjectives_Implementation()
 	Super::AbortAllObjectives_Implementation();
 }
 
-TArray<class UObjective*> UStageList::GetStageObjectives_Implementation() const
+TArray<UObjective*> UStageList::GetStageObjectives_Implementation() const
 {
 	return ActiveObjectives;
 }

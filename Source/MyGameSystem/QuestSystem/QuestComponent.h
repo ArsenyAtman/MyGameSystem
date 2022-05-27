@@ -62,15 +62,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestEventDelegate OnQuestFailed;
 
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestsUpdateDelegate OnActiveQuestsUpdated;
-
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestsUpdateDelegate OnCompletedQuestsUpdated;
-
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestsUpdateDelegate OnFailedQuestsUpdated;
-
 protected:
 
 	virtual void BeginPlay() override;
@@ -79,15 +70,6 @@ protected:
 	bool CheckQuestOnDuplication(TSubclassOf<class UQuest> QuestClass) const;
 
 private:
-
-	UFUNCTION(NetMulticast, Reliable)
-	void QuestAddedNotify(class UQuest* Quest);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void QuestCompletedNotify(class UQuest* Quest);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void QuestFailedNotify(class UQuest* Quest);
 
 	UPROPERTY(BlueprintGetter = GetActiveQuests, ReplicatedUsing = OnRep_ActiveQuests)
 	TArray<class UQuest*> ActiveQuests;
@@ -99,12 +81,24 @@ private:
 	TArray<class UQuest*> FailedQuests;
 
 	UFUNCTION()
-	void OnRep_ActiveQuests();
+	void OnRep_ActiveQuests(const TArray<class UQuest*>& PreReplicationActiveQuests);
 
 	UFUNCTION()
-	void OnRep_CompletedQuests();
+	void OnRep_CompletedQuests(const TArray<class UQuest*>& PreReplicationCompletedQuests);
 
 	UFUNCTION()
-	void OnRep_FailedQuests();
+	void OnRep_FailedQuests(const TArray<class UQuest*>& PreReplicationFailedQuests);
+
+	UFUNCTION()
+	void BroadcastChange_QuestAdded(class UQuest* NewQuest);
+
+	UFUNCTION()
+	void BroadcastChange_QuestCompleted(class UQuest* NewQuest);
+
+	UFUNCTION()
+	void BroadcastChange_QuestFailed(class UQuest* NewQuest);
+
+	using BroadcastChangeFunction = void (UQuestComponent::*)(class UQuest*);
+	void PerformeFunctionForArrayDiff(const TArray<class UQuest*>& Array1, const TArray<class UQuest*>& Array2, BroadcastChangeFunction Function);
 
 };

@@ -44,8 +44,8 @@ void UQuestComponent::AddQuest(TSubclassOf<UQuest> QuestClass)
 		{
 			UQuest* NewQuest = NewObject<UQuest>(this, QuestClass);
 			ActiveQuests.Add(NewQuest);
-			NewQuest->Activate(this);
-			QuestAddedNotify(NewQuest);
+			NewQuest->Activate();
+			BroadcastChange_QuestAdded(NewQuest);
 		}
 	}
 }
@@ -57,7 +57,7 @@ void UQuestComponent::QuestCompleted(UQuest* Quest)
 		if (ActiveQuests.Remove(Quest) > 0)
 		{
 			CompletedQuests.Add(Quest);
-			QuestCompletedNotify(Quest);
+			BroadcastChange_QuestCompleted(Quest);
 		}
 	}
 }
@@ -69,7 +69,7 @@ void UQuestComponent::QuestFailed(UQuest* Quest)
 		if (ActiveQuests.Remove(Quest) > 0)
 		{
 			FailedQuests.Add(Quest);
-			QuestFailedNotify(Quest);
+			BroadcastChange_QuestFailed(Quest);
 		}
 	}
 }
@@ -96,32 +96,55 @@ bool UQuestComponent::CheckQuestOnDuplication(TSubclassOf<UQuest> QuestClass) co
 	return true;
 }
 
-void UQuestComponent::QuestAddedNotify_Implementation(UQuest* Quest)
+void UQuestComponent::OnRep_ActiveQuests(const TArray<UQuest*>& PreReplicationActiveQuests)
 {
-	OnQuestAdded.Broadcast(Quest);
+	PerformeFunctionForArrayDiff(PreReplicationActiveQuests, ActiveQuests, &UQuestComponent::BroadcastChange_QuestAdded);
 }
 
-void UQuestComponent::QuestCompletedNotify_Implementation(UQuest* Quest)
+void UQuestComponent::OnRep_CompletedQuests(const TArray<UQuest*>& PreReplicationCompletedQuests)
 {
-	OnQuestCompleted.Broadcast(Quest);
+	PerformeFunctionForArrayDiff(PreReplicationCompletedQuests, CompletedQuests, &UQuestComponent::BroadcastChange_QuestCompleted);
 }
 
-void UQuestComponent::QuestFailedNotify_Implementation(UQuest* Quest)
+void UQuestComponent::OnRep_FailedQuests(const TArray<UQuest*>& PreReplicationFailedQuests)
 {
-	OnQuestFailed.Broadcast(Quest);
+	PerformeFunctionForArrayDiff(PreReplicationFailedQuests, FailedQuests, &UQuestComponent::BroadcastChange_QuestFailed);
 }
 
-void UQuestComponent::OnRep_ActiveQuests()
+void UQuestComponent::BroadcastChange_QuestAdded(UQuest* NewQuest)
 {
-	OnActiveQuestsUpdated.Broadcast();
+	OnQuestAdded.Broadcast(NewQuest);
 }
 
-void UQuestComponent::OnRep_CompletedQuests()
+void UQuestComponent::BroadcastChange_QuestCompleted(UQuest* NewQuest)
 {
-	OnCompletedQuestsUpdated.Broadcast();
+	OnQuestCompleted.Broadcast(NewQuest);
 }
 
-void UQuestComponent::OnRep_FailedQuests()
+void UQuestComponent::BroadcastChange_QuestFailed(UQuest* NewQuest)
 {
-	OnFailedQuestsUpdated.Broadcast();
+	OnQuestFailed.Broadcast(NewQuest);
+}
+
+void UQuestComponent::PerformeFunctionForArrayDiff(const TArray<UQuest*>& ArrayBefore, const TArray<UQuest*>& ArrayAfter, BroadcastChangeFunction Function)
+{
+	for (int i = 0; i < ArrayAfter.Num(); ++i)
+	{
+		if(i >= ArrayBefore.Num() || ArrayAfter[i] != ArrayBefore[i])
+		{
+			((*this).*Function)(ArrayAfter[i]);
+		}
+	}
+	/*
+	int SizeBefore = ArrayBefore.Num();
+	int SizeAfter = ArrayAfter.Num();
+	int SizeDifference = SizeAfter - SizeBefore;
+	if(SizeDifference > 0)
+	{
+		for (int i = SizeBefore; i < SizeAfter; i++)
+		{
+			((*this).*Function)(ArrayAfter[i]);
+		}
+	}
+	*/
 }

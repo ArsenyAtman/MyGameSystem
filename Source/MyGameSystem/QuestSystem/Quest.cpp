@@ -16,18 +16,14 @@ void UQuest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME(UQuest, PastStages);
 }
 
-void UQuest::Activate_Implementation(UQuestComponent* QuestComponent)
+void UQuest::Activate_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		if (IsValid(InitialStageClass))
 		{
-			ActiveStage = NewObject<UStage>(this, InitialStageClass);
-			if (IsValid(ActiveStage))
-			{
-				SetCondition(ETaskCondition::InProcess);
-				ActiveStage->Activate(this);
-			}
+			ChangeActiveStage(InitialStageClass);
+			SetCondition(ETaskCondition::InProcess);
 		}
 
 		OnQuestActivated();
@@ -38,19 +34,19 @@ void UQuest::SetIsBeingTracked(bool bNewIsBeingTracked)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		if (GetCondition() == ETaskCondition::InProcess && bIsBeingTracked != bNewIsBeingTracked)
+		if (GetCondition() == ETaskCondition::InProcess)
 		{
 			if (bNewIsBeingTracked)
 			{
-				ActiveStage->MarkObjectives();
+				GetActiveStage()->MarkObjectives();
 			}
 			else
 			{
-				ActiveStage->UnmarkObjectives();
+				GetActiveStage()->UnmarkObjectives();
 			}
 
 			bIsBeingTracked = bNewIsBeingTracked;
-			IsBeingTrackedChangeBroadcast(bIsBeingTracked);
+			BroadcastChange_IsBeingTracked();
 		}
 	}
 }
@@ -59,18 +55,16 @@ void UQuest::StagePassed_Implementation(UStage* Stage, TSubclassOf<UStage> NextS
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		if (Stage == ActiveStage)
+		if (Stage == GetActiveStage())
 		{
-			PastStages.Add(ActiveStage);
 			if (IsValid(NextStageClass))
 			{
-				ActiveStage = NewObject<UStage>(this, NextStageClass);
-				ActiveStage->Activate(this);
-				SetIsBeingTracked(bIsBeingTracked);
+				ChangeActiveStage(NextStageClass);
+				SetIsBeingTracked(GetIsBeingTracked());
 			}
 			else
 			{
-				if (ActiveStage->GetCondition() == ETaskCondition::Completed)
+				if (GetActiveStage()->GetCondition() == ETaskCondition::Completed)
 				{
 					Complete();
 				}
@@ -91,20 +85,23 @@ UQuestComponent* UQuest::GetOwningQuestComponent() const
 void UQuest::SetCondition(ETaskCondition NewCondition)
 {
 	Condition = NewCondition;
-	ConditionChangeBroadcast(Condition);
+	BroadcastChange_Condition();
 }
 
 void UQuest::Complete_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		SetIsBeingTracked(false);
-		SetCondition(ETaskCondition::Completed);
-		OnQuestCompleted();
-		GetOwningQuestComponent()->QuestCompleted(this);
-		if (IsValid(NextQuestIfCompleted))
+		if (GetCondition() == ETaskCondition::InProcess)
 		{
-			GetOwningQuestComponent()->AddQuest(NextQuestIfCompleted);
+			SetIsBeingTracked(false);
+			SetCondition(ETaskCondition::Completed);
+			OnQuestCompleted();
+			GetOwningQuestComponent()->QuestCompleted(this);
+			if (IsValid(NextQuestIfCompleted))
+			{
+				GetOwningQuestComponent()->AddQuest(NextQuestIfCompleted);
+			}
 		}
 	}
 }
@@ -113,69 +110,103 @@ void UQuest::Fail_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		SetIsBeingTracked(false);
-		SetCondition(ETaskCondition::Failed);
-		OnQuestFailed();
-		GetOwningQuestComponent()->QuestFailed(this);
-		if (IsValid(NextQuestIfFailed))
+		if (GetCondition() == ETaskCondition::InProcess)
 		{
-			GetOwningQuestComponent()->AddQuest(NextQuestIfFailed);
+			SetIsBeingTracked(false);
+			SetCondition(ETaskCondition::Failed);
+			OnQuestFailed();
+			GetOwningQuestComponent()->QuestFailed(this);
+			if (IsValid(NextQuestIfFailed))
+			{
+				GetOwningQuestComponent()->AddQuest(NextQuestIfFailed);
+			}
 		}
 	}
 }
 
+void UQuest::ChangeActiveStage(TSubclassOf<UStage> NewStageClass)
+{
+	if(IsValid(GetActiveStage()))
+	{
+		PastStages.Add(GetActiveStage());
+		BroadcastChange_PastStages();
+	}
+
+	if(IsValid(NewStageClass))
+	{
+		ActiveStage = NewObject<UStage>(this, NewStageClass);
+		if(IsValid(ActiveStage))
+		{
+			ActiveStage->Activate();
+		}
+	}
+	else
+	{
+		ActiveStage = nullptr;
+	}
+
+	BroadcastChange_ActiveStage();
+}
+
 void UQuest::OnRep_ActiveStage()
 {
-	OnActiveStageChanged.Broadcast(this);
+	BroadcastChange_ActiveStage();
+}
+
+void UQuest::OnRep_PastStages()
+{
+	BroadcastChange_PastStages();
 }
 
 void UQuest::OnRep_Condition()
 {
-	ConditionChangeBroadcast(GetCondition());
+	BroadcastChange_Condition();
 }
 
 void UQuest::OnRep_IsBeingTracked()
 {
-	IsBeingTrackedChangeBroadcast(GetIsBeingTracked());
+	BroadcastChange_IsBeingTracked();
 }
 
-void UQuest::ConditionChangeBroadcast(ETaskCondition CurrentCondition)
+void UQuest::BroadcastChange_ActiveStage()
 {
-	switch(CurrentCondition)
+	OnActiveStageChanged.Broadcast(this);
+}
+
+void UQuest::BroadcastChange_PastStages()
+{
+	OnPastStagesChanged.Broadcast(this);
+}
+
+void UQuest::BroadcastChange_Condition()
+{
+	/*
+	if(ConditionToDelegateMap.Contains(GetCondition()))
+	{
+		FQuestConditionDelegate DelegateToBroadcast = ConditionToDelegateMap[GetCondition()];
+		DelegateToBroadcast.Broadcast(this);
+	}
+	*/
+
+	switch(GetCondition())
 	{
 		case ETaskCondition::InProcess:
-
 			OnActivated.Broadcast(this);
-
 			break;
 
 		case ETaskCondition::Completed:
-
 			OnCompleted.Broadcast(this);
-
 			break;
 
 		case ETaskCondition::Failed:
-
 			OnFailed.Broadcast(this);
-
-			break;
-
-		case ETaskCondition::Aborted:
-
-			// ...
-
-			break;
-
-		default:
-
 			break;
 	}
 }
 
-void UQuest::IsBeingTrackedChangeBroadcast(bool CurrentIsBeingTracked)
+void UQuest::BroadcastChange_IsBeingTracked()
 {
-	if(CurrentIsBeingTracked == true)
+	if(GetIsBeingTracked() == true)
 	{
 		OnBecomeTracked.Broadcast(this);
 	}

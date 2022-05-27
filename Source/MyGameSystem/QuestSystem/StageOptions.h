@@ -14,9 +14,6 @@ struct FOption
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<class UObjective> ObjectiveClass;
 
-	UPROPERTY(BlueprintReadOnly)
-	class UObjective* Objective = nullptr;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<class UStage> NextStageClass;
 };
@@ -38,7 +35,7 @@ protected:
 
 	virtual void AbortAllObjectives_Implementation() override;
 
-	TArray<class UObjective*> GetStageObjectives_Implementation() const override;
+	TArray<class UObjective*> GetStageObjectives_Implementation() const override { return StageObjectives; }
 
 	UFUNCTION(BlueprintPure, Category = "StageOptions|QuestFlow")
 	class UClass* GetNextStage(class UObjective* OfObjective, const TArray<FOption>& FromOptions) const;
@@ -48,6 +45,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "StageOptions|QuestFlow")
 	TArray<FOption> Options;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "StageOptions|QuestFlow")
+	TArray<class UObjective*> StageObjectives;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "StageOptions|QuestFlow")
 	TSubclassOf<class UStage> NextStageClassIfFailed;

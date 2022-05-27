@@ -20,8 +20,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
-	void Activate(class UQuestComponent* QuestComponent);
-	virtual void Activate_Implementation(class UQuestComponent* QuestComponent);
+	void Activate();
+	virtual void Activate_Implementation();
 
 	UFUNCTION(BlueprintSetter, Category = "Quest|Internal")
 	void SetIsBeingTracked(bool bNewIsBeingTracked);
@@ -41,6 +41,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FQuestConditionDelegate OnActiveStageChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FQuestConditionDelegate OnPastStagesChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FQuestConditionDelegate OnActivated;
@@ -82,14 +85,17 @@ protected:
 	void OnQuestFailed();
 	virtual void OnQuestFailed_Implementation() { return; }
 
+	UFUNCTION(BlueprintCallable)
+	void ChangeActiveStage(TSubclassOf<class UStage> NewStageClass);
+
+	UFUNCTION(BlueprintGetter)
+	class UStage* GetActiveStage() const { return ActiveStage; }
+
+	UFUNCTION(BlueprintGetter)
+	TArray<class UStage*> GetPastStages() const { return PastStages; }
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Stages")
 	TSubclassOf<class UStage> InitialStageClass;
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ActiveStage, Category = "Quest|Stages")
-	class UStage* ActiveStage;
-
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Quest|Stages")
-	TArray<class UStage*> PastStages;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|QuestsFlow")
 	TSubclassOf<class UQuest> NextQuestIfCompleted;
@@ -99,25 +105,49 @@ protected:
 
 private:
 
-	UPROPERTY(BlueprintGetter = GetCondition, BlueprintSetter = SetCondition, ReplicatedUsing = OnRep_Condition)
-	ETaskCondition Condition = ETaskCondition::Aborted;
-
-	UPROPERTY(BlueprintGetter = GetIsBeingTracked, BlueprintSetter = SetIsBeingTracked, ReplicatedUsing = OnRep_IsBeingTracked)
-	bool bIsBeingTracked = false;
+	// Event on condition
+	UPROPERTY(BlueprintGetter = GetActiveStage, ReplicatedUsing = OnRep_ActiveStage, Category = "Quest|Stages")
+	class UStage* ActiveStage;
 
 	UFUNCTION()
 	void OnRep_ActiveStage();
 
 	UFUNCTION()
+	void BroadcastChange_ActiveStage();
+
+	// Event on condition
+	UPROPERTY(BlueprintGetter = GetPastStages, ReplicatedUsing = OnRep_PastStages, Category = "Quest|Stages")
+	TArray<class UStage*> PastStages;
+
+	UFUNCTION()
+	void OnRep_PastStages();
+
+	UFUNCTION()
+	void BroadcastChange_PastStages();
+
+	UPROPERTY(BlueprintGetter = GetCondition, BlueprintSetter = SetCondition, ReplicatedUsing = OnRep_Condition)
+	ETaskCondition Condition = ETaskCondition::Aborted;
+
+	UFUNCTION()
 	void OnRep_Condition();
+
+	UFUNCTION()
+	void BroadcastChange_Condition();
+
+	TMap<ETaskCondition, FQuestConditionDelegate> ConditionToDelegateMap =
+	{
+		{ETaskCondition::InProcess, OnActivated},
+		{ETaskCondition::Completed, OnCompleted},
+		{ETaskCondition::Failed, OnFailed}
+	};
+
+	UPROPERTY(BlueprintGetter = GetIsBeingTracked, BlueprintSetter = SetIsBeingTracked, ReplicatedUsing = OnRep_IsBeingTracked)
+	bool bIsBeingTracked = false;
 
 	UFUNCTION()
 	void OnRep_IsBeingTracked();
 
 	UFUNCTION()
-	void ConditionChangeBroadcast(ETaskCondition CurrentCondition);
-
-	UFUNCTION()
-	void IsBeingTrackedChangeBroadcast(bool CurrentIsBeingTracked);
+	void BroadcastChange_IsBeingTracked();
 	
 };

@@ -14,7 +14,7 @@ void UStage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME(UStage, Condition);
 }
 
-void UStage::Activate_Implementation(UQuest* RelatedQuest)
+void UStage::Activate_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
@@ -24,7 +24,7 @@ void UStage::Activate_Implementation(UQuest* RelatedQuest)
 	}
 }
 
-void UStage::ObjectiveCompleted_Implementation(class UObjective* Objective)
+void UStage::ObjectiveCompleted_Implementation(UObjective* Objective)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
@@ -35,7 +35,7 @@ void UStage::ObjectiveCompleted_Implementation(class UObjective* Objective)
 	}
 }
 
-void UStage::ObjectiveFailed_Implementation(class UObjective* Objective)
+void UStage::ObjectiveFailed_Implementation(UObjective* Objective)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
@@ -79,17 +79,20 @@ UQuest* UStage::GetOwningQuest() const
 void UStage::SetCondition(ETaskCondition NewCondition)
 {
 	Condition = NewCondition;
-	ConditionChangeBroadcast(Condition);
+	BroadcastChange_Condition();
 }
 
 void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		SetCondition(ETaskCondition::Completed);
-		AbortAllObjectives();
-		OnStageCompleted();
-		GetOwningQuest()->StagePassed(this, NextStage);
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			SetCondition(ETaskCondition::Completed);
+			AbortAllObjectives();
+			OnStageCompleted();
+			GetOwningQuest()->StagePassed(this, NextStage);
+		}
 	}
 }
 
@@ -97,10 +100,13 @@ void UStage::Fail_Implementation(TSubclassOf<UStage> NextStage)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		SetCondition(ETaskCondition::Failed);
-		AbortAllObjectives();
-		OnStageFailed();
-		GetOwningQuest()->StagePassed(this, NextStage);
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			SetCondition(ETaskCondition::Failed);
+			AbortAllObjectives();
+			OnStageFailed();
+			GetOwningQuest()->StagePassed(this, NextStage);
+		}
 	}
 }
 
@@ -159,41 +165,31 @@ bool UStage::IsOneObjectiveFailed(const TArray<UObjective*>& Objectives) const
 
 void UStage::OnRep_Condition()
 {
-	ConditionChangeBroadcast(GetCondition());
+	BroadcastChange_Condition();
 }
 
-void UStage::ConditionChangeBroadcast(ETaskCondition CurrentCondition)
+void UStage::BroadcastChange_Condition()
 {
-	switch(CurrentCondition)
+	/*
+	if(ConditionToDelegateMap.Contains(CurrentCondition))
+	{
+		FStageConditionDelegate DelegateToBroadcast = ConditionToDelegateMap[CurrentCondition];
+		DelegateToBroadcast.Broadcast(this);
+	}
+	*/
+
+	switch(GetCondition())
 	{
 		case ETaskCondition::InProcess:
-
 			OnActivated.Broadcast(this);
-
 			break;
 
 		case ETaskCondition::Completed:
-
 			OnCompleted.Broadcast(this);
-
 			break;
 
 		case ETaskCondition::Failed:
-
 			OnFailed.Broadcast(this);
-
-			break;
-
-		case ETaskCondition::Aborted:
-
-			// ...
-
-			break;
-
-		default:
-
-			// ...
-
 			break;
 	}
 }

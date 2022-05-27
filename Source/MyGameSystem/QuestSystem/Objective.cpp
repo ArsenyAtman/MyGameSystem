@@ -19,7 +19,7 @@ void UObjective::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME(UObjective, ReferencesForQuest);
 }
 
-void UObjective::Activate_Implementation(UStage* RelatedStage)
+void UObjective::Activate_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
@@ -76,7 +76,7 @@ void UObjective::Update_Implementation()
 	{
 		Unmark();
 		Mark();
-		OnUpdatedNotify();
+		Notify_OnUpdated();
 	}
 }
 
@@ -94,17 +94,20 @@ void UObjective::EndObjective_Implementation()
 void UObjective::SetCondition(ETaskCondition NewCondition)
 {
 	Condition = NewCondition;
-	ConditionChangeBroadcast(Condition);
+	BroadcastChange_Condition();
 }
 
 void UObjective::Complete_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		SetCondition(ETaskCondition::Completed);
-		EndObjective();
-		OnObjectiveCompleted();
-		GetOwningStage()->ObjectiveCompleted(this);
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			SetCondition(ETaskCondition::Completed);
+			EndObjective();
+			OnObjectiveCompleted();
+			GetOwningStage()->ObjectiveCompleted(this);
+		}
 	}
 }
 
@@ -112,10 +115,13 @@ void UObjective::Fail_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		SetCondition(ETaskCondition::Failed);
-		EndObjective();
-		OnObjectiveFailed();
-		GetOwningStage()->ObjectiveFailed(this);
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			SetCondition(ETaskCondition::Failed);
+			EndObjective();
+			OnObjectiveFailed();
+			GetOwningStage()->ObjectiveFailed(this);
+		}
 	}
 }
 
@@ -147,7 +153,7 @@ UMarkersManagerComponent* UObjective::CreateMarkersManager() const
 	return nullptr;
 }
 
-void UObjective::OnUpdatedNotify_Implementation()
+void UObjective::Notify_OnUpdated_Implementation()
 {
 	if(OnUpdated.IsBound())
 	{
@@ -157,41 +163,35 @@ void UObjective::OnUpdatedNotify_Implementation()
 
 void UObjective::OnRep_Condition()
 {
-	ConditionChangeBroadcast(GetCondition());
+	BroadcastChange_Condition();
 }
 
-void UObjective::ConditionChangeBroadcast(ETaskCondition CurrentCondition)
+void UObjective::BroadcastChange_Condition()
 {
-	switch(CurrentCondition)
+	/*
+	if(ConditionToDelegateMap.Contains(CurrentCondition))
+	{
+		FObjectiveConditionDelegate DelegateToBroadcast = ConditionToDelegateMap[CurrentCondition];
+		DelegateToBroadcast.Broadcast(this);
+	}
+	*/
+
+	switch(GetCondition())
 	{
 		case ETaskCondition::InProcess:
-
 			OnActivated.Broadcast(this);
-
 			break;
 
 		case ETaskCondition::Completed:
-
 			OnCompleted.Broadcast(this);
-
 			break;
 
 		case ETaskCondition::Failed:
-
 			OnFailed.Broadcast(this);
-
 			break;
 
 		case ETaskCondition::Aborted:
-
 			OnAborted.Broadcast(this);
-
-			break;
-
-		default:
-
-			// ...
-
 			break;
 	}
 }

@@ -20,8 +20,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
-	void Activate(class UQuest* RelatedQuest);
-	virtual void Activate_Implementation(class UQuest* RelatedQuest);
+	void Activate();
+	virtual void Activate_Implementation();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
 	void ObjectiveCompleted(class UObjective* Objective);
@@ -110,10 +110,19 @@ private:
 	UPROPERTY(BlueprintGetter = GetCondition, BlueprintSetter = SetCondition, Replicated = OnRep_Condition)
 	ETaskCondition Condition = ETaskCondition::Aborted;
 
+	/*
+	TMap<ETaskCondition, FStageConditionDelegate> ConditionToDelegateMap =
+	{
+		{ETaskCondition::InProcess, OnActivated},
+		{ETaskCondition::Completed, OnCompleted},
+		{ETaskCondition::Failed, OnFailed}
+	};
+	*/
+
 	UFUNCTION()
 	void OnRep_Condition();
 
 	UFUNCTION()
-	void ConditionChangeBroadcast(ETaskCondition CurrentCondition);
+	void BroadcastChange_Condition();
 	
 };

@@ -19,8 +19,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
-	void Activate(class UStage* RelatedStage);
-	virtual void Activate_Implementation(class UStage* RelatedStage);
+	void Activate();
+	virtual void Activate_Implementation();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Abort();
@@ -115,6 +115,16 @@ private:
 	UPROPERTY(BlueprintGetter = GetCondition, BlueprintSetter = SetCondition, ReplicatedUsing = OnRep_Condition)
 	ETaskCondition Condition = ETaskCondition::Aborted;
 
+	/*
+	TMap<ETaskCondition, FObjectiveConditionDelegate> ConditionToDelegateMap =
+	{
+		{ETaskCondition::InProcess, OnActivated},
+		{ETaskCondition::Completed, OnCompleted},
+		{ETaskCondition::Failed, OnFailed},
+		{ETaskCondition::Aborted, OnAborted}
+	};
+	*/
+
 	UPROPERTY(BlueprintGetter = GetReferencesForQuest, Replicated)
 	FReferencesForQuest ReferencesForQuest;
 
@@ -125,8 +135,8 @@ private:
 	void OnRep_Condition();
 
 	UFUNCTION()
-	void ConditionChangeBroadcast(ETaskCondition CurrentCondition);
+	void BroadcastChange_Condition();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void OnUpdatedNotify();
+	void Notify_OnUpdated();
 };

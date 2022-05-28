@@ -135,16 +135,4 @@ void UQuestComponent::PerformeFunctionForArrayDiff(const TArray<UQuest*>& ArrayB
 			((*this).*Function)(ArrayAfter[i]);
 		}
 	}
-	/*
-	int SizeBefore = ArrayBefore.Num();
-	int SizeAfter = ArrayAfter.Num();
-	int SizeDifference = SizeAfter - SizeBefore;
-	if(SizeDifference > 0)
-	{
-		for (int i = SizeBefore; i < SizeAfter; i++)
-		{
-			((*this).*Function)(ArrayAfter[i]);
-		}
-	}
-	*/
 }

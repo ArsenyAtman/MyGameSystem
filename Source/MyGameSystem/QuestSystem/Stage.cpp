@@ -18,8 +18,8 @@ void UStage::Activate_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		SetCondition(ETaskCondition::InProcess);
 		ActivateObjectives();
+		SetCondition(ETaskCondition::InProcess);
 		OnStageActivated();
 	}
 }
@@ -88,8 +88,8 @@ void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)
 	{
 		if (GetCondition() == ETaskCondition::InProcess)
 		{
-			SetCondition(ETaskCondition::Completed);
 			AbortAllObjectives();
+			SetCondition(ETaskCondition::Completed);
 			OnStageCompleted();
 			GetOwningQuest()->StagePassed(this, NextStage);
 		}
@@ -102,8 +102,8 @@ void UStage::Fail_Implementation(TSubclassOf<UStage> NextStage)
 	{
 		if (GetCondition() == ETaskCondition::InProcess)
 		{
-			SetCondition(ETaskCondition::Failed);
 			AbortAllObjectives();
+			SetCondition(ETaskCondition::Failed);
 			OnStageFailed();
 			GetOwningQuest()->StagePassed(this, NextStage);
 		}

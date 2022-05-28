@@ -93,8 +93,11 @@ void UObjective::EndObjective_Implementation()
 
 void UObjective::SetCondition(ETaskCondition NewCondition)
 {
-	Condition = NewCondition;
-	BroadcastChange_Condition();
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		Condition = NewCondition;
+		BroadcastChange_Condition();
+	}
 }
 
 void UObjective::Complete_Implementation()

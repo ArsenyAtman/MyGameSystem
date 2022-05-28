@@ -23,9 +23,9 @@ void UObjective::Activate_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		SetCondition(ETaskCondition::InProcess);
 		ReferencesForQuest = FindReferencesForQuest();
 		MarkersManager = CreateMarkersManager();
+		SetCondition(ETaskCondition::InProcess);
 		OnObjectiveActivated();
 	}
 }
@@ -36,8 +36,8 @@ void UObjective::Abort_Implementation()
 	{
 		if (GetCondition() == ETaskCondition::InProcess)
 		{
-			SetCondition(ETaskCondition::Aborted);
 			EndObjective();
+			SetCondition(ETaskCondition::Aborted);
 		}
 		OnObjectiveAborted();
 	}
@@ -103,8 +103,8 @@ void UObjective::Complete_Implementation()
 	{
 		if (GetCondition() == ETaskCondition::InProcess)
 		{
-			SetCondition(ETaskCondition::Completed);
 			EndObjective();
+			SetCondition(ETaskCondition::Completed);
 			OnObjectiveCompleted();
 			GetOwningStage()->ObjectiveCompleted(this);
 		}
@@ -117,8 +117,8 @@ void UObjective::Fail_Implementation()
 	{
 		if (GetCondition() == ETaskCondition::InProcess)
 		{
-			SetCondition(ETaskCondition::Failed);
 			EndObjective();
+			SetCondition(ETaskCondition::Failed);
 			OnObjectiveFailed();
 			GetOwningStage()->ObjectiveFailed(this);
 		}

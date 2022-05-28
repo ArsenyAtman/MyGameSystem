@@ -58,52 +58,52 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintSetter)
+	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
 	void SetCondition(ETaskCondition NewCondition);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|MarkersManager")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|MarkersManager", meta = (BlueprintProtected))
 	class TSubclassOf<class UMarkersManagerComponent> MarkersManagerComponentClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsOptional)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsOptional, meta = (BlueprintProtected))
 	bool bIsOptional = false;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void Complete();
 	virtual void Complete_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void Fail();
 	virtual void Fail_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void Update();
 	virtual void Update_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal", meta = (BlueprintProtected))
 	void EndObjective();
 	virtual void EndObjective_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveActivated();
 	virtual void OnObjectiveActivated_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveAborted();
 	virtual void OnObjectiveAborted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveCompleted();
 	virtual void OnObjectiveCompleted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveFailed();
 	virtual void OnObjectiveFailed_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|RelatedActors")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|RelatedActors", meta = (BlueprintProtected))
 	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark) const;
 	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) const { return ActorsToMark; }
 
-	UFUNCTION(BlueprintGetter, Category = "Objective|RelatedActors")
+	UFUNCTION(BlueprintGetter, Category = "Objective|RelatedActors", meta = (BlueprintProtected))
 	FReferencesForQuest GetReferencesForQuest() const { return ReferencesForQuest; }
 
 private:

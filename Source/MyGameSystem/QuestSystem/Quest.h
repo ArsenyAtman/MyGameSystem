@@ -62,45 +62,45 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintSetter)
+	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
 	void SetCondition(ETaskCondition NewCondition);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal", meta = (BlueprintProtected))
 	void Complete();
 	virtual void Complete_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal", meta = (BlueprintProtected))
 	void Fail();
 	virtual void Fail_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control", meta = (BlueprintProtected))
 	void OnQuestActivated();
 	virtual void OnQuestActivated_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control", meta = (BlueprintProtected))
 	void OnQuestCompleted();
 	virtual void OnQuestCompleted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control", meta = (BlueprintProtected))
 	void OnQuestFailed();
 	virtual void OnQuestFailed_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	void ChangeActiveStage(TSubclassOf<class UStage> NewStageClass);
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, meta = (BlueprintProtected))
 	class UStage* GetActiveStage() const { return ActiveStage; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, meta = (BlueprintProtected))
 	TArray<class UStage*> GetPastStages() const { return PastStages; }
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Stages")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Stages", meta = (BlueprintProtected))
 	TSubclassOf<class UStage> InitialStageClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|QuestsFlow")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|QuestsFlow", meta = (BlueprintProtected))
 	TSubclassOf<class UQuest> NextQuestIfCompleted;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|QuestsFlow")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|QuestsFlow", meta = (BlueprintProtected))
 	TSubclassOf<class UQuest> NextQuestIfFailed;
 
 private:

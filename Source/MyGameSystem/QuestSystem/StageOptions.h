@@ -37,19 +37,23 @@ protected:
 
 	TArray<class UObjective*> GetStageObjectives_Implementation() const override { return StageObjectives; }
 
-	UFUNCTION(BlueprintPure, Category = "StageOptions|QuestFlow")
+	UFUNCTION(BlueprintPure, Category = "StageOptions|QuestFlow", meta = (BlueprintProtected))
 	class UClass* GetNextStage(class UObjective* OfObjective, const TArray<FOption>& FromOptions) const;
 
-	UFUNCTION(BlueprintPure, Category = "StageOptions|Objectives")
+	UFUNCTION(BlueprintPure, Category = "StageOptions|Objectives", meta = (BlueprintProtected))
 	UObjective* GetCompletedObjective(const TArray<class UObjective*>& Objectives) const;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "StageOptions|QuestFlow")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "StageOptions|QuestFlow", meta = (BlueprintProtected))
 	TArray<FOption> Options;
 
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "StageOptions|QuestFlow")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "StageOptions|QuestFlow", meta = (BlueprintProtected))
 	TArray<class UObjective*> StageObjectives;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "StageOptions|QuestFlow")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "StageOptions|QuestFlow", meta = (BlueprintProtected))
 	TSubclassOf<class UStage> NextStageClassIfFailed;
+
+private:
+
+	// ...
 
 };

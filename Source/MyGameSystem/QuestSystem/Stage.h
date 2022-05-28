@@ -54,55 +54,55 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintSetter)
+	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
 	void SetCondition(ETaskCondition NewCondition);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal", meta = (BlueprintProtected))
 	void ActivateObjectives();
 	virtual void ActivateObjectives_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control", meta = (BlueprintProtected))
 	void CheckCondition();
 	virtual void CheckCondition_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal", meta = (BlueprintProtected))
 	void Complete(TSubclassOf<class UStage> NextStage);
 	virtual void Complete_Implementation(TSubclassOf<class UStage> NextStage);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal", meta = (BlueprintProtected))
 	void Fail(TSubclassOf<class UStage> NextStage);
 	virtual void Fail_Implementation(TSubclassOf<class UStage> NextStage);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control", meta = (BlueprintProtected))
 	void OnStageActivated();
 	virtual void OnStageActivated_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control", meta = (BlueprintProtected))
 	void OnStageCompleted();
 	virtual void OnStageCompleted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control", meta = (BlueprintProtected))
 	void OnStageFailed();
 	virtual void OnStageFailed_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal", meta = (BlueprintProtected))
 	void AbortAllObjectives();
 	virtual void AbortAllObjectives_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Objectives")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Objectives", meta = (BlueprintProtected))
 	TArray<class UObjective*> GetStageObjectives() const;
 	virtual TArray<class UObjective*> GetStageObjectives_Implementation() const { return TArray<class UObjective*>(); }
 
-	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
+	UFUNCTION(BlueprintPure, Category = "Stage|Objectives", meta = (BlueprintProtected))
 	bool IsAllObjectivesCompleted(const TArray<class UObjective*>& Objectives) const;
 
-	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
+	UFUNCTION(BlueprintPure, Category = "Stage|Objectives", meta = (BlueprintProtected))
 	bool IsAllObjectivesFailed(const TArray<class UObjective*>& Objectives) const;
 
-	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
+	UFUNCTION(BlueprintPure, Category = "Stage|Objectives", meta = (BlueprintProtected))
 	bool IsOneObjectiveCompleted(const TArray<class UObjective*>& Objectives) const;
 
-	UFUNCTION(BlueprintPure, Category = "Stage|Objectives")
+	UFUNCTION(BlueprintPure, Category = "Stage|Objectives", meta = (BlueprintProtected))
 	bool IsOneObjectiveFailed(const TArray<class UObjective*>& Objectives) const;
 
 private:

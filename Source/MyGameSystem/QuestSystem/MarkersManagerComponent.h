@@ -31,7 +31,7 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MarkersManagerComponent")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MarkersManagerComponent", meta = (BlueprintProtected))
 	class TSubclassOf<AActor> MarkerClass;
 
 private:

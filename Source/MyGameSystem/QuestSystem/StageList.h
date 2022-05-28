@@ -28,16 +28,16 @@ protected:
 
 	TArray<class UObjective*> GetStageObjectives_Implementation() const override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageList|Objectives")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageList|Objectives", meta = (BlueprintProtected))
 	TArray<TSubclassOf<class UObjective>> InitialObjectives;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageList|QuestFlow")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageList|QuestFlow", meta = (BlueprintProtected))
 	TSubclassOf<class UStage> NextStageIfCompleted;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageList|QuestFlow")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "StageList|QuestFlow", meta = (BlueprintProtected))
 	TSubclassOf<class UStage> NextStageIfFailed;
 
-	UPROPERTY(BlueprintReadOnly, Replicated, Category = "StageList|Objectives")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "StageList|Objectives", meta = (BlueprintProtected))
 	TArray<class UObjective*> ActiveObjectives;
 	
 };

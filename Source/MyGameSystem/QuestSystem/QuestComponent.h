@@ -57,7 +57,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal", meta = (BlueprintProtected))
 	bool CheckQuestOnDuplication(TSubclassOf<class UQuest> QuestClass) const;
 
 private:

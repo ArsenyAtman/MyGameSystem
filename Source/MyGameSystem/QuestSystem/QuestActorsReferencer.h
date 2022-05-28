@@ -19,6 +19,10 @@ public:
 	UFUNCTION(BlueprintPure)
 	FReferencesForQuest GetReferencesForQuest(TSubclassOf<class UObjective> ObjectiveClass) const;
 
+protected:
+
+	// ...
+
 private:
 
 	UPROPERTY(EditAnywhere)

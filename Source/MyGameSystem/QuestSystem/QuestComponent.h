@@ -44,21 +44,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetAllQuests() const;
 
-	/**
-	 * @warning Not synced!!!
-	 */
 	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestEventDelegate OnQuestAdded;
 
-	/**
-	 * @warning Not synced!!!
-	 */
 	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestEventDelegate OnQuestCompleted;
 
-	/**
-	 * @warning Not synced!!!
-	 */
 	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
 	FQuestEventDelegate OnQuestFailed;
 

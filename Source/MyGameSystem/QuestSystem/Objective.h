@@ -35,36 +35,36 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Objective|OwningStage")
 	class UStage* GetOwningStage() const;
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Objective|Condition")
 	ETaskCondition GetCondition() const { return Condition; }
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Objective|IsOptional")
 	bool GetIsOptional() const { return bIsOptional; }
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
 	FObjectiveConditionDelegate OnActivated;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
 	FObjectiveConditionDelegate OnCompleted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
 	FObjectiveConditionDelegate OnFailed;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
 	FObjectiveConditionDelegate OnAborted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
 	FObjectiveConditionDelegate OnUpdated;
 
 protected:
 
-	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintSetter, Category = "Objective|Condition", meta = (BlueprintProtected))
 	void SetCondition(ETaskCondition NewCondition);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|MarkersManager", meta = (BlueprintProtected))
 	class TSubclassOf<class UMarkersManagerComponent> MarkersManagerComponentClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsOptional, meta = (BlueprintProtected))
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsOptional, Category = "Objective|IsOptional", meta = (BlueprintProtected))
 	bool bIsOptional = false;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))

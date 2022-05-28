@@ -40,21 +40,21 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Stage|OwningQuest")
 	class UQuest* GetOwningQuest() const;
 
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Stage|Condition")
 	ETaskCondition GetCondition() const { return Condition; }
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Stage|Delegates")
 	FStageConditionDelegate OnActivated;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Stage|Delegates")
 	FStageConditionDelegate OnCompleted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Stage|Delegates")
 	FStageConditionDelegate OnFailed;
 
 protected:
 
-	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintSetter, Category = "Stage|Condition", meta = (BlueprintProtected))
 	void SetCondition(ETaskCondition NewCondition);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal", meta = (BlueprintProtected))

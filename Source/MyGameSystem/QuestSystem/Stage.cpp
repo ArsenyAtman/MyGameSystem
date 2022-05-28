@@ -78,8 +78,11 @@ UQuest* UStage::GetOwningQuest() const
 
 void UStage::SetCondition(ETaskCondition NewCondition)
 {
-	Condition = NewCondition;
-	BroadcastChange_Condition();
+	if (GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		Condition = NewCondition;
+		BroadcastChange_Condition();
+	}
 }
 
 void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)

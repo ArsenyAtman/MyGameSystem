@@ -84,8 +84,11 @@ UQuestComponent* UQuest::GetOwningQuestComponent() const
 
 void UQuest::SetCondition(ETaskCondition NewCondition)
 {
-	Condition = NewCondition;
-	BroadcastChange_Condition();
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		Condition = NewCondition;
+		BroadcastChange_Condition();
+	}
 }
 
 void UQuest::Complete_Implementation()
@@ -126,26 +129,29 @@ void UQuest::Fail_Implementation()
 
 void UQuest::ChangeActiveStage(TSubclassOf<UStage> NewStageClass)
 {
-	if(IsValid(GetActiveStage()))
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		PastStages.Add(GetActiveStage());
-		BroadcastChange_PastStages();
-	}
-
-	if(IsValid(NewStageClass))
-	{
-		ActiveStage = NewObject<UStage>(this, NewStageClass);
-		if(IsValid(ActiveStage))
+		if(IsValid(GetActiveStage()))
 		{
-			ActiveStage->Activate();
+			PastStages.Add(GetActiveStage());
+			BroadcastChange_PastStages();
 		}
-	}
-	else
-	{
-		ActiveStage = nullptr;
-	}
 
-	BroadcastChange_ActiveStage();
+		if(IsValid(NewStageClass))
+		{
+			ActiveStage = NewObject<UStage>(this, NewStageClass);
+			if(IsValid(ActiveStage))
+			{
+				ActiveStage->Activate();
+			}
+		}
+		else
+		{
+			ActiveStage = nullptr;
+		}
+
+		BroadcastChange_ActiveStage();
+	}
 }
 
 void UQuest::OnRep_ActiveStage()

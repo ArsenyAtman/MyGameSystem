@@ -16,7 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	AQuestActorsReferencer();
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "QuestActorsReferencer")
 	FReferencesForQuest GetReferencesForQuest(TSubclassOf<class UObjective> ObjectiveClass) const;
 
 protected:

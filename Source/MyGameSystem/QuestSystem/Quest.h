@@ -39,30 +39,30 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Quest|Info")
 	bool GetIsBeingTracked() const { return bIsBeingTracked; }
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Quest|Delegates")
 	FQuestConditionDelegate OnActiveStageChanged;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Quest|Delegates")
 	FQuestConditionDelegate OnPastStagesChanged;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Quest|Delegates")
 	FQuestConditionDelegate OnActivated;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Quest|Delegates")
 	FQuestConditionDelegate OnCompleted;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Quest|Delegates")
 	FQuestConditionDelegate OnFailed;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Quest|Delegates")
 	FQuestConditionDelegate OnBecomeTracked;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Quest|Delegates")
 	FQuestConditionDelegate OnBecomeUntracked;
 
 protected:
 
-	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintSetter, Category = "Quest|Condition", meta = (BlueprintProtected))
 	void SetCondition(ETaskCondition NewCondition);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal", meta = (BlueprintProtected))
@@ -85,13 +85,13 @@ protected:
 	void OnQuestFailed();
 	virtual void OnQuestFailed_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, Category = "Quest|Stages", meta = (BlueprintProtected))
 	void ChangeActiveStage(TSubclassOf<class UStage> NewStageClass);
 
-	UFUNCTION(BlueprintGetter, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintGetter, Category = "Quest|Stages", meta = (BlueprintProtected))
 	class UStage* GetActiveStage() const { return ActiveStage; }
 
-	UFUNCTION(BlueprintGetter, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintGetter, Category = "Quest|Stages", meta = (BlueprintProtected))
 	TArray<class UStage*> GetPastStages() const { return PastStages; }
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Quest|Stages", meta = (BlueprintProtected))
@@ -105,8 +105,7 @@ protected:
 
 private:
 
-	// Event on condition
-	UPROPERTY(BlueprintGetter = GetActiveStage, ReplicatedUsing = OnRep_ActiveStage, Category = "Quest|Stages")
+	UPROPERTY(BlueprintGetter = GetActiveStage, ReplicatedUsing = OnRep_ActiveStage)
 	class UStage* ActiveStage;
 
 	UFUNCTION()
@@ -115,8 +114,7 @@ private:
 	UFUNCTION()
 	void BroadcastChange_ActiveStage();
 
-	// Event on condition
-	UPROPERTY(BlueprintGetter = GetPastStages, ReplicatedUsing = OnRep_PastStages, Category = "Quest|Stages")
+	UPROPERTY(BlueprintGetter = GetPastStages, ReplicatedUsing = OnRep_PastStages)
 	TArray<class UStage*> PastStages;
 
 	UFUNCTION()

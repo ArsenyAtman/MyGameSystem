@@ -116,14 +116,14 @@ void UQuestComponent::BroadcastChange_QuestAdded(UQuest* NewQuest)
 	OnQuestAdded.Broadcast(NewQuest);
 }
 
-void UQuestComponent::BroadcastChange_QuestCompleted(UQuest* NewQuest)
+void UQuestComponent::BroadcastChange_QuestCompleted(UQuest* Quest)
 {
-	OnQuestCompleted.Broadcast(NewQuest);
+	OnQuestCompleted.Broadcast(Quest);
 }
 
-void UQuestComponent::BroadcastChange_QuestFailed(UQuest* NewQuest)
+void UQuestComponent::BroadcastChange_QuestFailed(UQuest* Quest)
 {
-	OnQuestFailed.Broadcast(NewQuest);
+	OnQuestFailed.Broadcast(Quest);
 }
 
 void UQuestComponent::PerformeFunctionForArrayDiff(const TArray<UQuest*>& ArrayBefore, const TArray<UQuest*>& ArrayAfter, BroadcastChangeFunction Function)

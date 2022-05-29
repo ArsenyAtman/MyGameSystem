@@ -3,178 +3,188 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "MyGameSystem/AdvancedObject/ReplicatingActorComponent.h"
 #include "QuestSystemTypes.h"
 #include "Quest.h"
 #include "QuestComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestEventDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQuestInfoEventDelegate, FQuestInfo, QuestInfo);
+/**
+ * A delegate for handling changes related to some quest.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQuestEventDelegate, class UQuest*, Quest);
 
+/**
+ * A delegate for handling quest groups changes.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestsUpdateDelegate);
+
+/**
+ * A component that handles quests of it's actor.
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable, BlueprintType )
-class MYGAMESYSTEM_API UQuestComponent : public UActorComponent
+class MYGAMESYSTEM_API UQuestComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 
 public:	
+
 	// Sets default values for this component's properties
 	UQuestComponent();
 
+	// Override for the replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	/**
+	 * Add a new quest.
+	 * @warning Server-only!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Control")
 	void AddQuest(TSubclassOf<class UQuest> QuestClass);
 
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "QuestComponent|Control")
-	void SelectQuestToTrackByIndex(int QuestIndex);
-
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "QuestComponent|Control")
-	void SelectQuestToTrackByInfo(FQuestInfo QuestInfo);
-
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "QuestComponent|Control")
-	void UntrackQuest();
-
+	/**
+	 * Notify the component about it's quest completion.
+	 * @param Quest - A quest that ends.
+	 * @warning Use this function only if you know what you are doing!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	void QuestCompleted(class UQuest* Quest);
 
+	/**
+	 * Notify the component about it's quest failure.
+	 * @param Quest - A quest that ends.
+	 * @warning Use this function only if you know what you are doing!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
 	void QuestFailed(class UQuest* Quest);
 
-	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
-	void QuestUpdated(class UQuest* Quest);
-
+	/**
+	 * Get the active quests of this component.
+	 * @return The active quests.
+	 */
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetActiveQuests() const { return ActiveQuests; }
 
+	/**
+	 * Get the completed quests of this component.
+	 * @return The completed quests.
+	 */
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetCompletedQuests() const { return CompletedQuests; }
 
+	/**
+	 * Get the failed quests of this component.
+	 * @return The failed quests.
+	 */
 	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetFailedQuests() const { return FailedQuests; }
 
+	/**
+	 * Get all  quests of this component.
+	 * @return All quests.
+	 */
 	UFUNCTION(BlueprintPure, Category = "QuestComponent|Quests")
 	TArray<class UQuest*> GetAllQuests() const;
 
-	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<struct FQuestInfo> GetActiveQuestsInfo() const { return ActiveQuestsInfo; }
-
-	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<struct FQuestInfo> GetCompletedQuestsInfo() const { return CompletedQuestsInfo; }
-
-	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	TArray<struct FQuestInfo> GetFailedQuestsInfo() const { return FailedQuestsInfo; }
-
-	UFUNCTION(BlueprintPure, Category = "QuestComponent|Quests")
-	bool HasTrackedQuest() const;
-
-	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	class UQuest* GetTrackedQuest() const { return TrackedQuest; }
-
-	UFUNCTION(BlueprintGetter, Category = "QuestComponent|Quests")
-	struct FQuestInfo GetTrackedQuestInfo() const { return TrackedQuestInfo; }
-
+	/**
+	 * Called when a new quest is added.
+	 */
 	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestInfoEventDelegate OnQuestAdded;
+	FQuestEventDelegate OnQuestAdded;
 
+	/**
+	 * Called when an active quest is completed.
+	 */
 	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestInfoEventDelegate OnQuestCompleted;
+	FQuestEventDelegate OnQuestCompleted;
 
+	/**
+	 * Called when an active quest is failed.
+	 */
 	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestInfoEventDelegate OnQuestFailed;
-
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestEventDelegate OnQuestsUpdated;
-
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestEventDelegate OnTrackedQuestSelected;
-
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestEventDelegate OnTrackedQuestDeselected;
-
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestEventDelegate OnTrackedQuestUpdated;
-
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestInfoEventDelegate OnTrackedQuestCompleted;
-
-	UPROPERTY(BlueprintAssignable, Category = "QuestComponent|Delegates")
-	FQuestInfoEventDelegate OnTrackedQuestFailed;
+	FQuestEventDelegate OnQuestFailed;
 
 protected:
 
+	// BeginPlay override.
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
-	void UpdateAllQuestsInfo();
-
-	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
-	TArray<struct FQuestInfo> GetQuestsInfo(const TArray<class UQuest*>& Quests) const;
-
-	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
+	/**
+	 * Is a quest already being processed by this component.
+	 * @param QuestClass - The quest class to check.
+	 * @return True is the specified quest was not assigned to this component.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal", meta = (BlueprintProtected))
 	bool CheckQuestOnDuplication(TSubclassOf<class UQuest> QuestClass) const;
-
-	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
-	void SetTrackedQuest(class UQuest* NewTrackedQuest);
 
 private:
 
-	UFUNCTION(Client, Reliable)
-	void TrackedQuestSelectedNotify(struct FQuestInfo NewTrackedQuestInfo);
-
-	UFUNCTION(Client, Reliable)
-	void TrackedQuestDeselectedNotify();
-
-	UFUNCTION(Client, Reliable)
-	void TrackedQuestUpdatedNotify(struct FQuestInfo NewTrackedQuestInfo);
-
-	UFUNCTION(Client, Reliable)
-	void TrackedQuestCompletedNotify(struct FQuestInfo QuestInfo);
-
-	UFUNCTION(Client, Reliable)
-	void TrackedQuestFailedNotify(struct FQuestInfo QuestInfo);
-
-	UFUNCTION(Client, Reliable)
-	void QuestAddedNotify(struct FQuestInfo QuestInfo);
-
-	UFUNCTION(Client, Reliable)
-	void QuestCompletedNotify(struct FQuestInfo QuestInfo);
-
-	UFUNCTION(Client, Reliable)
-	void QuestFailedNotify(struct FQuestInfo QuestInfo);
-
-	UFUNCTION()
-	void OnRep_ActiveQuestsInfo();
-
-	UFUNCTION()
-	void OnRep_CompletedQuestsInfo();
-
-	UFUNCTION()
-	void OnRep_FailedQuestsInfo();
-
-	UPROPERTY(BlueprintGetter = GetActiveQuests)
+	/**
+	 * The active quests of this component.
+	 */
+	UPROPERTY(BlueprintGetter = GetActiveQuests, ReplicatedUsing = OnRep_ActiveQuests)
 	TArray<class UQuest*> ActiveQuests;
 
-	UPROPERTY(BlueprintGetter = GetCompletedQuests)
+	/**
+	 * The completed quests of this component
+	 */
+	UPROPERTY(BlueprintGetter = GetCompletedQuests, ReplicatedUsing = OnRep_CompletedQuests)
 	TArray<class UQuest*> CompletedQuests;
 
-	UPROPERTY(BlueprintGetter = GetFailedQuests)
+	/**
+	 * The failed quests of this component.
+	 */
+	UPROPERTY(BlueprintGetter = GetFailedQuests, ReplicatedUsing = OnRep_FailedQuests)
 	TArray<class UQuest*> FailedQuests;
 
-	UPROPERTY(BlueprintGetter = GetActiveQuestsInfo, Replicated, ReplicatedUsing = OnRep_ActiveQuestsInfo)
-	TArray<struct FQuestInfo> ActiveQuestsInfo;
+	/**
+	 * On replicated event of the ActiveQuests.
+	 * @param PreReplicationActiveQuests - Array before replication.
+	 */
+	UFUNCTION()
+	void OnRep_ActiveQuests(const TArray<class UQuest*>& PreReplicationActiveQuests);
 
-	UPROPERTY(BlueprintGetter = GetCompletedQuestsInfo, Replicated, ReplicatedUsing = OnRep_CompletedQuestsInfo)
-	TArray<struct FQuestInfo> CompletedQuestsInfo;
+	/**
+	 * On replicated event of the CompletedQuests.
+	 * @param PreReplicationCompletedQuests - Array before replication.
+	 */
+	UFUNCTION()
+	void OnRep_CompletedQuests(const TArray<class UQuest*>& PreReplicationCompletedQuests);
 
-	UPROPERTY(BlueprintGetter = GetFailedQuestsInfo, Replicated, ReplicatedUsing = OnRep_FailedQuestsInfo)
-	TArray<struct FQuestInfo> FailedQuestsInfo;
+	/**
+	 * On replicated event of the FailedQuests.
+	 * @param PreReplicationFailedQuests - Array before replication.
+	 */
+	UFUNCTION()
+	void OnRep_FailedQuests(const TArray<class UQuest*>& PreReplicationFailedQuests);
 
-	UPROPERTY(BlueprintGetter = GetTrackedQuest)
-	class UQuest* TrackedQuest;
+	/**
+	 * Broadcast delegate OnQuestAdded.
+	 * @param NewQuest - Quest that adds.
+	 */
+	UFUNCTION()
+	void BroadcastChange_QuestAdded(class UQuest* NewQuest);
 
-	UPROPERTY(BlueprintGetter = GetTrackedQuestInfo)
-	struct FQuestInfo TrackedQuestInfo;
+	/**
+	 * Broadcast delegate OnQuestCompleted.
+	 * @param Quest - Quest that completes.
+	 */
+	UFUNCTION()
+	void BroadcastChange_QuestCompleted(class UQuest* Quest);
 
-	UPROPERTY(BlueprintGetter = HasTrackedQuest)
-	bool bHasTrackedQuest = false;
+	/**
+	 * Broadcast delegate OnQuestFailed.
+	 * @param Quest - Quest that fails.
+	 */
+	UFUNCTION()
+	void BroadcastChange_QuestFailed(class UQuest* Quest);
+
+	/**
+	 * Find the difference between two arrays and execute a function for each member of the difference.
+	 * @param Array1 - The first array.
+	 * @param Array2 - The second array.
+	 * @param Function - The function pointer.
+	 */
+	using BroadcastChangeFunction = void (UQuestComponent::*)(class UQuest*);
+	void PerformeFunctionForArrayDiff(const TArray<class UQuest*>& Array1, const TArray<class UQuest*>& Array2, BroadcastChangeFunction Function);
+
 };

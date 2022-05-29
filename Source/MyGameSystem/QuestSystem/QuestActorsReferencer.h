@@ -7,20 +7,36 @@
 #include "QuestSystemTypes.h"
 #include "QuestActorsReferencer.generated.h"
 
+/**
+ * Actor to refer actors for quests from the level.
+ */
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API AQuestActorsReferencer : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+
 	// Sets default values for this actor's properties
 	AQuestActorsReferencer();
 
-	UFUNCTION(BlueprintPure)
+	/**
+	 * Get actors of an objective from the level.
+	 * @param ObjectiveClass - Class of the objective.
+	 * @return Referenced actors.
+	 */
+	UFUNCTION(BlueprintPure, Category = "QuestActorsReferencer")
 	FReferencesForQuest GetReferencesForQuest(TSubclassOf<class UObjective> ObjectiveClass) const;
+
+protected:
+
+	// ...
 
 private:
 
+	/**
+	 * Map for binding actors and quests.
+	 */
 	UPROPERTY(EditAnywhere)
 	TMap<TSubclassOf<class UObjective>, FReferencesForQuest> ReferencesForQuests;
 };

@@ -47,7 +47,7 @@ struct FItemStruct
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	UObject* OwningContainer; // can't use TScripInterface, bcz it doesn't support replication
+	UObject* OwningContainer; // can't use TScriptInterface, bcz it doesn't support replication
 
 	UPROPERTY(BlueprintReadWrite)
 	int Place;

@@ -2,7 +2,17 @@
 
 
 #include "StageOptions.h"
+
 #include "Objective.h"
+#include "Net/UnrealNetwork.h"
+
+void UStageOptions::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UStageOptions, Options);
+	DOREPLIFETIME(UStageOptions, StageObjectives);
+}
 
 void UStageOptions::ActivateObjectives_Implementation()
 {
@@ -11,8 +21,8 @@ void UStageOptions::ActivateObjectives_Implementation()
 		UObjective* NewObjective = NewObject<UObjective>(this, Option.ObjectiveClass);
 		if (IsValid(NewObjective))
 		{
-			Option.Objective = NewObjective;
-			Option.Objective->Activate(this);
+			StageObjectives.Add(NewObjective);
+			NewObjective->Activate();
 		}
 	}
 }
@@ -29,37 +39,26 @@ void UStageOptions::CheckCondition_Implementation()
 	{
 		Fail(NextStageClassIfFailed);
 	}
-	else
-	{
-		Update();
-	}
 }
 
 void UStageOptions::AbortAllObjectives_Implementation()
 {
-	for (FOption& Option : Options)
+	for (UObjective* Objective : GetStageObjectives())
 	{
-		Option.Objective->Abort();
+		Objective->Abort();
 	}
+
+	Super::AbortAllObjectives_Implementation();
 }
 
-TArray<class UObjective*> UStageOptions::GetStageObjectives_Implementation() const
+UClass* UStageOptions::GetNextStage(UObjective* OfObjective, const TArray<FOption>& FromOptions) const
 {
-	TArray<UObjective*> Objectives;
-	for (const FOption& Option : Options)
+	TArray<UObjective*> Objectives = GetStageObjectives();
+	for (int i = 0; i < Options.Num(); ++i)
 	{
-		Objectives.Add(Option.Objective);
-	}
-	return Objectives;
-}
-
-class UClass* UStageOptions::GetNextStage(UObjective* OfObjective, const TArray<FOption>& FromOptions) const
-{
-	for (const FOption& Option : FromOptions)
-	{
-		if (Option.Objective == OfObjective)
+		if(Objectives[i] == OfObjective)
 		{
-			return Option.NextStageClass;
+			return Options[i].NextStageClass;
 		}
 	}
 	return nullptr;
@@ -67,9 +66,9 @@ class UClass* UStageOptions::GetNextStage(UObjective* OfObjective, const TArray<
 
 UObjective* UStageOptions::GetCompletedObjective(const TArray<UObjective*>& Objectives) const
 {
-	for (UObjective* Objective : Objectives)
+	for (UObjective* Objective : GetStageObjectives())
 	{
-		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
+		if (Objective->GetCondition() == ETaskCondition::Completed && !Objective->GetIsOptional())
 		{
 			return Objective;
 		}

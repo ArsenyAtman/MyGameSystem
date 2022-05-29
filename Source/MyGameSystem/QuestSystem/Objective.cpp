@@ -38,8 +38,8 @@ void UObjective::Abort_Implementation()
 		{
 			EndObjective();
 			SetCondition(ETaskCondition::Aborted);
+			OnObjectiveAborted();
 		}
-		OnObjectiveAborted();
 	}
 }
 
@@ -156,14 +156,6 @@ UMarkersManagerComponent* UObjective::CreateMarkersManager() const
 	return nullptr;
 }
 
-void UObjective::Notify_OnUpdated_Implementation()
-{
-	if(OnUpdated.IsBound())
-	{
-		OnUpdated.Broadcast(this);
-	}
-}
-
 void UObjective::OnRep_Condition()
 {
 	BroadcastChange_Condition();
@@ -197,4 +189,9 @@ void UObjective::BroadcastChange_Condition()
 			OnAborted.Broadcast(this);
 			break;
 	}
+}
+
+void UObjective::Notify_OnUpdated_Implementation()
+{
+	OnUpdated.Broadcast(this);
 }

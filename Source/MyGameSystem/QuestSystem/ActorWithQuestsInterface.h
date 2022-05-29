@@ -14,15 +14,18 @@ class UActorWithQuestsInterface : public UInterface
 };
 
 /**
- * 
+ * An actor with QuestComponent.
  */
 class MYGAMESYSTEM_API IActorWithQuestsInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Returns QuestComponent of the actor.
+	 * @return QuestComponent of this actor.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithQuestsInterface")
 	class UQuestComponent* GetActorQuestComponent() const;
 	virtual class UQuestComponent* GetActorQuestComponent_Implementation() const { return nullptr; }

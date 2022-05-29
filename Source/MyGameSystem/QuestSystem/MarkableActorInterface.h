@@ -14,15 +14,18 @@ class UMarkableActorInterface : public UInterface
 };
 
 /**
- * 
+ * An interface for actors that can be marked as an objective.
  */
 class MYGAMESYSTEM_API IMarkableActorInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Returns marker's relative transform.
+	 * @return Relative transform for markers.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MarkableActorInterface")
 	FTransform GetMarkerRelativeTransform() const;
 	virtual FTransform GetMarkerRelativeTransfrom_Implementation() const { return FTransform(); }

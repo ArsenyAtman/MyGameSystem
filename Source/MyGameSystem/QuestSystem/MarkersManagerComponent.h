@@ -6,6 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "MarkersManagerComponent.generated.h"
 
+/**
+ * A component that manages markers for quests.
+ */
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UMarkersManagerComponent : public UActorComponent
 {
@@ -15,27 +18,46 @@ public:
 	// Sets default values for this actor's properties
 	UMarkersManagerComponent();
 
+	// Override for cleanup.
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	/**
+	 * Marks actors for a quest.
+	 * @param ActorsToMark - Objective actors for a quest.
+	 */
 	UFUNCTION(BlueprintCallable, Client, Reliable, Category = "MarkersManagerComponent")
 	void MarkActors(const TArray<class AActor*>& ActorsToMark);
 
+	/**
+	 * Delete all set markers.
+	 */
 	UFUNCTION(BlueprintCallable, Client, Reliable, Category = "MarkersManagerComponent")
 	void DeleteAllMarkers();
 
+	/**
+	 * Marks actors for a quest on the current machine.
+	 * @param ActorsToMark - Objective actors for a quest.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "MarkersManagerComponent")
 	void MarkActorsLocally(const TArray<class AActor*>& ActorsToMark);
 
+	/**
+	 * Delete all set markers on the current machine.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "MarkersManagerComponent")
 	void DeleteAllMarkersLocally();
 
 protected:
 
+	/**
+	 * Class for marker objects.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MarkersManagerComponent", meta = (BlueprintProtected))
 	class TSubclassOf<AActor> MarkerClass;
 
 private:
 
+	// An array of currently instanced markers.
 	UPROPERTY()
 	TArray<class AActor*> Markers;
 

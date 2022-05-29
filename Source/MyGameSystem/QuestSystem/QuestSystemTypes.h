@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "QuestSystemTypes.generated.h"
 
+/**
+ * Condition of a quest system object.
+ */
 UENUM(Blueprintable, BlueprintType)
 enum class ETaskCondition : uint8
 {
@@ -14,6 +17,9 @@ enum class ETaskCondition : uint8
 	Aborted		UMETA(DisplayName = "Aborted")
 };
 
+/**
+ * Structure for related actors of an objective.
+ */
 USTRUCT(BlueprintType, Blueprintable)
 struct FReferencesForQuest
 {

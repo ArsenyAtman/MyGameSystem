@@ -3,152 +3,253 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
 #include "QuestSystemTypes.h"
 #include "Objective.generated.h"
 
-UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UObjectiveData : public UDataAsset
-{
-	GENERATED_BODY()
+/**
+ * Delegate for handling changes of an objective.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FObjectiveConditionDelegate, class UObjective*, Objective);
 
-public:
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bIsOptional = false;
-
-};
-
-USTRUCT(Blueprintable, BlueprintType)
-struct FObjectiveInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UObjectiveData* ObjectiveData;
-
-	UPROPERTY(BlueprintReadWrite)
-	ETaskCondition Condition;
-
-	UPROPERTY(BlueprintReadWrite)
-	float Progress;
-
-	FObjectiveInfo(class UObjectiveData* Data = nullptr, ETaskCondition ObjectiveCondition = ETaskCondition::InProcess, float ObjectiveProgress = 0.0f)
-	{
-		ObjectiveData = Data;
-		Condition = ObjectiveCondition;
-		Progress = ObjectiveProgress;
-	}
-
-	friend bool operator == (const FObjectiveInfo& Info1, const FObjectiveInfo& Info2)
-	{
-		return 	Info1.ObjectiveData == Info2.ObjectiveData &&
-				Info1.Condition == Info2.Condition &&
-				Info1.Progress == Info2.Progress;
-	}
-
-	friend bool operator != (const FObjectiveInfo& Info1, const FObjectiveInfo& Info2)
-	{
-		return !(Info1 == Info2);
-	}
-};
-
+/**
+ * An object for objective representation.
+ */
 UCLASS(Blueprintable, BlueprintType)
-class MYGAMESYSTEM_API UObjective : public UObject
+class MYGAMESYSTEM_API UObjective : public UAdvancedObject
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
-	void Activate(class UStage* RelatedStage);
-	virtual void Activate_Implementation(class UStage* RelatedStage);
+	// Override for the replication.
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	/**
+	 * Activate the objective.
+	 * @warning Use this function only if you know what you are doing!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	void Activate();
+	virtual void Activate_Implementation();
+
+	/**
+	 * Abort the objective
+	 * @warning Use this function only if you know what you are doing!
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
 	void Abort();
 	virtual void Abort_Implementation();
 
+	/**
+	 * Spawn markers of this objective.
+	 * @warning Use this function only if you know what you are doing!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Objective|Internal")
 	void Mark();
 
+	/**
+	 * Despawn markers of this objective.
+	 * @warning Use this function only if you know what you are doing!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Objective|Internal")
 	void Unmark();
 
-	UFUNCTION(BlueprintPure, Category = "Objective|Info")
-	FObjectiveInfo GetObjectiveInfo() const;
+	/**
+	 * Get the stage that owns this objective.
+	 * @return The owning stage.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "Objective|OwningStage")
+	class UStage* GetOwningStage() const;
 
-	UFUNCTION(BlueprintPure, Category = "Objective|OwningStage")
-	FORCEINLINE class UStage* GetOwningStage() const { return OwningStage; }
+	/**
+	 * Get the condition of this objective.
+	 * @return The condition of this objective.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "Objective|Condition")
+	ETaskCondition GetCondition() const { return Condition; }
+
+	/**
+	 * Whether this objective is optional.
+	 * @return Is this condition optional.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "Objective|IsOptional")
+	bool GetIsOptional() const { return bIsOptional; }
+
+	/**
+	 * Called after the activation.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
+	FObjectiveConditionDelegate OnActivated;
+
+	/**
+	 * Called after the completion.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
+	FObjectiveConditionDelegate OnCompleted;
+
+	/**
+	 * Called after the failure.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
+	FObjectiveConditionDelegate OnFailed;
+
+	/**
+	 * Called after the interruption.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
+	FObjectiveConditionDelegate OnAborted;
+
+	/**
+	 * Called after updates.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Objective|Delegates")
+	FObjectiveConditionDelegate OnUpdated;
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|Info")
-	UObjectiveData* ObjectiveData;
+	/**
+	 * Set the condition of this objective.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintSetter, Category = "Objective|Condition", meta = (BlueprintProtected))
+	void SetCondition(ETaskCondition NewCondition);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|MarkersManager")
+	/**
+	 * Class of the markers manager.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Objective|MarkersManager", meta = (BlueprintProtected))
 	class TSubclassOf<class UMarkersManagerComponent> MarkersManagerComponentClass;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	/**
+	 * Complete the objective.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void Complete();
 	virtual void Complete_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	/**
+	 * Fail the objective.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void Fail();
 	virtual void Fail_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	/**
+	 * Update the objective
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void Update();
 	virtual void Update_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
+	/**
+	 * Cleanup.
+	 * @warning Use this function only if you know what you are doing!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal", meta = (BlueprintProtected))
 	void EndObjective();
 	virtual void EndObjective_Implementation();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	/**
+	 * Called after the activation.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveActivated();
 	virtual void OnObjectiveActivated_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	/**
+	 * Called after the abortion.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveAborted();
 	virtual void OnObjectiveAborted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	/**
+	 * Called after the completion.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveCompleted();
 	virtual void OnObjectiveCompleted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
+	/**
+	 * Called after the failure.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveFailed();
 	virtual void OnObjectiveFailed_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control")
-	void OnObjectiveUpdated();
-	virtual void OnObjectiveUpdated_Implementation() { return; }
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Progress")
-	float RecalculateProgress() const;
-	virtual float RecalculateProgress_Implementation() const { return -1.0f; }
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|RelatedActors")
+	/**
+	 * Filter actors for marking as objectives.
+	 * @param ActorsToMark - Source list of actors to filter.
+	 * @return Filtered list of actors.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|RelatedActors", meta = (BlueprintProtected))
 	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark) const;
 	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) const { return ActorsToMark; }
 
-	UFUNCTION(BlueprintGetter, Category = "Objective|RelatedActors")
+	/**
+	 * Get related actors for this objective.
+	 * @return References for this objective.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "Objective|RelatedActors", meta = (BlueprintProtected))
 	FReferencesForQuest GetReferencesForQuest() const { return ReferencesForQuest; }
 
 private:
 
-	class UStage* OwningStage = nullptr;
+	/**
+	 * Is this opjective optional.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsOptional, Category = "Objective|IsOptional", meta = (AllowPrivateAccess = true, BlueprintProtected))
+	bool bIsOptional = false;
 
-	ETaskCondition Condition = ETaskCondition::Aborted;
-	float Progress = 0.0f;
-
+	// Get all related actors for the objective.
 	FReferencesForQuest FindReferencesForQuest() const;
 
-	UPROPERTY(BlueprintGetter = GetReferencesForQuest)
-	FReferencesForQuest ReferencesForQuest;
-
+	// Instance the markers manager object.
 	class UMarkersManagerComponent* CreateMarkersManager() const;
 
+	/**
+	 * Condition of the objective
+	 */
+	UPROPERTY(BlueprintGetter = GetCondition, BlueprintSetter = SetCondition, ReplicatedUsing = OnRep_Condition)
+	ETaskCondition Condition = ETaskCondition::Aborted;
+
+	/*
+	TMap<ETaskCondition, FObjectiveConditionDelegate> ConditionToDelegateMap =
+	{
+		{ETaskCondition::InProcess, OnActivated},
+		{ETaskCondition::Completed, OnCompleted},
+		{ETaskCondition::Failed, OnFailed},
+		{ETaskCondition::Aborted, OnAborted}
+	};
+	*/
+
+	/**
+	 * Related actors for this objective.
+	 */
+	UPROPERTY(BlueprintGetter = GetReferencesForQuest, Replicated)
+	FReferencesForQuest ReferencesForQuest;
+
+	// MarkersManager object.
 	UPROPERTY()
 	class UMarkersManagerComponent* MarkersManager = nullptr;
+
+	// On replicated event for the Condition property.
+	UFUNCTION()
+	void OnRep_Condition();
+
+	// Broadcast related delegate to the current condition.
+	UFUNCTION()
+	void BroadcastChange_Condition();
+
+	// Notify all clients about the update.
+	UFUNCTION(NetMulticast, Reliable)
+	void Notify_OnUpdated();
 };

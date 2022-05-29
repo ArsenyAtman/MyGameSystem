@@ -4,90 +4,125 @@
 #include "Stage.h"
 #include "Quest.h"
 #include "Objective.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 
-void UStage::Activate_Implementation(UQuest* RelatedQuest)
+void UStage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	OwningQuest = RelatedQuest;
-	Condition = ETaskCondition::InProcess;
-	ActivateObjectives();
-	OnStageActivated();
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UStage, Condition);
 }
 
-void UStage::ObjectiveCompleted_Implementation(class UObjective* Objective)
+void UStage::Activate_Implementation()
 {
-	if (Condition == ETaskCondition::InProcess)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		CheckCondition();
+		ActivateObjectives();
+		SetCondition(ETaskCondition::InProcess);
+		OnStageActivated();
 	}
 }
 
-void UStage::ObjectiveFailed_Implementation(class UObjective* Objective)
+void UStage::ObjectiveCompleted_Implementation(UObjective* Objective)
 {
-	if (Condition == ETaskCondition::InProcess)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		CheckCondition();
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			CheckCondition();
+		}
 	}
 }
 
-void UStage::Update_Implementation()
+void UStage::ObjectiveFailed_Implementation(UObjective* Objective)
 {
-	OnStageUpdated();
-	OwningQuest->Update();
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			CheckCondition();
+		}
+	}
 }
 
 void UStage::MarkObjectives()
 {
-	for (UObjective* Objective : GetStageObjectives())
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::InProcess)
+		for (UObjective* Objective : GetStageObjectives())
 		{
-			Objective->Mark();
+			if (Objective->GetCondition() == ETaskCondition::InProcess)
+			{
+				Objective->Mark();
+			}
 		}
 	}
 }
 
 void UStage::UnmarkObjectives()
 {
-	for (UObjective* Objective : GetStageObjectives())
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		Objective->Unmark();
+		for (UObjective* Objective : GetStageObjectives())
+		{
+			Objective->Unmark();
+		}
 	}
 }
 
-FStageInfo UStage::GetStageInfo() const
+UQuest* UStage::GetOwningQuest() const
 {
-	TArray<UObjective*> Objectives = GetStageObjectives();
-	TArray<FObjectiveInfo> ObjectiveInfos;
-	for (const UObjective* Objective : Objectives)
+	return Cast<UQuest>(GetOuter());
+}
+
+void UStage::SetCondition(ETaskCondition NewCondition)
+{
+	if (GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		ObjectiveInfos.Add(Objective->GetObjectiveInfo());
+		Condition = NewCondition;
+		BroadcastChange_Condition();
 	}
-	return FStageInfo(StageData, Condition, ObjectiveInfos);
 }
 
 void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)
 {
-	Condition = ETaskCondition::Completed;
-	AbortAllObjectives();
-	OnStageCompleted();
-	OwningQuest->StagePassed(this, NextStage);
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			AbortAllObjectives();
+			SetCondition(ETaskCondition::Completed);
+			OnStageCompleted();
+			GetOwningQuest()->StagePassed(this, NextStage);
+		}
+	}
 }
 
 void UStage::Fail_Implementation(TSubclassOf<UStage> NextStage)
 {
-	Condition = ETaskCondition::Failed;
-	AbortAllObjectives();
-	OnStageFailed();
-	OwningQuest->StagePassed(this, NextStage);
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			AbortAllObjectives();
+			SetCondition(ETaskCondition::Failed);
+			OnStageFailed();
+			GetOwningQuest()->StagePassed(this, NextStage);
+		}
+	}
+}
+
+void UStage::AbortAllObjectives_Implementation()
+{
+	// ...
 }
 
 bool UStage::IsAllObjectivesCompleted(const TArray<UObjective*>& Objectives) const
 {
 	for (const UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition != ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
+		if (Objective->GetCondition() != ETaskCondition::Completed && !Objective->GetIsOptional())
 		{
 			return false;
 		}
@@ -99,7 +134,7 @@ bool UStage::IsAllObjectivesFailed(const TArray<UObjective*>& Objectives) const
 {
 	for (const UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition != ETaskCondition::Failed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
+		if (Objective->GetCondition() != ETaskCondition::Failed && !Objective->GetIsOptional())
 		{
 			return false;
 		}
@@ -111,7 +146,7 @@ bool UStage::IsOneObjectiveCompleted(const TArray<UObjective*>& Objectives) cons
 {
 	for (const UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Completed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
+		if (Objective->GetCondition() == ETaskCondition::Completed && !Objective->GetIsOptional())
 		{
 			return true;
 		}
@@ -123,10 +158,41 @@ bool UStage::IsOneObjectiveFailed(const TArray<UObjective*>& Objectives) const
 {
 	for (const UObjective* Objective : Objectives)
 	{
-		if (Objective->GetObjectiveInfo().Condition == ETaskCondition::Failed && !Objective->GetObjectiveInfo().ObjectiveData->bIsOptional)
+		if (Objective->GetCondition() == ETaskCondition::Failed && !Objective->GetIsOptional())
 		{
 			return true;
 		}
 	}
 	return false;
+}
+
+void UStage::OnRep_Condition()
+{
+	BroadcastChange_Condition();
+}
+
+void UStage::BroadcastChange_Condition()
+{
+	/*
+	if(ConditionToDelegateMap.Contains(CurrentCondition))
+	{
+		FStageConditionDelegate DelegateToBroadcast = ConditionToDelegateMap[CurrentCondition];
+		DelegateToBroadcast.Broadcast(this);
+	}
+	*/
+
+	switch(GetCondition())
+	{
+		case ETaskCondition::InProcess:
+			OnActivated.Broadcast(this);
+			break;
+
+		case ETaskCondition::Completed:
+			OnCompleted.Broadcast(this);
+			break;
+
+		case ETaskCondition::Failed:
+			OnFailed.Broadcast(this);
+			break;
+	}
 }

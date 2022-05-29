@@ -4,104 +4,220 @@
 #include "Quest.h"
 #include "Stage.h"
 #include "QuestComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 
-void UQuest::Activate_Implementation(UQuestComponent* QuestComponent)
+void UQuest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	OwningQuestComponent = QuestComponent;
-	if (IsValid(InitialStageClass))
-	{
-		ActiveStage = NewObject<UStage>(this, InitialStageClass);
-		if (IsValid(ActiveStage))
-		{
-			Condition = ETaskCondition::InProcess;
-			ActiveStage->Activate(this);
-		}
-	}
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	OnQuestActivated();
+	DOREPLIFETIME(UQuest, Condition);
+	DOREPLIFETIME(UQuest, bIsBeingTracked);
+	DOREPLIFETIME(UQuest, ActiveStage);
+	DOREPLIFETIME(UQuest, PastStages);
+}
+
+void UQuest::Activate_Implementation()
+{
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		if (IsValid(InitialStageClass))
+		{
+			ChangeActiveStage(InitialStageClass);
+			SetCondition(ETaskCondition::InProcess);
+		}
+
+		OnQuestActivated();
+	}
 }
 
 void UQuest::SetIsBeingTracked(bool bNewIsBeingTracked)
 {
-	if (Condition == ETaskCondition::InProcess)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		if (bNewIsBeingTracked)
+		if (GetCondition() == ETaskCondition::InProcess)
 		{
-			ActiveStage->MarkObjectives();
-		}
-		else
-		{
-			ActiveStage->UnmarkObjectives();
-		}
+			if (bNewIsBeingTracked)
+			{
+				GetActiveStage()->MarkObjectives();
+			}
+			else
+			{
+				GetActiveStage()->UnmarkObjectives();
+			}
 
-		bIsBeingTracked = bNewIsBeingTracked;
+			bIsBeingTracked = bNewIsBeingTracked;
+			BroadcastChange_IsBeingTracked();
+		}
 	}
 }
 
 void UQuest::StagePassed_Implementation(UStage* Stage, TSubclassOf<UStage> NextStageClass)
 {
-	if (Stage == ActiveStage)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		PastStages.Add(ActiveStage);
-		if (IsValid(NextStageClass))
+		if (Stage == GetActiveStage())
 		{
-			ActiveStage = NewObject<UStage>(this, NextStageClass);
-			ActiveStage->Activate(this);
-			SetIsBeingTracked(bIsBeingTracked);
-
-			Update();
-		}
-		else
-		{
-			if (ActiveStage->GetStageInfo().Condition == ETaskCondition::Completed)
+			if (IsValid(NextStageClass))
 			{
-				Complete();
+				ChangeActiveStage(NextStageClass);
+				SetIsBeingTracked(GetIsBeingTracked());
 			}
 			else
 			{
-				Fail();
+				if (GetActiveStage()->GetCondition() == ETaskCondition::Completed)
+				{
+					Complete();
+				}
+				else
+				{
+					Fail();
+				}
 			}
 		}
 	}
 }
 
-void UQuest::Update_Implementation()
+UQuestComponent* UQuest::GetOwningQuestComponent() const
 {
-	OnQuestUpdated();
-	OwningQuestComponent->QuestUpdated(this);
+	return Cast<UQuestComponent>(GetOuter());
 }
 
-FQuestInfo UQuest::GetQuestInfo() const
+void UQuest::SetCondition(ETaskCondition NewCondition)
 {
-	TArray<FStageInfo> PastStageInfos;
-	for (const UStage* Stage : PastStages)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		PastStageInfos.Add(Stage->GetStageInfo());
+		Condition = NewCondition;
+		BroadcastChange_Condition();
 	}
-	return FQuestInfo(QuestData, Condition, bIsBeingTracked, ActiveStage->GetStageInfo(), PastStageInfos);
 }
 
 void UQuest::Complete_Implementation()
 {
-	SetIsBeingTracked(false);
-	Condition = ETaskCondition::Completed;
-	OnQuestCompleted();
-	OwningQuestComponent->QuestCompleted(this);
-	if (IsValid(NextQuestIfCompleted))
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		OwningQuestComponent->AddQuest(NextQuestIfCompleted);
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			SetIsBeingTracked(false);
+			SetCondition(ETaskCondition::Completed);
+			OnQuestCompleted();
+			GetOwningQuestComponent()->QuestCompleted(this);
+			if (IsValid(NextQuestIfCompleted))
+			{
+				GetOwningQuestComponent()->AddQuest(NextQuestIfCompleted);
+			}
+		}
 	}
 }
 
 void UQuest::Fail_Implementation()
 {
-	SetIsBeingTracked(false);
-	Condition = ETaskCondition::Failed;
-	OnQuestFailed();
-	OwningQuestComponent->QuestFailed(this);
-	if (IsValid(NextQuestIfFailed))
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		OwningQuestComponent->AddQuest(NextQuestIfFailed);
+		if (GetCondition() == ETaskCondition::InProcess)
+		{
+			SetIsBeingTracked(false);
+			SetCondition(ETaskCondition::Failed);
+			OnQuestFailed();
+			GetOwningQuestComponent()->QuestFailed(this);
+			if (IsValid(NextQuestIfFailed))
+			{
+				GetOwningQuestComponent()->AddQuest(NextQuestIfFailed);
+			}
+		}
+	}
+}
+
+void UQuest::ChangeActiveStage(TSubclassOf<UStage> NewStageClass)
+{
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		if(IsValid(GetActiveStage()))
+		{
+			PastStages.Add(GetActiveStage());
+			BroadcastChange_PastStages();
+		}
+
+		if(IsValid(NewStageClass))
+		{
+			ActiveStage = NewObject<UStage>(this, NewStageClass);
+			if(IsValid(ActiveStage))
+			{
+				ActiveStage->Activate();
+			}
+		}
+		else
+		{
+			ActiveStage = nullptr;
+		}
+
+		BroadcastChange_ActiveStage();
+	}
+}
+
+void UQuest::OnRep_ActiveStage()
+{
+	BroadcastChange_ActiveStage();
+}
+
+void UQuest::OnRep_PastStages()
+{
+	BroadcastChange_PastStages();
+}
+
+void UQuest::OnRep_Condition()
+{
+	BroadcastChange_Condition();
+}
+
+void UQuest::OnRep_IsBeingTracked()
+{
+	BroadcastChange_IsBeingTracked();
+}
+
+void UQuest::BroadcastChange_ActiveStage()
+{
+	OnActiveStageChanged.Broadcast(this);
+}
+
+void UQuest::BroadcastChange_PastStages()
+{
+	OnPastStagesChanged.Broadcast(this);
+}
+
+void UQuest::BroadcastChange_Condition()
+{
+	/*
+	if(ConditionToDelegateMap.Contains(GetCondition()))
+	{
+		FQuestConditionDelegate DelegateToBroadcast = ConditionToDelegateMap[GetCondition()];
+		DelegateToBroadcast.Broadcast(this);
+	}
+	*/
+
+	switch(GetCondition())
+	{
+		case ETaskCondition::InProcess:
+			OnActivated.Broadcast(this);
+			break;
+
+		case ETaskCondition::Completed:
+			OnCompleted.Broadcast(this);
+			break;
+
+		case ETaskCondition::Failed:
+			OnFailed.Broadcast(this);
+			break;
+	}
+}
+
+void UQuest::BroadcastChange_IsBeingTracked()
+{
+	if(GetIsBeingTracked() == true)
+	{
+		OnBecomeTracked.Broadcast(this);
+	}
+	else
+	{
+		OnBecomeUntracked.Broadcast(this);
 	}
 }

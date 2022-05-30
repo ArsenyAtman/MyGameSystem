@@ -103,7 +103,7 @@ void UQuest::Complete_Implementation()
 			GetOwningQuestComponent()->QuestCompleted(this);
 			if (IsValid(NextQuestIfCompleted))
 			{
-				GetOwningQuestComponent()->AddQuest(NextQuestIfCompleted);
+				GetOwningQuestComponent()->AddQuestOfClass(NextQuestIfCompleted, true);
 			}
 		}
 	}
@@ -121,7 +121,7 @@ void UQuest::Fail_Implementation()
 			GetOwningQuestComponent()->QuestFailed(this);
 			if (IsValid(NextQuestIfFailed))
 			{
-				GetOwningQuestComponent()->AddQuest(NextQuestIfFailed);
+				GetOwningQuestComponent()->AddQuestOfClass(NextQuestIfFailed, true);
 			}
 		}
 	}

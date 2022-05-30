@@ -36,16 +36,29 @@ void UQuestComponent::BeginPlay()
 	// ...
 }
 
-void UQuestComponent::AddQuest(TSubclassOf<UQuest> QuestClass)
+void UQuestComponent::AddQuestOfClass(TSubclassOf<UQuest> QuestClass, bool bCheckOnDuplication)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(QuestClass) && CheckQuestOnDuplication(QuestClass))
+		if (IsValid(QuestClass) && (!bCheckOnDuplication || CheckQuestOnDuplication(QuestClass)))
 		{
 			UQuest* NewQuest = NewObject<UQuest>(this, QuestClass);
 			ActiveQuests.Add(NewQuest);
 			NewQuest->Activate();
 			BroadcastChange_QuestAdded(NewQuest);
+		}
+	}
+}
+
+void UQuestComponent::AddQuestObject(UQuest* Quest)
+{
+	if (GetOwnerRole() == ENetRole::ROLE_Authority)
+	{
+		if (IsValid(Quest))
+		{
+			ActiveQuests.Add(Quest);
+			Quest->Activate();
+			BroadcastChange_QuestAdded(Quest);
 		}
 	}
 }

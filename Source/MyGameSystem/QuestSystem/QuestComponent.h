@@ -37,10 +37,19 @@ public:
 	/**
 	 * Add a new quest.
 	 * @param QuestClass - Class of the new quest.
+	 * @param bCheckOnDuplication - Check the new quest class on duplication and don't add if it has already been added.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Control")
-	void AddQuest(TSubclassOf<class UQuest> QuestClass);
+	void AddQuestOfClass(TSubclassOf<class UQuest> QuestClass, bool bCheckOnDuplication = true);
+
+	/**
+	 * Add a new quest.
+	 * @param Quest - The new quest object with this quest component as outer.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Control")
+	void AddQuestObject(class UQuest* Quest);
 
 	/**
 	 * Notify the component about it's quest completion.

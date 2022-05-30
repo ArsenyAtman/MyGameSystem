@@ -20,7 +20,7 @@ public:
 
 	/**
 	 * Play a new animation montage on all machines.
-	 * @param Montage - A new animation to play.
+	 * @param Montage - The new animation to play.
 	 * @param InPlayRate - The rate of the animation.
 	 * @param StartTime - The start time of the animation
 	 * @param bStopAllMontages - Whether or not to stop all the currently playing montages.
@@ -32,23 +32,28 @@ public:
 
 	/**
 	 * Play a new animation on this machine.
-	 * @param Montage - A new animation to play.
+	 * @param Montage - The new animation to play.
 	 * @param InPlayRate - The rate of the animation.
 	 * @param StartTime - The start time of the animation
 	 * @param bStopAllMontages - Whether or not to stop all the currently playing montages.
-	 * @return A new playing animation instance of the new AnimMontage.
+	 * @return The new playing animation instance of the new AnimMontage.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "MontagePlayerComponent")
 	class UAnimInstance* PlayAnimationMontageLocally(class UAnimMontage* Montage, float InPlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = true);
 
 	/**
 	 * Play a new animation on clients.
+	 * @param Montage - The new animation to play.
+	 * @param InPlayRate - The rate of the animation.
+	 * @param StartTime - The start time of the animation
+	 * @param bStopAllMontages - Whether or not to stop all the currently playing montages.
 	 */
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
 	void PlayAnimationMontageOnClients(class UAnimMontage* Montage, float InPlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = true);
 
 	/**
 	 * Stop the currently playing animation montage on all machines.
+	 * @param Montage - The animation to stop.
 	 */
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
 	void StopAnimationMontage(class UAnimMontage* Montage);

@@ -23,8 +23,8 @@ class MYGAMESYSTEM_API IMarkableActorInterface
 public:
 
 	/**
-	 * Returns marker's relative transform.
-	 * @return Relative transform for markers.
+	 * Returns a relative transform for markers.
+	 * @return The relative transform for markers.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "MarkableActorInterface")
 	FTransform GetMarkerRelativeTransform() const;

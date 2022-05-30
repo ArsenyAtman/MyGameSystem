@@ -9,17 +9,17 @@
 #include "QuestComponent.generated.h"
 
 /**
- * A delegate for handling changes related to some quest.
+ * Delegate for handling changes related to some quest.
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQuestEventDelegate, class UQuest*, Quest);
 
 /**
- * A delegate for handling quest groups changes.
+ * Delegate for handling quest groups changes.
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestsUpdateDelegate);
 
 /**
- * A component that handles quests of it's actor.
+ * ActorComponent that handles quests of it's actor.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable, BlueprintType )
 class MYGAMESYSTEM_API UQuestComponent : public UReplicatingActorComponent
@@ -31,11 +31,12 @@ public:
 	// Sets default values for this component's properties
 	UQuestComponent();
 
-	// Override for the replication.
+	// Override for replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/**
 	 * Add a new quest.
+	 * @param QuestClass - Class of the new quest.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Control")
@@ -43,7 +44,7 @@ public:
 
 	/**
 	 * Notify the component about it's quest completion.
-	 * @param Quest - A quest that ends.
+	 * @param Quest - The quest that ends.
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
@@ -51,7 +52,7 @@ public:
 
 	/**
 	 * Notify the component about it's quest failure.
-	 * @param Quest - A quest that ends.
+	 * @param Quest - The quest that ends.
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "QuestComponent|Internal")
@@ -79,7 +80,7 @@ public:
 	TArray<class UQuest*> GetFailedQuests() const { return FailedQuests; }
 
 	/**
-	 * Get all  quests of this component.
+	 * Get all quests of this component.
 	 * @return All quests.
 	 */
 	UFUNCTION(BlueprintPure, Category = "QuestComponent|Quests")
@@ -137,21 +138,21 @@ private:
 	TArray<class UQuest*> FailedQuests;
 
 	/**
-	 * On replicated event of the ActiveQuests.
+	 * On replicated event of ActiveQuests.
 	 * @param PreReplicationActiveQuests - Array before replication.
 	 */
 	UFUNCTION()
 	void OnRep_ActiveQuests(const TArray<class UQuest*>& PreReplicationActiveQuests);
 
 	/**
-	 * On replicated event of the CompletedQuests.
+	 * On replicated event of CompletedQuests.
 	 * @param PreReplicationCompletedQuests - Array before replication.
 	 */
 	UFUNCTION()
 	void OnRep_CompletedQuests(const TArray<class UQuest*>& PreReplicationCompletedQuests);
 
 	/**
-	 * On replicated event of the FailedQuests.
+	 * On replicated event of FailedQuests.
 	 * @param PreReplicationFailedQuests - Array before replication.
 	 */
 	UFUNCTION()
@@ -185,6 +186,6 @@ private:
 	 * @param Function - The function pointer.
 	 */
 	using BroadcastChangeFunction = void (UQuestComponent::*)(class UQuest*);
-	void PerformeFunctionForArrayDiff(const TArray<class UQuest*>& Array1, const TArray<class UQuest*>& Array2, BroadcastChangeFunction Function);
+	void PerformFunctionForArrayDiff(const TArray<class UQuest*>& Array1, const TArray<class UQuest*>& Array2, BroadcastChangeFunction Function);
 
 };

@@ -8,7 +8,7 @@
 #include "QuestActorsReferencer.generated.h"
 
 /**
- * Actor to refer actors for quests from the level.
+ * Actor to refer actors for quests from a level.
  */
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API AQuestActorsReferencer : public AActor
@@ -21,7 +21,7 @@ public:
 	AQuestActorsReferencer();
 
 	/**
-	 * Get actors of an objective from the level.
+	 * Get actors of an objective from a level.
 	 * @param ObjectiveClass - Class of the objective.
 	 * @return Referenced actors.
 	 */

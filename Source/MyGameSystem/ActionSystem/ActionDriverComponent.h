@@ -7,7 +7,7 @@
 #include "ActionDriverComponent.generated.h"
 
 /**
- * Delegate for tracking changes of current actions of an ActionDriverComponent.
+ * Delegate for tracking changes of current actions of ActionDriverComponent.
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FActionChangeDelegate);
 

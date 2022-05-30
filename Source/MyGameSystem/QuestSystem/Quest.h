@@ -14,7 +14,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQuestConditionDelegate, class UQuest*, Quest);
 
 /**
- * An object that handles stages and describes a quest behavior.
+ * UAdvancedObject that handles stages and describes a quest behavior.
  */
 UCLASS(Blueprintable, BlueprintType)
 class MYGAMESYSTEM_API UQuest : public UAdvancedObject
@@ -23,11 +23,11 @@ class MYGAMESYSTEM_API UQuest : public UAdvancedObject
 
 public:
 
-	// Override for the replication.
+	// Override for replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/**
-	 * Activate the quest.
+	 * Activate this quest.
 	 * @warning Use this function only if you know what you are doing!
  	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Internal")
@@ -35,7 +35,7 @@ public:
 	virtual void Activate_Implementation();
 
 	/**
-	 * Track the quest.
+	 * Track or untrack this quest.
 	 * @param bNewIsBeingTracked - Track or not this quest.
 	 * @warning Server-only!
  	 */
@@ -53,8 +53,8 @@ public:
 	virtual void StagePassed_Implementation(class UStage* Stage, TSubclassOf<class UStage> NextStage);
 
 	/**
-	 * Get the quest component that owns this quest.
-	 * @return The quest component that owns this quest.
+	 * Get the QuestComponent that owns this quest.
+	 * @return The QuestComponent that owns this quest.
 	 */
 	UFUNCTION(BlueprintGetter, Category = "Quest|OwningQuestComponent")
 	class UQuestComponent* GetOwningQuestComponent() const;
@@ -214,13 +214,13 @@ private:
 	class UStage* ActiveStage;
 
 	/**
-	 * On replicated event of the ActiveStage.
+	 * On replicated event of ActiveStage.
 	 */
 	UFUNCTION()
 	void OnRep_ActiveStage();
 
 	/**
-	 * Broadcast change of the ActiveStage.
+	 * Broadcast change of ActiveStage.
 	 */
 	UFUNCTION()
 	void BroadcastChange_ActiveStage();
@@ -232,13 +232,13 @@ private:
 	TArray<class UStage*> PastStages;
 
 	/**
-	 * On replicated event of the PastStages.
+	 * On replicated event of PastStages.
 	 */
 	UFUNCTION()
 	void OnRep_PastStages();
 
 	/**
-	 * Broadcast change of the PastStages.
+	 * Broadcast change of PastStages.
 	 */
 	UFUNCTION()
 	void BroadcastChange_PastStages();
@@ -250,13 +250,13 @@ private:
 	ETaskCondition Condition = ETaskCondition::Aborted;
 
 	/**
-	 * On replicated event of the Condition.
+	 * On replicated event of Condition.
 	 */
 	UFUNCTION()
 	void OnRep_Condition();
 
 	/**
-	 * Broadcast change of the Condition.
+	 * Broadcast change of Condition.
 	 */
 	UFUNCTION()
 	void BroadcastChange_Condition();
@@ -271,13 +271,13 @@ private:
 	*/
 
 	/**
-	 * Is this quest is being tracked.
+	 * Is this quest being tracked.
 	 */
 	UPROPERTY(BlueprintGetter = GetIsBeingTracked, BlueprintSetter = SetIsBeingTracked, ReplicatedUsing = OnRep_IsBeingTracked)
 	bool bIsBeingTracked = false;
 
 	/**
-	 * On replicated event of the IsBeingTracked.
+	 * On replicated event of bIsBeingTracked.
 	 */
 	UFUNCTION()
 	void OnRep_IsBeingTracked();

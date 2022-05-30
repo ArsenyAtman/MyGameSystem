@@ -7,7 +7,7 @@
 #include "ActionInputHandler.generated.h"
 
 /**
- * A delegate type for acton input handlers.
+ * Delegate for acton input handlers.
  */
 DECLARE_DELEGATE(FActionFunctionDelegate);
 

@@ -7,7 +7,7 @@
 #include "MarkersManagerComponent.generated.h"
 
 /**
- * A component that manages markers for quests.
+ * ActorComponent that manages markers for quests.
  */
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UMarkersManagerComponent : public UActorComponent
@@ -15,10 +15,10 @@ class MYGAMESYSTEM_API UMarkersManagerComponent : public UActorComponent
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	// Sets default values for this actor's properties.
 	UMarkersManagerComponent();
 
-	// Override for cleanup.
+	// EndPlay override.
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	/**
@@ -57,7 +57,9 @@ protected:
 
 private:
 
-	// An array of currently instanced markers.
+	/**
+	 * Array of currently instanced markers.
+	 */
 	UPROPERTY()
 	TArray<class AActor*> Markers;
 

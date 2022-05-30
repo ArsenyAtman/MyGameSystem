@@ -8,7 +8,7 @@
 #include "Condition.generated.h"
 
 /**
- * An object that implements a behaviour of the controlled actor.
+ * Object that implements a behavior of the controlled actor.
  * @see ConditionComponent
  */
 UCLASS(BlueprintType, Blueprintable)
@@ -42,7 +42,7 @@ public:
 protected:
 
 	/**
-	 * Abort this condition and start a new one. See the NextCondition description.
+	 * Abort this condition and start a new one. See NextCondition description.
 	 * @param NextCondition - A new condition with the same outer as this condition has (the same ConditionComponent).
 	 * @warning Server-only!
 	 */

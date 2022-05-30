@@ -24,7 +24,7 @@ public:
 
 	/**
 	 * Get a component that defines a line trace direction (to find an interactive object).
-	 * @return A SceneComponent for the line tracing process.
+	 * @return SceneComponent for the line tracing process.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InteractingActorInterface")
 	class USceneComponent* GetTraceSceneComponent() const;
@@ -32,7 +32,7 @@ public:
 
 	/**
 	 * Get an interaction component of this actor.
-	 * @return An InteractionComponent of this actor.
+	 * @return InteractionComponent of this actor.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InteractingActorInterface")
 	class UInteractionComponent* GetInteractionComponent() const;

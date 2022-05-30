@@ -14,7 +14,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStageConditionDelegate, class UStage*, Stage);
 
 /**
- * An object for objectives handling.
+ * Object for objectives handling.
  */
 UCLASS(Blueprintable, BlueprintType, Abstract)
 class MYGAMESYSTEM_API UStage : public UAdvancedObject
@@ -23,11 +23,11 @@ class MYGAMESYSTEM_API UStage : public UAdvancedObject
 
 public:
 
-	// Override for the replication.
+	// Override for replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/**
-	 * Activate the stage.
+	 * Activate this stage.
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal")
@@ -167,7 +167,7 @@ protected:
 	virtual void OnStageFailed_Implementation() { return; }
 
 	/**
-	 * Called after the activation.
+	 * Called after the abortion.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Internal", meta = (BlueprintProtected))

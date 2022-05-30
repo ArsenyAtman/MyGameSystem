@@ -58,7 +58,7 @@ protected:
 	virtual void ObjectTick_Implementation(float DeltaTime) { return; }
 
 	/**
-	 * Enable/Disable the ObjectTick method.
+	 * Enable/Disable ObjectTick method.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected))
 	bool bCanEverTick = true;

@@ -6,6 +6,9 @@
 #include "Stage.h"
 #include "StageOptions.generated.h"
 
+/**
+ * Structure for a stage option.
+ */
 USTRUCT(BlueprintType, Blueprintable)
 struct FOption
 {
@@ -28,7 +31,7 @@ class MYGAMESYSTEM_API UStageOptions : public UStage
 
 public:
 
-	// Override for the replication.
+	// Override for replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
@@ -46,16 +49,16 @@ protected:
 	TArray<class UObjective*> GetStageObjectives_Implementation() const override { return StageObjectives; }
 
 	/**
-	 * Get a next stage class to run related to the specified objective from the options.
+	 * Get a next stage class to run related to a specified objective from options.
 	 * @param OfObjective - The specified objective.
-	 * @param FromOptions - The list of options.
+	 * @param FromOptions - List of options.
 	 * @return The next stage class to run.
 	 */
 	UFUNCTION(BlueprintPure, Category = "StageOptions|QuestFlow", meta = (BlueprintProtected))
 	class UClass* GetNextStage(class UObjective* OfObjective, const TArray<FOption>& FromOptions) const;
 
 	/**
-	 * Get the first completed objective from the list.
+	 * Get the first completed objective from list.
 	 * @param Objectives - TArray of objectives.
 	 * @return The first completed objective.
 	 */

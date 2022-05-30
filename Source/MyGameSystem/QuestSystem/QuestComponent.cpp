@@ -98,17 +98,17 @@ bool UQuestComponent::CheckQuestOnDuplication(TSubclassOf<UQuest> QuestClass) co
 
 void UQuestComponent::OnRep_ActiveQuests(const TArray<UQuest*>& PreReplicationActiveQuests)
 {
-	PerformeFunctionForArrayDiff(PreReplicationActiveQuests, ActiveQuests, &UQuestComponent::BroadcastChange_QuestAdded);
+	PerformFunctionForArrayDiff(PreReplicationActiveQuests, ActiveQuests, &UQuestComponent::BroadcastChange_QuestAdded);
 }
 
 void UQuestComponent::OnRep_CompletedQuests(const TArray<UQuest*>& PreReplicationCompletedQuests)
 {
-	PerformeFunctionForArrayDiff(PreReplicationCompletedQuests, CompletedQuests, &UQuestComponent::BroadcastChange_QuestCompleted);
+	PerformFunctionForArrayDiff(PreReplicationCompletedQuests, CompletedQuests, &UQuestComponent::BroadcastChange_QuestCompleted);
 }
 
 void UQuestComponent::OnRep_FailedQuests(const TArray<UQuest*>& PreReplicationFailedQuests)
 {
-	PerformeFunctionForArrayDiff(PreReplicationFailedQuests, FailedQuests, &UQuestComponent::BroadcastChange_QuestFailed);
+	PerformFunctionForArrayDiff(PreReplicationFailedQuests, FailedQuests, &UQuestComponent::BroadcastChange_QuestFailed);
 }
 
 void UQuestComponent::BroadcastChange_QuestAdded(UQuest* NewQuest)
@@ -126,7 +126,7 @@ void UQuestComponent::BroadcastChange_QuestFailed(UQuest* Quest)
 	OnQuestFailed.Broadcast(Quest);
 }
 
-void UQuestComponent::PerformeFunctionForArrayDiff(const TArray<UQuest*>& ArrayBefore, const TArray<UQuest*>& ArrayAfter, BroadcastChangeFunction Function)
+void UQuestComponent::PerformFunctionForArrayDiff(const TArray<UQuest*>& ArrayBefore, const TArray<UQuest*>& ArrayAfter, BroadcastChangeFunction Function)
 {
 	for (int i = 0; i < ArrayAfter.Num(); ++i)
 	{

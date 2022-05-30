@@ -7,7 +7,7 @@
 #include "AxisActionInputHandler.generated.h"
 
 /**
- * A delegate type for axis action handlers.
+ * Delegate for axis action handlers.
  */
 DECLARE_DELEGATE(FAxisActionFunctionDelegate);
 

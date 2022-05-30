@@ -16,7 +16,7 @@ class MYGAMESYSTEM_API UStageList : public UStage
 
 public:
 
-	// Override for the replication.
+	// Override for replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:

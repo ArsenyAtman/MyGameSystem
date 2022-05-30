@@ -23,8 +23,8 @@ class MYGAMESYSTEM_API IActionDrivenActorInterface
 public:
 
 	/**
-	 * Get the ActionDriver of this actor.
-	 * @return The ActionDriverComponent that controls this actor.
+	 * Get ActionDriver of this actor.
+	 * @return ActionDriverComponent that controls this actor.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActionDrivenActorInterface")
 	class UActionDriverComponent* GetActionDriverComponent() const;

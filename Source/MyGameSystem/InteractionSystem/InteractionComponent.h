@@ -7,17 +7,17 @@
 #include "InteractionComponent.generated.h"
 
 /**
- * 
+ * Delegate for situations where an interactable becomes available.
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractionAvailableDelegate, FText, Descriprion);
 
 /**
- * 
+ * Delegate for situations where an interactable becomes unavailable.
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractionUnavailableDelegate);
 
 /**
- * 
+ * ActorComponent for interactions handling.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UInteractionComponent : public UActorComponent
@@ -131,7 +131,7 @@ protected:
 	TEnumAsByte<ECollisionChannel> TraceCollisionChannel = ECollisionChannel::ECC_Visibility;
 
 	/**
-	 * Whether or not to draw a debug lines.
+	 * Whether or not to draw debug lines.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "InteractionComponent|Debug", meta = (BlueprintProtected))
 	bool bDrawDebugTrace = false;
@@ -156,10 +156,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintSetter = SetIsTracing, BlueprintGetter = GetIsTracing, Replicated, meta = (AllowPrivateAccess = true), Category = "InteractionComponent|Tracing")
 	bool bIsTracing = true;
 
-	// A timer for a delay between single traces.
+	// Timer for a delay between single traces.
 	FTimerHandle TraceTimer;
 
-	// An interactable actor.
+	// Current interactable actor.
 	class AActor* ActorForInteraction;
 		
 };

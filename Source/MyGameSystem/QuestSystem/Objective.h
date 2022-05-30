@@ -13,7 +13,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FObjectiveConditionDelegate, class UObjective*, Objective);
 
 /**
- * An object for objective representation.
+ * UAdvancedObject for a quest objective representation.
  */
 UCLASS(Blueprintable, BlueprintType)
 class MYGAMESYSTEM_API UObjective : public UAdvancedObject
@@ -22,11 +22,11 @@ class MYGAMESYSTEM_API UObjective : public UAdvancedObject
 
 public:
 
-	// Override for the replication.
+	// Override for replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/**
-	 * Activate the objective.
+	 * Activate this objective.
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
@@ -34,7 +34,7 @@ public:
 	virtual void Activate_Implementation();
 
 	/**
-	 * Abort the objective
+	 * Abort this objective
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Internal")
@@ -204,15 +204,15 @@ protected:
 private:
 
 	/**
-	 * Is this opjective optional.
+	 * Is this objective optional.
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsOptional, Category = "Objective|IsOptional", meta = (AllowPrivateAccess = true, BlueprintProtected))
 	bool bIsOptional = false;
 
-	// Get all related actors for the objective.
+	// Get all related actors to this objective.
 	FReferencesForQuest FindReferencesForQuest() const;
 
-	// Instance the markers manager object.
+	// Instance a markers manager.
 	class UMarkersManagerComponent* CreateMarkersManager() const;
 
 	/**
@@ -232,7 +232,7 @@ private:
 	*/
 
 	/**
-	 * Related actors for this objective.
+	 * Related actors to this objective.
 	 */
 	UPROPERTY(BlueprintGetter = GetReferencesForQuest, Replicated)
 	FReferencesForQuest ReferencesForQuest;
@@ -241,7 +241,7 @@ private:
 	UPROPERTY()
 	class UMarkersManagerComponent* MarkersManager = nullptr;
 
-	// On replicated event for the Condition property.
+	// On replicated event for Condition.
 	UFUNCTION()
 	void OnRep_Condition();
 

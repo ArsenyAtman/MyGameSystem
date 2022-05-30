@@ -7,7 +7,7 @@
 #include "AxisInputHandler.generated.h"
 
 /**
- * A delegate type for axis input handlers.
+ * Delegate for axis input handlers.
  */
 DECLARE_DELEGATE_OneParam(FAxisFunctionDelegate, float);
 

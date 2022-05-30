@@ -36,7 +36,7 @@ public:
 
 	/**
 	 * Called when a new action tried to start.
-	 * @param NewAction - an action that tried to start.
+	 * @param NewAction - The action that tried to start.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl")

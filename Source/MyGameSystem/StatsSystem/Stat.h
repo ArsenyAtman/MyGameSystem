@@ -3,20 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
 #include "StatsSystemTypes.h"
 #include "Stat.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatPassiveEffectDelegate, class UEffect*, Effect);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, FStatValues, Delta, class UEffect*, Effect);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStatConditionChangeDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatEffectDelegate, class UStat*, Stat, class UEffect*, Effect);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, class UStat*, Stat, FStatValues, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatConditionChangeDelegate, class UStat*, Stat);
 
 UCLASS(BlueprintType, Blueprintable, EditInlineNew)
-class MYGAMESYSTEM_API UStat : public UObject
+class MYGAMESYSTEM_API UStat : public UAdvancedObject
 {
 	GENERATED_BODY()
 
 public:
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Stat|Delta")
 	FStatValues ApplyDelta(FStatValues Delta, class UEffect* Effect);
@@ -39,9 +41,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Stat|StatsComponent")
 	class UStatsComponent* GetOwningStatsComponent() const;
 
-	UFUNCTION(BlueprintPure, Category = "Stat|Condition")
-	FStatInfo GetStatInfo() const;
-
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
 	FStatValueChangeDelegate OnValuesChanged;
 
@@ -52,25 +51,47 @@ public:
 	FStatConditionChangeDelegate OnMaxReached;
 
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
-	FStatPassiveEffectDelegate OnEffectAdded;
+	FStatEffectDelegate OnEffectAdded;
 
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
-	FStatPassiveEffectDelegate OnEffectRemoved;
+	FStatEffectDelegate OnEffectRemoved;
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatValues, Category = "Stat|Condition")
+	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
+	void SetStatValues(FStatValues NewStatValues);
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatValues,  BlueprintSetter = SetStatValues, ReplicatedUsing = OnRep_StatValues, Category = "Stat|Condition", meta = (AllowPrivateAccess = true))
 	FStatValues StatValues;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatBaseValues, Category = "Stat|Condition")
+	UFUNCTION()
+	void OnRep_StatValues(FStatValues PreReplicationStatValues);
+
+	UFUNCTION()
+	void BroadcastChange_StatValues(FStatValues PrevValues);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatBaseValues, Category = "Stat|Condition", meta = (AllowPrivateAccess = true))
 	FStatValues StatBaseValues;
 
-	UPROPERTY(BlueprintGetter = GetEffects, Category = "Stat|Effects")
+	UPROPERTY(BlueprintGetter = GetEffects, ReplicatedUsing = OnRep_Effects, Category = "Stat|Effects")
 	TArray<class UEffect*> Effects;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stat|Condition")
-	class UStatDataAsset* StatData = nullptr;
+	UFUNCTION()
+	void OnRep_Effects(const TArray<class UEffect*>& PreReplicationEffects);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = "Stat|DeltaApplier")
+	UFUNCTION()
+	void BroadcastChange_Effects(const TArray<class UEffect*>& PrevEffects);
+
+	UFUNCTION()
+	void Broadcast_OnEffectAdded(class UEffect* Effect);
+
+	UFUNCTION()
+	void Broadcast_OnEffectRemoved(class UEffect* Effect);
+
+	UPROPERTY(EditDefaultsOnly, Instanced, Category = "Stat|DeltaApplier")
 	class UStatDeltaApplier* StatDeltaApplier;
+
+	TArray<class UEffect*> FindMissingEffects(const TArray<class UEffect*>& FromArray, const TArray<class UEffect*>& InArray) const;
 };

@@ -28,12 +28,12 @@ public:
 		Max = StatMaxValue;
 	}
 
-	FStatValues operator + (FStatValues StatValues);
-	FStatValues operator - (FStatValues StatValues);
-	FStatValues operator * (FStatValues StatValues);
-	FStatValues operator / (FStatValues StatValues);
+	FStatValues operator + (FStatValues StatValues) const;
+	FStatValues operator - (FStatValues StatValues) const;
+	FStatValues operator * (FStatValues StatValues) const;
+	FStatValues operator / (FStatValues StatValues) const;
 
-	FStatValues operator * (float Scale);
+	FStatValues operator * (float Scale) const;
 	friend FStatValues operator * (float Scale, FStatValues StatValues);
 
 	FStatValues& operator += (FStatValues StatValues);
@@ -42,48 +42,7 @@ public:
 	FStatValues& operator /= (FStatValues StatValues);
 
 	FStatValues& operator *= (float Scale);
-};
 
-USTRUCT(BlueprintType, Blueprintable)
-struct FEffectInfo
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UEffectDataAsset* EffectData;
-
-	FEffectInfo(class UEffectDataAsset* Data = nullptr)
-	{
-		EffectData = Data;
-	}
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FStatInfo
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UStatDataAsset* StatData;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FStatValues StatBaseValues;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FStatValues StatValues;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FEffectInfo> AppliedEffects;
-
-	FStatInfo(class UStatDataAsset* Data = nullptr, FStatValues BaseValues = FStatValues(), FStatValues Values = FStatValues(), TArray<FEffectInfo> Effects = TArray<FEffectInfo>())
-	{
-		StatData = Data;
-		StatBaseValues = BaseValues;
-		StatValues = Values;
-		AppliedEffects = Effects;
-	}
+	bool operator == (FStatValues StatValues) const;
+	bool operator != (FStatValues StatValues) const;
 };

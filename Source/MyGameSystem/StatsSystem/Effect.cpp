@@ -3,33 +3,52 @@
 #include "Effect.h"
 #include "StatsComponent.h"
 #include "Stat.h"
-#include "EffectDataAsset.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 
-void UEffect::Activate(UStatsComponent* StatsComponent)
+void UEffect::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	if (!GetIsActive() && IsValid(StatsComponent) && GetRelatedStatsComponent() == nullptr)
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// ...
+}
+
+void UEffect::Activate()
+{
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		bIsActive = true;
+		if (IsValid(GetRelatedStatsComponent()))
+		{
+			GetRelatedStatsComponent()->AddEffect(this);
 
-		RelatedStatsComponent = StatsComponent;
-		RelatedStatsComponent->AddEffect(this);
-
-		OnActivated();
+			OnActivated();
+			Notify_OnActivated();
+		}
 	}
 }
 
 void UEffect::Deactivate()
 {
-	if (GetIsActive())
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		OnDeactivating();
+		if (IsValid(GetRelatedStatsComponent()))
+		{
+			OnDeactivating();
 
-		bIsActive = false;
+			GetRelatedStatsComponent()->RemoveEffect(this);
+		}
 
-		RelatedStatsComponent->RemoveEffect(this);
-		RelatedStatsComponent = nullptr;
+		this->Destroy();
 	}
+}
+
+UStatsComponent* UEffect::GetRelatedStatsComponent() const
+{
+	if (IsValid(GetOuter()))
+	{
+		return Cast<UStatsComponent>(GetOuter());
+	}
+	
+	return nullptr;
 }
 
 AActor* UEffect::GetRelatedActor() const
@@ -38,13 +57,28 @@ AActor* UEffect::GetRelatedActor() const
 	{
 		return GetRelatedStatsComponent()->GetOwner();
 	}
-	else
-	{
-		return nullptr;
-	}
+	
+	return nullptr;
 }
 
-FEffectInfo UEffect::GetEffectInfo() const
+void UEffect::EndPlay_Implementation()
 {
-	return FEffectInfo(EffectData);
+	Broadcast_OnDeactivated();
+
+	Super::EndPlay_Implementation();
+}
+
+void UEffect::Notify_OnActivated_Implementation()
+{
+	Broadcast_OnActivated();
+}
+
+void UEffect::Broadcast_OnActivated()
+{
+	OnEffectActivated.Broadcast(this);
+}
+
+void UEffect::Broadcast_OnDeactivated()
+{
+	OnEffectDeactivated.Broadcast(this);
 }

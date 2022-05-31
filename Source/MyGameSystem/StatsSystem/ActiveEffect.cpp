@@ -3,15 +3,21 @@
 
 #include "ActiveEffect.h"
 #include "Stat.h"
+#include "Net/UnrealNetwork.h"
 
 FStatValues UActiveEffect::ApplyDeltaToRelatedStats(FStatValues Delta)
 {
-	FStatValues DeltaSum;
-
-	for (UStat* Stat : GetRelatedStats())
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		DeltaSum += Stat->ApplyDelta(Delta, this);
+		FStatValues DeltaSum;
+
+		for (UStat* Stat : GetRelatedStats())
+		{
+			DeltaSum += Stat->ApplyDelta(Delta, this);
+		}
+
+		return DeltaSum;
 	}
 
-	return DeltaSum;
+	return FStatValues();
 }

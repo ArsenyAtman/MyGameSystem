@@ -25,7 +25,7 @@ protected:
 
 	virtual void OnDeactivating_Implementation();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn = true), Category = "StatEffect|RelatedStats")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StatEffect|RelatedStats", meta = (ExposeOnSpawn = true, BlueprintProtected))
 	TSubclassOf<class UStat> ForStatsOfClass;
 
 private:

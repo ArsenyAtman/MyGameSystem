@@ -16,7 +16,7 @@ class MYGAMESYSTEM_API UActiveEffect : public UStatEffect
 
 protected:
 
-	UFUNCTION(BlueprintCallable, Category = "ActiveEffect|ApplyDelta")
+	UFUNCTION(BlueprintCallable, Category = "ActiveEffect|ApplyDelta", meta = (BlueprintProtected))
 	FStatValues ApplyDeltaToRelatedStats(FStatValues Delta);
 	
 };

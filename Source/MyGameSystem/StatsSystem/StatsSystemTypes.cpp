@@ -3,7 +3,7 @@
 
 #include "StatsSystemTypes.h"
 
-FStatValues FStatValues::operator + (FStatValues StatValues)
+FStatValues FStatValues::operator + (FStatValues StatValues) const
 {
 	FStatValues NewStatValues = *this;
 
@@ -14,7 +14,7 @@ FStatValues FStatValues::operator + (FStatValues StatValues)
 	return NewStatValues;
 }
 
-FStatValues FStatValues::operator - (FStatValues StatValues)
+FStatValues FStatValues::operator - (FStatValues StatValues) const
 {
 	FStatValues NewStatValues = *this;
 
@@ -25,7 +25,7 @@ FStatValues FStatValues::operator - (FStatValues StatValues)
 	return NewStatValues;
 }
 
-FStatValues FStatValues::operator * (FStatValues StatValues)
+FStatValues FStatValues::operator * (FStatValues StatValues) const
 {
 	FStatValues NewStatValues = *this;
 
@@ -36,7 +36,7 @@ FStatValues FStatValues::operator * (FStatValues StatValues)
 	return NewStatValues;
 }
 
-FStatValues FStatValues::operator / (FStatValues StatValues)
+FStatValues FStatValues::operator / (FStatValues StatValues) const
 {
 	FStatValues NewStatValues = *this;
 
@@ -47,7 +47,7 @@ FStatValues FStatValues::operator / (FStatValues StatValues)
 	return NewStatValues;
 }
 
-FStatValues FStatValues::operator * (float Scale)
+FStatValues FStatValues::operator * (float Scale) const
 {
 	FStatValues NewStatValues = *this;
 
@@ -100,4 +100,14 @@ FStatValues& FStatValues::operator *= (float Scale)
 	*this = *this * Scale;
 
 	return *this;
+}
+
+bool FStatValues::operator == (FStatValues StatValues) const
+{
+	return this->Value == StatValues.Value && this->Min == StatValues.Min && this->Max == StatValues.Max;
+}
+
+bool FStatValues::operator != (FStatValues StatValues) const
+{
+	return !((*this) == StatValues);
 }

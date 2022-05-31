@@ -21,35 +21,23 @@ void UStatsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UStatsComponent, EffectsInfo);
-	DOREPLIFETIME(UStatsComponent, StatsInfo);
+	//DOREPLIFETIME(UStatsComponent, Stats);
+	DOREPLIFETIME(UStatsComponent, Effects);
 }
 
 void UStatsComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (GetOwnerRole() == ENetRole::ROLE_Authority)
-	{
-		for (UStat* Stat : GetStats())
-		{
-			Stat->OnValuesChanged.AddDynamic(this, &UStatsComponent::StatValuesChanged);
-			Stat->OnEffectAdded.AddDynamic(this, &UStatsComponent::StatEffectAdded);
-			Stat->OnEffectRemoved.AddDynamic(this, &UStatsComponent::StatEffectRemoved);
-		}
-
-		UpdateEffectsInfo();
-		UpdateStatsInfo();
-	}
 }
 
 void UStatsComponent::ApplyEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(Effect) && Effect->GetOuter() == this && Effect->GetRelatedStatsComponent() == nullptr)
+		if (IsValid(Effect) && Effect->GetOuter() == this)
 		{
-			Effect->Activate(this);
+			Effect->Activate();
 		}
 	}
 }
@@ -73,12 +61,7 @@ void UStatsComponent::AddEffect(UEffect* Effect)
 		{
 			Effects.Add(Effect);
 
-			if (OnEffectAdded.IsBound())
-			{
-				OnEffectAdded.Broadcast(Effect);
-			}
-
-			UpdateEffectsInfo();
+			Broadcast_OnEffectAdded(Effect);
 		}
 	}
 }
@@ -91,14 +74,27 @@ void UStatsComponent::RemoveEffect(UEffect* Effect)
 		{
 			Effects.Remove(Effect);
 
-			if (OnEffectRemoved.IsBound())
-			{
-				OnEffectRemoved.Broadcast(Effect);
-			}
-
-			UpdateEffectsInfo();
+			Broadcast_OnEffectRemoved(Effect);
 		}
 	}
+}
+
+TArray<UEffect*> UStatsComponent::GetEffectsOfClass(TSubclassOf<UEffect> EffectClass) const
+{
+	TArray<UEffect*> FoundEffects;
+
+	if (IsValid(EffectClass))
+	{
+		for (UEffect* Effect : GetEffects())
+		{
+			if (Effect->GetClass()->IsChildOf(EffectClass))
+			{
+				FoundEffects.Add(Effect);
+			}
+		}
+	}
+
+	return FoundEffects;
 }
 
 TArray<UStat*> UStatsComponent::GetStatsOfClass(TSubclassOf<UStat> StatClass) const
@@ -119,49 +115,48 @@ TArray<UStat*> UStatsComponent::GetStatsOfClass(TSubclassOf<UStat> StatClass) co
 	return FoundStats;
 }
 
-void UStatsComponent::OnRep_StatsInfo()
+void UStatsComponent::OnRep_Effects(const TArray<UEffect*>& PreReplicationEffects)
 {
-	if (OnStatsUpdated.IsBound())
+	BroadcastChange_Effects(PreReplicationEffects);
+}
+
+void UStatsComponent::BroadcastChange_Effects(const TArray<UEffect*>& PrevEffects)
+{
+	TArray<UEffect*> AddedEffects = FindMissingEffects(Effects, PrevEffects);
+	TArray<UEffect*> RemovedEffects = FindMissingEffects(PrevEffects, Effects);
+
+	for(UEffect* Effect : AddedEffects)
 	{
-		OnStatsUpdated.Broadcast();
+		Broadcast_OnEffectAdded(Effect);
+	}
+
+	for(UEffect* Effect : RemovedEffects)
+	{
+		Broadcast_OnEffectRemoved(Effect);
 	}
 }
 
-void UStatsComponent::UpdateStatsInfo()
+void UStatsComponent::Broadcast_OnEffectAdded(UEffect* Effect)
 {
-	StatsInfo.Empty();
-
-	for (const UStat* Stat : GetStats())
-	{
-		StatsInfo.Add(Stat->GetStatInfo());
-	}
-
-	if (OnStatsUpdated.IsBound())
-	{
-		OnStatsUpdated.Broadcast();
-	}
+	OnEffectAdded.Broadcast(Effect);
 }
 
-void UStatsComponent::OnRep_EffectsInfo()
+void UStatsComponent::Broadcast_OnEffectRemoved(UEffect* Effect)
 {
-	if (OnEffectsUpdated.IsBound())
-	{
-		OnEffectsUpdated.Broadcast();
-	}
+	OnEffectRemoved.Broadcast(Effect);
 }
 
-void UStatsComponent::UpdateEffectsInfo()
+TArray<UEffect*> UStatsComponent::FindMissingEffects(const TArray<UEffect*>& FromArray, const TArray<UEffect*>& InArray) const
 {
-	EffectsInfo.Empty();
+	TArray<UEffect*> MissingEffects;
 
-	for (const UEffect* Effect : GetEffects())
+	for(UEffect* Effect : FromArray)
 	{
-		EffectsInfo.Add(Effect->GetEffectInfo());
+		if(InArray.Find(Effect) == INDEX_NONE)
+		{
+			MissingEffects.Add(Effect);
+		}
 	}
 
-	if (OnEffectsUpdated.IsBound())
-	{
-		OnEffectsUpdated.Broadcast();
-	}
-
+	return MissingEffects;
 }

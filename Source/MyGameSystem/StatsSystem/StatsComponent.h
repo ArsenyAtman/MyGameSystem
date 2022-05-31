@@ -3,15 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "MyGameSystem/AdvancedObject/ReplicatingActorComponent.h"
 #include "StatsSystemTypes.h"
 #include "StatsComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStatsComponentUpdateDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatsComponentEffectDelegate, class UEffect*, Effect);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatComponentEffectDelegate, class UEffect*, Effect);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UStatsComponent : public UActorComponent
+class MYGAMESYSTEM_API UStatsComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 
@@ -38,65 +37,45 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "StatComponent|Effects")
 	TArray<class UEffect*> GetEffects() const { return Effects; }
 
+	UFUNCTION(BlueprintPure, Category = "StatComponent|Effects")
+	TArray<class UEffect*> GetEffectsOfClass(TSubclassOf<class UEffect> EffectClass) const;
+
 	UFUNCTION(BlueprintGetter, Category = "StatComponent|Stats")
 	TArray<class UStat*> GetStats() const { return Stats; }
 
 	UFUNCTION(BlueprintPure, Category = "StatComponent|Stats")
 	TArray<class UStat*> GetStatsOfClass(TSubclassOf<class UStat> StatClass) const;
 
-	UFUNCTION(BlueprintGetter, Category = "StatComponent|Effects")
-	TArray<struct FEffectInfo> GetEffectsInfo() const { return EffectsInfo; }
+	UPROPERTY(BlueprintAssignable)
+	FStatComponentEffectDelegate OnEffectAdded;
 
-	UFUNCTION(BlueprintGetter, Category = "StatComponent|Stats")
-	TArray<struct FStatInfo> GetStatsInfo() const { return StatsInfo; }
-
-	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
-	FStatsComponentUpdateDelegate OnEffectsUpdated;
-
-	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
-	FStatsComponentUpdateDelegate OnStatsUpdated;
-
-	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
-	FStatsComponentEffectDelegate OnEffectAdded;
-
-	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
-	FStatsComponentEffectDelegate OnEffectRemoved;
+	UPROPERTY(BlueprintAssignable)
+	FStatComponentEffectDelegate OnEffectRemoved;
 
 protected:
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintGetter = GetStats, Category = "StatComponent|Stats")
-	TArray<class UStat*> Stats;
-
-	UPROPERTY(BlueprintGetter = GetEffects, Category = "StatComponent|Effects")
-	TArray<class UEffect*> Effects;
-
-	UPROPERTY(BlueprintGetter = GetEffectsInfo, ReplicatedUsing = OnRep_EffectsInfo, Category = "StatComponent|Effects")
-	TArray<struct FEffectInfo> EffectsInfo;
-
-	UPROPERTY(BlueprintGetter = GetStatsInfo, ReplicatedUsing = OnRep_StatsInfo, Category = "StatComponent|Stats")
-	TArray<struct FStatInfo> StatsInfo;
+	// ...
 
 private:
 
-	UFUNCTION()
-	void OnRep_StatsInfo();
+	UPROPERTY(EditAnywhere, Instanced, BlueprintGetter = GetStats, Replicated, Category = "StatComponent|Stats")
+	TArray<class UStat*> Stats;
+
+	UPROPERTY(BlueprintGetter = GetEffects, ReplicatedUsing = OnRep_Effects, Category = "StatComponent|Effects")
+	TArray<class UEffect*> Effects;
 
 	UFUNCTION()
-	void StatValuesChanged(FStatValues Delta, class UEffect* OfEffect) { UpdateStatsInfo(); }
+	void OnRep_Effects(const TArray<class UEffect*>& PreReplicationEffects);
 
 	UFUNCTION()
-	void StatEffectAdded(class UEffect* Effect) { UpdateStatsInfo(); }
+	void BroadcastChange_Effects(const TArray<class UEffect*>& PrevEffects);
 
 	UFUNCTION()
-	void StatEffectRemoved(class UEffect* Effect) { UpdateStatsInfo(); }
+	void Broadcast_OnEffectAdded(class UEffect* Effect);
 
 	UFUNCTION()
-	void UpdateStatsInfo();
+	void Broadcast_OnEffectRemoved(class UEffect* Effect);
 
-	UFUNCTION()
-	void OnRep_EffectsInfo();
-
-	UFUNCTION()
-	void UpdateEffectsInfo();
+	TArray<class UEffect*> FindMissingEffects(const TArray<class UEffect*>& FromArray, const TArray<class UEffect*>& InArray) const;
 
 };

@@ -46,10 +46,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "StatComponent|Stats")
 	TArray<class UStat*> GetStatsOfClass(TSubclassOf<class UStat> StatClass) const;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
 	FStatComponentEffectDelegate OnEffectAdded;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
 	FStatComponentEffectDelegate OnEffectRemoved;
 
 protected:
@@ -67,13 +67,10 @@ private:
 	UFUNCTION()
 	void OnRep_Effects(const TArray<class UEffect*>& PreReplicationEffects);
 
-	UFUNCTION()
 	void BroadcastChange_Effects(const TArray<class UEffect*>& PrevEffects);
 
-	UFUNCTION()
 	void Broadcast_OnEffectAdded(class UEffect* Effect);
 
-	UFUNCTION()
 	void Broadcast_OnEffectRemoved(class UEffect* Effect);
 
 	TArray<class UEffect*> FindMissingEffects(const TArray<class UEffect*>& FromArray, const TArray<class UEffect*>& InArray) const;

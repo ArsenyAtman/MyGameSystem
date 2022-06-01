@@ -58,7 +58,7 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintSetter, Category = "Stat|Condition", meta = (BlueprintProtected))
 	void SetStatValues(FStatValues NewStatValues);
 
 private:
@@ -69,7 +69,6 @@ private:
 	UFUNCTION()
 	void OnRep_StatValues(FStatValues PreReplicationStatValues);
 
-	UFUNCTION()
 	void BroadcastChange_StatValues(FStatValues PrevValues);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatBaseValues, Category = "Stat|Condition", meta = (AllowPrivateAccess = true))
@@ -81,13 +80,10 @@ private:
 	UFUNCTION()
 	void OnRep_Effects(const TArray<class UEffect*>& PreReplicationEffects);
 
-	UFUNCTION()
 	void BroadcastChange_Effects(const TArray<class UEffect*>& PrevEffects);
 
-	UFUNCTION()
 	void Broadcast_OnEffectAdded(class UEffect* Effect);
 
-	UFUNCTION()
 	void Broadcast_OnEffectRemoved(class UEffect* Effect);
 
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = "Stat|DeltaApplier")

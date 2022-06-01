@@ -30,10 +30,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Effect|RelatedActor")
 	class AActor* GetRelatedActor() const;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Effect|Delegates")
 	FEffectConditionChangeDelegate OnEffectActivated;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Effect|Delegates")
 	FEffectConditionChangeDelegate OnEffectDeactivated;
 
 protected:
@@ -55,10 +55,8 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Notify_OnActivated();
 
-	UFUNCTION()
 	void Broadcast_OnActivated();
 
-	UFUNCTION()
 	void Broadcast_OnDeactivated();
 	
 };

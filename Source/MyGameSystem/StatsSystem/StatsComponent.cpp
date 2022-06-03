@@ -21,14 +21,8 @@ void UStatsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(UStatsComponent, Stats);
+	DOREPLIFETIME(UStatsComponent, Stats);
 	DOREPLIFETIME(UStatsComponent, Effects);
-}
-
-void UStatsComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
 }
 
 void UStatsComponent::ApplyEffect(UEffect* Effect)

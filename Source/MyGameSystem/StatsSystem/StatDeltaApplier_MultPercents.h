@@ -7,7 +7,7 @@
 #include "StatDeltaApplier_MultPercents.generated.h"
 
 /**
- * 
+ * DeltaApplier that multiplies all delta modifications of passive effects.
  */
 UCLASS()
 class MYGAMESYSTEM_API UStatDeltaApplier_MultPercents : public UStatDeltaApplier

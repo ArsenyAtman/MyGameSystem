@@ -7,7 +7,7 @@
 #include "ActiveEffect.generated.h"
 
 /**
- * 
+ * Effect that applies it's delta to related stats.
  */
 UCLASS()
 class MYGAMESYSTEM_API UActiveEffect : public UStatEffect
@@ -16,6 +16,11 @@ class MYGAMESYSTEM_API UActiveEffect : public UStatEffect
 
 protected:
 
+	/**
+	 * Apply the delta of this effect.
+	 * @param Delta - The value to apply.
+	 * @return Delta that has been applied to all stats.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "ActiveEffect|ApplyDelta", meta = (BlueprintProtected))
 	FStatValues ApplyDeltaToRelatedStats(FStatValues Delta);
 	

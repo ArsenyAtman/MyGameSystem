@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "StatsSystemTypes.generated.h"
 
+/**
+ * Struct for some value in a range.
+ */
 USTRUCT(BlueprintType, Blueprintable)
 struct FStatValues
 {

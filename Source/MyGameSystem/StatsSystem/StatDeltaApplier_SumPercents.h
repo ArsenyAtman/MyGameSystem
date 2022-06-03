@@ -7,7 +7,7 @@
 #include "StatDeltaApplier_SumPercents.generated.h"
 
 /**
- * 
+ * DeltaApplier that sums all delta modifications of passive effects.
  */
 UCLASS()
 class MYGAMESYSTEM_API UStatDeltaApplier_SumPercents : public UStatDeltaApplier

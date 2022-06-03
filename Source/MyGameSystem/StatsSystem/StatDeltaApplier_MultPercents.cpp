@@ -16,7 +16,7 @@ FStatValues UStatDeltaApplier_MultPercents::ApplyDelta_Implementation(FStatValue
 		UPassiveEffect* PassiveEffect = Cast<UPassiveEffect>(Effect);
 		if (IsValid(PassiveEffect))
 		{
-			FinalDelta = PassiveEffect->ApplyToDelta(FinalDelta, OfEffect, GetOwningStat());
+			FinalDelta = PassiveEffect->ApplyToDelta(FinalDelta, OfEffect, GetOwningStat()); // NOT *= !!!!
 		}
 	}
 

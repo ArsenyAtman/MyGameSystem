@@ -7,7 +7,8 @@
 #include "StatEffect.generated.h"
 
 /**
- * 
+ * Effect that applies to a Stat.
+ * @see UStat class.
  */
 UCLASS()
 class MYGAMESYSTEM_API UStatEffect : public UEffect
@@ -16,20 +17,30 @@ class MYGAMESYSTEM_API UStatEffect : public UEffect
 
 public:
 
+	/**
+	 * Getter for related stats of this effect.
+	 * @return Related stats.
+	 */
 	UFUNCTION(BlueprintPure, Category = "StatEffect|RelatedStats")
 	TArray<class UStat*> GetRelatedStats() const { return RelatedStats; }
 	
 protected:
 
-	virtual void OnActivated_Implementation();
+	// Activation override.
+	virtual void OnActivated_Implementation() override;
 
-	virtual void OnDeactivating_Implementation();
+	// Deactivation override.
+	virtual void OnDeactivating_Implementation() override;
 
+	/**
+	 * Class of stats affected by this effect.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StatEffect|RelatedStats", meta = (ExposeOnSpawn = true, BlueprintProtected))
 	TSubclassOf<class UStat> ForStatsOfClass;
 
 private:
 
+	// Stats that are related to this effect.
 	TArray<class UStat*> RelatedStats;
 
 };

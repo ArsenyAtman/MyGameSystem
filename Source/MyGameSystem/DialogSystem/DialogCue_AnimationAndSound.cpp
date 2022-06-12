@@ -12,7 +12,7 @@
 #include "MyGameSystem/MontagePlayer/MontagePlayableActorInterface.h"
 #include "AnimNotify_PlayAudioOfDialogCue.h"
 #include "Dialog.h"
-#include "DialogCueDataAsset_AnimationAndSound.h"
+#include "Animation/AnimInstance.h"
 
 void UDialogCue_AnimationAndSound::OnCueBeginned_Implementation()
 {
@@ -52,17 +52,17 @@ void UDialogCue_AnimationAndSound::StartAnimation()
 
 void UDialogCue_AnimationAndSound::PlayAudio_Implementation()
 {
-	if (IsValid(GetDialogUnitData_Implementation()) && IsValid(GetDialogUnitData_Implementation()->Sound))
+	if (IsValid(Sound))
 	{
-		AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetInterlocutors(), GetDialogUnitData_Implementation()->Voice);
+		AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetInterlocutors(), Voice);
 		if (IsValid(CueOwner) && CueOwner->Implements<UDialogWavePlayableActorInterface>())
 		{
 			UDialogWavePlayerComponent* DialogPlayer = IDialogWavePlayableActorInterface::Execute_GetDialogWavePlayerComponent(CueOwner);
 			if (IsValid(DialogPlayer))
 			{
 				TArray<UDialogueVoice*> InterlocutorsVoices = GetInterlocutorsVoices(GetOwningDialog()->GetInterlocutors());
-				InterlocutorsVoices.Remove(GetDialogUnitData_Implementation()->Voice);
-				PlayingAudioComponent = DialogPlayer->PlayDialogWaveReplicated(GetDialogUnitData_Implementation()->Sound, InterlocutorsVoices);
+				InterlocutorsVoices.Remove(Voice);
+				PlayingAudioComponent = DialogPlayer->PlayDialogWaveReplicated(Sound, InterlocutorsVoices);
 				if (IsValid(PlayingAudioComponent))
 				{
 					PlayingAudioComponent->OnAudioFinished.AddDynamic(this, &UDialogCue_AnimationAndSound::AudioPlayed);
@@ -90,13 +90,13 @@ void UDialogCue_AnimationAndSound::AudioPlayed()
 
 void UDialogCue_AnimationAndSound::PlayAnimation_Implementation()
 {
-	if (IsValid(GetDialogUnitData_Implementation()) && IsValid(GetDialogUnitData_Implementation()->Animation))
+	if (IsValid(Animation))
 	{
-		AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetInterlocutors(), GetDialogUnitData_Implementation()->Voice);
+		AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetInterlocutors(), Voice);
 		if (IsValid(CueOwner) && CueOwner->Implements<UMontagePlayableActorInterface>())
 		{
 			UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(CueOwner);
-			PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(GetDialogUnitData_Implementation()->Animation);
+			PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(Animation);
 			if (IsValid(PlayingAnimInstance))
 			{
 				PlayingAnimInstance->OnMontageEnded.AddDynamic(this, &UDialogCue_AnimationAndSound::AnimationPlayed);
@@ -109,7 +109,7 @@ void UDialogCue_AnimationAndSound::PlayAnimation_Implementation()
 		this->AnimationPlayed(nullptr, true);
 	}
 
-	if (IsValid(GetDialogUnitData_Implementation()) && !HasAudioStartAnimNotify(GetDialogUnitData_Implementation()->Animation))
+	if (!HasAudioStartAnimNotify(Animation))
 	{
 		PlayAudio();
 	}
@@ -185,9 +185,4 @@ bool UDialogCue_AnimationAndSound::HasAudioStartAnimNotify(const UAnimMontage* M
 		}
 	}
 	return false;
-}
-
-UDialogCueDataAsset_AnimationAndSound* UDialogCue_AnimationAndSound::GetDialogUnitData_Implementation() const
-{
-	return Cast<UDialogCueDataAsset_AnimationAndSound>(Super::GetDialogUnitData_Implementation());
 }

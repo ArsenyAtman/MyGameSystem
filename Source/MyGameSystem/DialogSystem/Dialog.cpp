@@ -12,19 +12,17 @@ void UDialog::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UDialog, CurrentDialogUnit);
-
 }
 
 void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& OtherInterlocutors)
 {
 	DialogMaster = Master;
 	DialogInitiator = Initiator;
+	AdditionalInterlocutors = OtherInterlocutors;
 
-	Interlocutors = OtherInterlocutors;
-	Interlocutors.Add(DialogMaster);
-	Interlocutors.Add(DialogInitiator);
-
-	BeginDialogForInterlocutors(GetOwningDialogComponent(), Interlocutors);
+	TArray<AActor*> InterlocutorsWithoutMaster = GetAdditionalInterlocutors();
+	InterlocutorsWithoutMaster.Add(DialogInitiator);
+	BeginDialogForInterlocutors(InterlocutorsWithoutMaster);
 
 	SetCurrentDialogUnit(NewObject<UDialogUnit>(this, InitialDialogUnit));
 	if (IsValid(GetCurrentDialogUnit()))
@@ -50,9 +48,17 @@ void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUni
 		else
 		{
 			SetCurrentDialogUnit(nullptr);
-			EndDialogForInterlocutors(Interlocutors);
+			EndDialogForInterlocutors(GetAllInterlocutors());
 		}
 	}
+}
+
+TArray<AActor*> UDialog::GetAllInterlocutors() const
+{
+	TArray<AActor*> AllInterlocutors = AdditionalInterlocutors;
+	AllInterlocutors.Add(DialogInitiator);
+	AllInterlocutors.Add(DialogMaster);
+	return AllInterlocutors;
 }
 
 UDialogComponent* UDialog::GetOwningDialogComponent() const
@@ -60,16 +66,16 @@ UDialogComponent* UDialog::GetOwningDialogComponent() const
 	return Cast<UDialogComponent>(GetOuter());
 }
 
-void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponent, const TArray<AActor*>& DialogInterlocutors)
+void UDialog::BeginDialogForInterlocutors(const TArray<AActor*>& DialogInterlocutorsWithoutMaster)
 {
-	for (const AActor* Interlocutor : DialogInterlocutors)
+	for (const AActor* Interlocutor : DialogInterlocutorsWithoutMaster)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
 			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
 			if (IsValid(DialogComponent))
 			{
-				DialogComponent->DialogStarted(MasterDialogComponent);
+				DialogComponent->DialogStarted(this);
 			}
 		}
 	}

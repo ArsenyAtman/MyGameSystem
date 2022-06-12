@@ -31,7 +31,10 @@ public:
 	class UDialogUnit* GetCurrentDialogUnit() const {return CurrentDialogUnit; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
-	TArray<class AActor*> GetInterlocutors() const { return Interlocutors; }
+	TArray<class AActor*> GetAdditionalInterlocutors() const { return AdditionalInterlocutors; }
+
+	UFUNCTION(BlueprintPure, Category = "Dialog|Interlocutors")
+	TArray<class AActor*> GetAllInterlocutors() const;
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
 	class AActor* GetDialogMaster() const { return DialogMaster; }
@@ -48,7 +51,7 @@ public:
 protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void BeginDialogForInterlocutors(class UDialogComponent* MasterDialogComponent, const TArray<class AActor*>& DialogInterlocutors);
+	void BeginDialogForInterlocutors(const TArray<class AActor*>& DialogInterlocutorsWithoutMaster);
 
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
 	void EndDialogForInterlocutors(const TArray<class AActor*>& DialogInterlocutors);
@@ -61,8 +64,8 @@ protected:
 
 private:
 
-	UPROPERTY(BlueprintGetter = GetInterlocutors)
-	TArray<class AActor*> Interlocutors;
+	UPROPERTY(BlueprintGetter = GetAdditionalInterlocutors)
+	TArray<class AActor*> AdditionalInterlocutors;
 
 	UPROPERTY(BlueprintGetter = GetDialogInitiator)
 	class AActor* DialogInitiator = nullptr;

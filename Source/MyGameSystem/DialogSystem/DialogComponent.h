@@ -7,7 +7,7 @@
 #include "Sound/DialogueTypes.h"
 #include "DialogComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogConditionDelegate, class UDialogComponent*, MasterDialogComponent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogConditionDelegate, class UDialog*, Dialog);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UDialogComponent : public UReplicatingActorComponent
@@ -28,16 +28,13 @@ public:
 	void SelectDialogCue(const int CueIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Internal")
-	void DialogStarted(class UDialogComponent* NewMasterDialogComponent);
+	void DialogStarted(class UDialog* NewDialog);
 
 	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Internal")
 	void DialogEnded();
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	class UDialog* GetCurrentDialog() const { return CurrentDialog; }
-
-	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	class UDialogComponent* GetMasterDialogComponent() const { return MasterDialogComponent; }
 
 	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
 	TSubclassOf<UDialog> GetDialogClass() const { return DialogClass; }
@@ -65,24 +62,18 @@ protected:
 	UFUNCTION(BlueprintSetter)
 	void SetCurrentDialog(class UDialog* NewDialog);
 
-	UFUNCTION(BlueprintSetter)
-	void SetMasterDialogComponent(class UDialogComponent* NewMasterDialogComponent);
-
 private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetDialogClass, BlueprintSetter = SetDialogClass, Category = "DialogComponent|Dialog", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UDialog> DialogClass;
 
-	UPROPERTY(BlueprintGetter = GetCurrentDialog, BlueprintSetter = SetCurrentDialog, Replicated);
+	UPROPERTY(BlueprintGetter = GetCurrentDialog, BlueprintSetter = SetCurrentDialog, ReplicatedUsing = OnRep_CurrentDialog);
 	class UDialog* CurrentDialog;
 
-	UPROPERTY(BlueprintGetter = GetMasterDialogComponent, BlueprintSetter = SetMasterDialogComponent, ReplicatedUsing = OnRep_MasterDialogComponent)
-	class UDialogComponent* MasterDialogComponent;
-
 	UFUNCTION()
-	void OnRep_MasterDialogComponent(class UDialogComponent* PreReplicationMasterDialogComponent);
+	void OnRep_CurrentDialog(class UDialog* PreReplicationCurrentDialog);
 
-	void Broadcast_MasterDialogComponent(class UDialogComponent* PrevMasterDialogComponent);
+	void Broadcast_CurrentDialog(class UDialog* PrevDialog);
 
 	UPROPERTY(BlueprintGetter = GetNotes)
 	TArray<FString> Notepad;

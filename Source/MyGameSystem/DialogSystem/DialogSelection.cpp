@@ -9,22 +9,28 @@
 
 void UDialogSelection::Activate_Implementation()
 {
-	OnSelectionStarted();
+	if(GetNetRole() == ENetRole::Role_Authority)
+	{
+		OnSelectionStarted();
+	}
 }
 
 void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 {
-	TArray<TSubclassOf<UDialogUnit>> AvailableOptions = GetAvailableOptions();
-	if (AvailableOptions.IsValidIndex(CueIndex))
+	if(GetNetRole() == ENetRole::Role_Authority)
 	{
-		GetOwningDialog()->OnDialogUnitPassed(this, AvailableOptions[CueIndex]);
-	}
-	else
-	{
-		GetOwningDialog()->OnDialogUnitPassed(this, nullptr);
-	}
+		TArray<TSubclassOf<UDialogUnit>> AvailableOptions = GetAvailableOptions();
+		if (AvailableOptions.IsValidIndex(CueIndex))
+		{
+			GetOwningDialog()->OnDialogUnitPassed(this, AvailableOptions[CueIndex]);
+		}
+		else
+		{
+			GetOwningDialog()->OnDialogUnitPassed(this, nullptr);
+		}
 
-	OnSelectionEnded();
+		OnSelectionEnded();
+	}
 }
 
 TArray<TSubclassOf<UDialogUnit>> UDialogSelection::GetAvailableOptions() const

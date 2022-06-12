@@ -97,11 +97,14 @@ void UDialogComponent::RemoveNote(const FString& NoteToRemove)
 
 void UDialogComponent::SetCurrentDialog(UDialog* NewDialog)
 {
-	UDialog* PrevDialog = GetCurrentDialog();
+	if (GetOwnerRole() == ENetRole::ROLE_Authority)
+	{
+		UDialog* PrevDialog = GetCurrentDialog();
 
-	CurrentDialog = NewDialog;
+		CurrentDialog = NewDialog;
 
-	Broadcast_CurrentDialog(PrevDialog);
+		Broadcast_CurrentDialog(PrevDialog);
+	}
 }
 
 void UDialogComponent::OnRep_CurrentDialog(UDialog* PreReplicationCurrentDialog)

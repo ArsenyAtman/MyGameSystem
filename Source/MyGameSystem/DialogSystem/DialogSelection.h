@@ -24,11 +24,11 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Control", meta = (BlueprintProtected))
 	void OnSelectionStarted();
 	virtual void OnSelectionStarted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Control", meta = (BlueprintProtected))
 	void OnSelectionEnded();
 	virtual void OnSelectionEnded_Implementation() { return; }
 

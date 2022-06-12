@@ -12,7 +12,7 @@ class MYGAMESYSTEM_API UDialogSelection_WithTimer : public UDialogSelection
 
 public:
 
-    UFUNCTION(BlueprintGetter)
+    UFUNCTION(BlueprintGetter, Category = "DialogSelection_WithTimer|Timer")
     float GetInitialTime() const {return InitialTime;}
 
 protected:

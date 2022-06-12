@@ -50,13 +50,13 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Animation", meta = (BlueprintProtected))
 	bool HasAudioStartAnimNotify(const class UAnimMontage* Montage) const;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue_AnimationAndSound|Animation", meta = (BlueprintProtected))
 	class UAnimMontage* Animation = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue_AnimationAndSound|Audio", meta = (BlueprintProtected))
 	class UDialogueVoice* Voice = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue_AnimationAndSound|Audio", meta = (BlueprintProtected))
 	class UDialogueWave* Sound = nullptr;
 
 private:

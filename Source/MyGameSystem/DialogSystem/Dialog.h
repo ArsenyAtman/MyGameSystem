@@ -45,7 +45,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Dialog|OwningDialogComponent")
 	class UDialogComponent* GetOwningDialogComponent() const;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Dialog|Delegates")
 	FDialogUnitChangeDelegate OnDialogUnitChanged;
 
 protected:
@@ -56,7 +56,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal", meta = (BlueprintProtected))
 	void EndDialogForInterlocutors(const TArray<class AActor*>& DialogInterlocutors);
 
-	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintSetter, Category = "Dialog|CurrentDialogUnit", meta = (BlueprintProtected))
 	void SetCurrentDialogUnit(class UDialogUnit* NewDialogUnit);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dialog|InitialDialogUnit", meta = (BlueprintProtected))
@@ -73,7 +73,7 @@ private:
 	UPROPERTY(BlueprintGetter = GetDialogMaster)
 	class AActor* DialogMaster = nullptr;
 
-	UPROPERTY(BlueprintGetter = GetCurrentDialogUnit, BlueprintSetter = SetCurrentDialogUnit, ReplicatedUsing = OnRep_CurrentDialogUnit)
+	UPROPERTY(BlueprintGetter = GetCurrentDialogUnit, BlueprintSetter = SetCurrentDialogUnit, ReplicatedUsing = OnRep_CurrentDialogUnit, Category = "Dialog|CurrentDialogUnit")
 	class UDialogUnit* CurrentDialogUnit;
 
 	UFUNCTION()

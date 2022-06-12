@@ -59,7 +59,7 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
+	UFUNCTION(BlueprintSetter, Category = "DialogComponent|Dialog", meta = (BlueprintProtected))
 	void SetCurrentDialog(class UDialog* NewDialog);
 
 private:

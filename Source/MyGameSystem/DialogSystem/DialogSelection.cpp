@@ -9,7 +9,7 @@
 
 void UDialogSelection::Activate_Implementation()
 {
-	if(GetNetRole() == ENetRole::Role_Authority)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		OnSelectionStarted();
 	}
@@ -17,7 +17,7 @@ void UDialogSelection::Activate_Implementation()
 
 void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 {
-	if(GetNetRole() == ENetRole::Role_Authority)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		TArray<TSubclassOf<UDialogUnit>> AvailableOptions = GetAvailableOptions();
 		if (AvailableOptions.IsValidIndex(CueIndex))

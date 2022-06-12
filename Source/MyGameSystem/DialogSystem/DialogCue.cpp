@@ -10,7 +10,7 @@
 
 void UDialogCue::Activate_Implementation()
 {
-	if(GetNetRole() == ENetRole::Role_Authority)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		OnCueBeginned();
 	}
@@ -18,7 +18,7 @@ void UDialogCue::Activate_Implementation()
 
 void UDialogCue::PlayNextDialogCue()
 {
-	if(GetNetRole() == ENetRole::Role_Authority)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		EndCue();
 	}
@@ -26,7 +26,7 @@ void UDialogCue::PlayNextDialogCue()
 
 void UDialogCue::EndCue()
 {
-	if(GetNetRole() == ENetRole::Role_Authority)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		OnCueEnded();
 		GetOwningDialog()->OnDialogUnitPassed(this, NextDialogUnit);

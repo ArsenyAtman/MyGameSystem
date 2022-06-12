@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "DialogSelection.h"
-#include "DialogSelectionDataAsset_WithTimer.h"
 #include "DialogSelection_WithTimer.generated.h"
+
 
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UDialogSelection_WithTimer : public UDialogSelection
@@ -12,7 +12,8 @@ class MYGAMESYSTEM_API UDialogSelection_WithTimer : public UDialogSelection
 
 public:
 
-    virtual class UDialogSelectionDataAsset_WithTimer* GetDialogUnitData_Implementation() const override;
+    UFUNCTION(BlueprintGetter)
+    float GetInitialTime() const {return InitialTime;}
 
 protected:
 
@@ -22,8 +23,8 @@ protected:
 
 private:
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection_WithTimer|Timer", meta = (AllowPrivateAccess = true))
-	float Time = -1.0f;
+    UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetInitialTime, Category = "DialogSelection_WithTimer|Timer", meta = (AllowPrivateAccess = true))
+	float InitialTime = -1.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection_WithTimer|Timer", meta = (AllowPrivateAccess = true))
     int DefaultOption = 0;

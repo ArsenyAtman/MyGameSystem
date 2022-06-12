@@ -7,7 +7,7 @@
 #include "Dialog.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDialogUnitChangeDelegate, class UDialogUnit*, DialogUnit, class UDialog*, OfDialog);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDialogUnitChangeDelegate, class UDialogUnit*, NewDialogUnit, class UDialog*, OfDialog);
 
 /**
  * 

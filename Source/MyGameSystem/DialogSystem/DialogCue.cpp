@@ -7,11 +7,9 @@
 #include "Dialog.h"
 #include "DialogComponent.h"
 #include "TalkableInterface.h"
-#include "DialogCueDataAsset.h"
 
-void UDialogCue::Activate_Implementation(class UDialog* OwnDialog)
+void UDialogCue::Activate_Implementation()
 {
-	OwningDialog = OwnDialog;
 	OnCueBeginned();
 }
 
@@ -33,5 +31,5 @@ void UDialogCue::OnCueEnded_Implementation()
 void UDialogCue::EndCue()
 {
 	OnCueEnded();
-	OwningDialog->OnDialogUnitPassed(this, NextDialogUnit);
+	GetOwningDialog()->OnDialogUnitPassed(this, NextDialogUnit);
 }

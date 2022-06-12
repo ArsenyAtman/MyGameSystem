@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DialogUnit.h"
-#include "DialogCueDataAsset.h"
-#include "DialogSystemTypes.h"
 #include "DialogCue.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
@@ -15,15 +13,10 @@ class MYGAMESYSTEM_API UDialogCue : public UDialogUnit
 
 public:
 
-	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
-
-	virtual class UDialogCueDataAsset* GetDialogUnitData_Implementation() const override { return CueData; }
+	virtual void Activate_Implementation() override;
 
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
-
-	UFUNCTION(BlueprintGetter, Category = "DialogCue|Dialog")
-	class UDialog* GetOwningDialog() const { return OwningDialog; }
 
 protected:
 
@@ -46,11 +39,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|DialogFlow", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class UDialogUnit> NextDialogUnit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Data", meta = (AllowPrivateAccess = true))
-	class UDialogCueDataAsset* CueData;
-
-	UPROPERTY(BlueprintGetter = GetOwningDialog)
-	class UDialog* OwningDialog;
 
 };

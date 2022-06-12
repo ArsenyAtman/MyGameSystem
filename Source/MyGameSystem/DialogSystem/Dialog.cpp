@@ -16,24 +16,27 @@ void UDialog::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 
 void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& OtherInterlocutors)
 {
-	DialogMaster = Master;
-	DialogInitiator = Initiator;
-	AdditionalInterlocutors = OtherInterlocutors;
-
-	TArray<AActor*> InterlocutorsWithoutMaster = GetAdditionalInterlocutors();
-	InterlocutorsWithoutMaster.Add(DialogInitiator);
-	BeginDialogForInterlocutors(InterlocutorsWithoutMaster);
-
-	SetCurrentDialogUnit(NewObject<UDialogUnit>(this, InitialDialogUnit));
-	if (IsValid(GetCurrentDialogUnit()))
+	if(GetNetRole() == ENetRole::Role_Authority)
 	{
-		GetCurrentDialogUnit()->Activate();
+		DialogMaster = Master;
+		DialogInitiator = Initiator;
+		AdditionalInterlocutors = OtherInterlocutors;
+
+		TArray<AActor*> InterlocutorsWithoutMaster = GetAdditionalInterlocutors();
+		InterlocutorsWithoutMaster.Add(DialogInitiator);
+		BeginDialogForInterlocutors(InterlocutorsWithoutMaster);
+
+		SetCurrentDialogUnit(NewObject<UDialogUnit>(this, InitialDialogUnit));
+		if (IsValid(GetCurrentDialogUnit()))
+		{
+			GetCurrentDialogUnit()->Activate();
+		}
 	}
 }
 
 void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUnit> NextDialogUnitClass)
 {
-	if (GetCurrentDialogUnit() == DialogUnit)
+	if (GetNetRole() == ENetRole::Role_Authority && GetCurrentDialogUnit() == DialogUnit)
 	{
 		UDialogUnit* PrevDialogUnit = GetCurrentDialogUnit();
 
@@ -98,9 +101,12 @@ void UDialog::EndDialogForInterlocutors(const TArray<AActor*>& DialogInterlocuto
 
 void UDialog::SetCurrentDialogUnit(UDialogUnit* NewDialogUnit)
 {
-	CurrentDialogUnit = NewDialogUnit;
+	if(GetNetRole() == ENetRole::Role_Authority)
+	{
+		CurrentDialogUnit = NewDialogUnit;
 
-	Broadcast_CurrentDialogUnit();
+		Broadcast_CurrentDialogUnit();
+	}
 }
 
 void UDialog::OnRep_CurrentDialogUnit()

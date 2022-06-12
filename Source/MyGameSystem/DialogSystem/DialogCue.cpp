@@ -10,26 +10,25 @@
 
 void UDialogCue::Activate_Implementation()
 {
-	OnCueBeginned();
+	if(GetNetRole() == ENetRole::Role_Authority)
+	{
+		OnCueBeginned();
+	}
 }
 
 void UDialogCue::PlayNextDialogCue()
 {
-	EndCue();
-}
-
-void UDialogCue::OnCueBeginned_Implementation()
-{
-	return;
-}
-
-void UDialogCue::OnCueEnded_Implementation()
-{
-	return;
+	if(GetNetRole() == ENetRole::Role_Authority)
+	{
+		EndCue();
+	}
 }
 
 void UDialogCue::EndCue()
 {
-	OnCueEnded();
-	GetOwningDialog()->OnDialogUnitPassed(this, NextDialogUnit);
+	if(GetNetRole() == ENetRole::Role_Authority)
+	{
+		OnCueEnded();
+		GetOwningDialog()->OnDialogUnitPassed(this, NextDialogUnit);
+	}
 }

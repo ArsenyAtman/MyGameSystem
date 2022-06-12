@@ -22,11 +22,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
 	void OnCueBeginned();
-	virtual void OnCueBeginned_Implementation();
+	virtual void OnCueBeginned_Implementation() { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
 	void OnCueEnded();
-	virtual void OnCueEnded_Implementation();
+	virtual void OnCueEnded_Implementation() { return; }
 
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal")
 	void EndCue();

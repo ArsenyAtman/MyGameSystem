@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DialogCue.h"
-#include "DialogCueDataAsset.h"
-#include "DialogCueDataAsset_AnimationAndSound.h"
 #include "DialogCue_AnimationAndSound.generated.h"
 
 /**
@@ -23,8 +21,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
-
-	virtual class UDialogCueDataAsset_AnimationAndSound* GetDialogUnitData_Implementation() const override;
 
 protected:
 
@@ -53,6 +49,15 @@ protected:
 
 	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Animation")
 	bool HasAudioStartAnimNotify(const class UAnimMontage* Montage) const;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UAnimMontage* Animation = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDialogueVoice* Voice = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UDialogueWave* Sound = nullptr;
 
 private:
 

@@ -1,16 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Dialog.h"
 #include "TalkableInterface.h"
 #include "DialogComponent.h"
 #include "DialogUnit.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 
-void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, const TArray<class AActor*>& OtherInterlocutors)
+
+void UDialog::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	OwningDialogComponent = OwnDialogComponent;
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(UDialog, CurrentDialogUnit);
+
+}
+
+void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& OtherInterlocutors)
+{
 	DialogMaster = Master;
 	DialogInitiator = Initiator;
 
@@ -18,38 +24,40 @@ void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, 
 	Interlocutors.Add(DialogMaster);
 	Interlocutors.Add(DialogInitiator);
 
-	BeginDialogForInterlocutors(OwningDialogComponent, Interlocutors);
+	BeginDialogForInterlocutors(GetOwningDialogComponent(), Interlocutors);
 
-	ActiveDialogUnit = NewObject<UDialogUnit>(this, InitialDialogUnit);
-	if (IsValid(ActiveDialogUnit))
+	SetCurrentDialogUnit(NewObject<UDialogUnit>(this, InitialDialogUnit));
+	if (IsValid(GetCurrentDialogUnit()))
 	{
-		ActiveDialogUnit->Activate(this);
-		UnitStartedForInterlocutors(ActiveDialogUnit, Interlocutors);
+		GetCurrentDialogUnit()->Activate();
 	}
 }
 
 void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUnit> NextDialogUnitClass)
 {
-	if (ActiveDialogUnit == DialogUnit)
+	if (GetCurrentDialogUnit() == DialogUnit)
 	{
-		UDialogUnit* PrevDialogUnit = ActiveDialogUnit;
-		UnitEndedForInterlocutors(PrevDialogUnit, Interlocutors);
+		UDialogUnit* PrevDialogUnit = GetCurrentDialogUnit();
 
 		if (IsValid(NextDialogUnitClass))
 		{
-			ActiveDialogUnit = NewObject<UDialogUnit>(this, NextDialogUnitClass);
-			if (IsValid(ActiveDialogUnit))
+			SetCurrentDialogUnit(NewObject<UDialogUnit>(this, NextDialogUnitClass));
+			if (IsValid(GetCurrentDialogUnit()))
 			{
-				ActiveDialogUnit->Activate(this);
-				UnitStartedForInterlocutors(ActiveDialogUnit, Interlocutors);
+				GetCurrentDialogUnit()->Activate();
 			}
 		}
 		else
 		{
-			ActiveDialogUnit = nullptr;
+			SetCurrentDialogUnit(nullptr);
 			EndDialogForInterlocutors(Interlocutors);
 		}
 	}
+}
+
+UDialogComponent* UDialog::GetOwningDialogComponent() const
+{
+	return Cast<UDialogComponent>(GetOuter());
 }
 
 void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponent, const TArray<AActor*>& DialogInterlocutors)
@@ -82,32 +90,19 @@ void UDialog::EndDialogForInterlocutors(const TArray<AActor*>& DialogInterlocuto
 	}
 }
 
-void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit, const TArray<AActor*>& DialogInterlocutors)
+void UDialog::SetCurrentDialogUnit(UDialogUnit* NewDialogUnit)
 {
-	for (const AActor* Interlocutor : DialogInterlocutors)
-	{
-		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
-		{
-			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-			if (IsValid(DialogComponent))
-			{
-				DialogComponent->UnitStarted(DialogUnit->GetDialogUnitData());
-			}
-		}
-	}
+	CurrentDialogUnit = NewDialogUnit;
+
+	Broadcast_CurrentDialogUnit();
 }
 
-void UDialog::UnitEndedForInterlocutors(UDialogUnit* DialogUnit, const TArray<AActor*>& DialogInterlocutors)
+void UDialog::OnRep_CurrentDialogUnit()
 {
-	for (const AActor* Interlocutor : DialogInterlocutors)
-	{
-		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
-		{
-			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-			if (IsValid(DialogComponent))
-			{
-				DialogComponent->UnitPassed(DialogUnit->GetDialogUnitData());
-			}
-		}
-	}
+	Broadcast_CurrentDialogUnit();
+}
+
+void UDialog::Broadcast_CurrentDialogUnit()
+{
+	OnDialogUnitChanged.Broadcast(GetCurrentDialogUnit(), this);
 }

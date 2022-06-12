@@ -3,39 +3,47 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
 #include "Dialog.generated.h"
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDialogUnitChangeDelegate, class UDialogUnit*, DialogUnit, class UDialog*, OfDialog);
 
 /**
  * 
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialog : public UObject
+class MYGAMESYSTEM_API UDialog : public UAdvancedObject
 {
 	GENERATED_BODY()
 
 public:
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void Begin(class UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, const TArray<class AActor*>& OtherInterlocutors);
+	void Begin(class AActor* Master, class AActor* Initiator, const TArray<class AActor*>& OtherInterlocutors);
 
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
 	void OnDialogUnitPassed(class UDialogUnit* DialogUnit, TSubclassOf<UDialogUnit> NextDialogUnitClass);
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|CurrentDialogUnit")
-	FORCEINLINE class UDialogUnit* GetCurrentDialogUnit() const {return ActiveDialogUnit; }
+	class UDialogUnit* GetCurrentDialogUnit() const {return CurrentDialogUnit; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
-	FORCEINLINE TArray<class AActor*> GetInterlocutors() const { return Interlocutors; }
+	TArray<class AActor*> GetInterlocutors() const { return Interlocutors; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
-	FORCEINLINE class AActor* GetDialogMaster() const { return DialogMaster; }
+	class AActor* GetDialogMaster() const { return DialogMaster; }
 
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
-	FORCEINLINE class AActor* GetDialogInitiator() const { return DialogInitiator; }
+	class AActor* GetDialogInitiator() const { return DialogInitiator; }
 
-	UFUNCTION(BlueprintGetter, Category = "Dialog|OwningDialogComponent")
-	FORCEINLINE class UDialogComponent* GetOwningDialogComponent() const { return OwningDialogComponent; }
+	UFUNCTION(BlueprintPure, Category = "Dialog|OwningDialogComponent")
+	class UDialogComponent* GetOwningDialogComponent() const;
+
+	UPROPERTY(BlueprintAssignable)
+	FDialogUnitChangeDelegate OnDialogUnitChanged;
 
 protected:
 
@@ -45,18 +53,15 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
 	void EndDialogForInterlocutors(const TArray<class AActor*>& DialogInterlocutors);
 
-	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void UnitStartedForInterlocutors(class UDialogUnit* DialogUnit, const TArray<class AActor*>& DialogInterlocutors);
-
-	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
-	void UnitEndedForInterlocutors(class UDialogUnit* DialogUnit, const TArray<class AActor*>& DialogInterlocutors);
+	UFUNCTION(BlueprintSetter)
+	void SetCurrentDialogUnit(class UDialogUnit* NewDialogUnit);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dialog|InitialDialogUnit")
 	TSubclassOf<UDialogUnit> InitialDialogUnit;
 
 private:
 
-	UPROPERTY(EditAnywhere, BlueprintGetter = GetInterlocutors)
+	UPROPERTY(BlueprintGetter = GetInterlocutors)
 	TArray<class AActor*> Interlocutors;
 
 	UPROPERTY(BlueprintGetter = GetDialogInitiator)
@@ -65,10 +70,12 @@ private:
 	UPROPERTY(BlueprintGetter = GetDialogMaster)
 	class AActor* DialogMaster = nullptr;
 
-	UPROPERTY(BlueprintGetter = GetOwningDialogComponent)
-	class UDialogComponent* OwningDialogComponent;
+	UPROPERTY(BlueprintGetter = GetCurrentDialogUnit, BlueprintSetter = SetCurrentDialogUnit, ReplicatedUsing = OnRep_CurrentDialogUnit)
+	class UDialogUnit* CurrentDialogUnit;
 
-	UPROPERTY(BlueprintGetter = GetCurrentDialogUnit)
-	class UDialogUnit* ActiveDialogUnit;
+	UFUNCTION()
+	void OnRep_CurrentDialogUnit();
+
+	void Broadcast_CurrentDialogUnit();
 	
 };

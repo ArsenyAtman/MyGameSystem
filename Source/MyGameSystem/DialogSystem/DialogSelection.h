@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DialogUnit.h"
-#include "DialogSelectionDataAsset.h"
 #include "DialogSelection.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
@@ -14,9 +13,7 @@ class MYGAMESYSTEM_API UDialogSelection : public UDialogUnit
 
 public:
 
-	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
-
-	virtual class UDialogSelectionDataAsset* GetDialogUnitData_Implementation() const override { return SelectionData; }
+	virtual void Activate_Implementation() override;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Internal")
 	void SelectNextCue(int CueIndex);
@@ -24,9 +21,6 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "DialogSelection|Data")
 	TArray<TSubclassOf<class UDialogUnit>> GetAvailableOptions() const;
-
-	UFUNCTION(BlueprintPure, Category = "DialogSelection|OwningDialog")
-	class UDialog* GetOwningDialog() const { return OwningDialog; }
 
 protected:
 
@@ -40,12 +34,7 @@ protected:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Options", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "DialogSelection|Options", meta = (AllowPrivateAccess = true))
 	TArray<TSubclassOf<class UDialogUnit>> Options;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Data", meta = (AllowPrivateAccess = true))
-	class UDialogSelectionDataAsset* SelectionData;
-
-	class UDialog* OwningDialog;
 	
 };

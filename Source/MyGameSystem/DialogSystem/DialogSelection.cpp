@@ -6,12 +6,9 @@
 #include "DialogUnit.h"
 #include "DialogComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "DialogSelectionDataAsset.h"
 
-void UDialogSelection::Activate_Implementation(UDialog* OwnDialog)
+void UDialogSelection::Activate_Implementation()
 {
-	OwningDialog = OwnDialog;
-	
 	OnSelectionStarted();
 }
 
@@ -20,11 +17,11 @@ void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
 	TArray<TSubclassOf<UDialogUnit>> AvailableOptions = GetAvailableOptions();
 	if (AvailableOptions.IsValidIndex(CueIndex))
 	{
-		OwningDialog->OnDialogUnitPassed(this, AvailableOptions[CueIndex]);
+		GetOwningDialog()->OnDialogUnitPassed(this, AvailableOptions[CueIndex]);
 	}
 	else
 	{
-		OwningDialog->OnDialogUnitPassed(this, nullptr);
+		GetOwningDialog()->OnDialogUnitPassed(this, nullptr);
 	}
 
 	OnSelectionEnded();

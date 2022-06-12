@@ -24,11 +24,11 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 	void OnSelectionStarted();
 	virtual void OnSelectionStarted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 	void OnSelectionEnded();
 	virtual void OnSelectionEnded_Implementation() { return; }
 

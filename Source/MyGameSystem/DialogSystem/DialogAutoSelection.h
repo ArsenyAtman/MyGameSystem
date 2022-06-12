@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DialogSelection.h"
-#include "DialogAutoSelectionDataAsset.h"
 #include "DialogAutoSelection.generated.h"
 
 UCLASS()
@@ -14,7 +13,7 @@ class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogSelection
 
 public:
 
-	virtual class UDialogAutoSelectionDataAsset* GetDialogUnitData_Implementation() const override;
+	// ...
 
 protected:
 

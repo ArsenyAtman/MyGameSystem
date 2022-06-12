@@ -50,16 +50,16 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
+	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal", meta = (BlueprintProtected))
 	void BeginDialogForInterlocutors(const TArray<class AActor*>& DialogInterlocutorsWithoutMaster);
 
-	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal")
+	UFUNCTION(BlueprintCallable, Category = "Dialog|Internal", meta = (BlueprintProtected))
 	void EndDialogForInterlocutors(const TArray<class AActor*>& DialogInterlocutors);
 
-	UFUNCTION(BlueprintSetter)
+	UFUNCTION(BlueprintSetter, meta = (BlueprintProtected))
 	void SetCurrentDialogUnit(class UDialogUnit* NewDialogUnit);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dialog|InitialDialogUnit")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dialog|InitialDialogUnit", meta = (BlueprintProtected))
 	TSubclassOf<UDialogUnit> InitialDialogUnit;
 
 private:

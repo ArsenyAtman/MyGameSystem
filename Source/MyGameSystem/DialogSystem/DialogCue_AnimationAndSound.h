@@ -27,36 +27,36 @@ protected:
 	virtual void OnCueBeginned_Implementation() override;
 	virtual void OnCueEnded_Implementation() override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue_AnimationAndSound|Audio")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue_AnimationAndSound|Audio", meta = (BlueprintProtected))
 	void PlayAudio();
 	virtual void PlayAudio_Implementation();
 
-	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Audio")
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Audio", meta = (BlueprintProtected))
 	void AudioPlayed();
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue_AnimationAndSound|Animation")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue_AnimationAndSound|Animation", meta = (BlueprintProtected))
 	void PlayAnimation();
 	virtual void PlayAnimation_Implementation();
 
-	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Animation")
+	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Animation", meta = (BlueprintProtected))
 	void AnimationPlayed(class UAnimMontage* AnimMontage, bool bInterrupted);
 
-	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors", meta = (BlueprintProtected))
 	TArray<class UDialogueVoice*> GetInterlocutorsVoices(const TArray<class AActor*>& Interlocutors) const;
 
-	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors")
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Interlocutors", meta = (BlueprintProtected))
 	class AActor* GetOwnerOfVoice(const TArray<class AActor*>& Interlocutors, const class UDialogueVoice* Voice) const;
 
-	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Animation")
+	UFUNCTION(BlueprintPure, Category = "DialogCue_AnimationAndSound|Animation", meta = (BlueprintProtected))
 	bool HasAudioStartAnimNotify(const class UAnimMontage* Montage) const;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected))
 	class UAnimMontage* Animation = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected))
 	class UDialogueVoice* Voice = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected))
 	class UDialogueWave* Sound = nullptr;
 
 private:

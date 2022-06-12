@@ -20,15 +20,15 @@ public:
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control", meta = (BlueprintProtected))
 	void OnCueBeginned();
 	virtual void OnCueBeginned_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control", meta = (BlueprintProtected))
 	void OnCueEnded();
 	virtual void OnCueEnded_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal")
+	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal", meta = (BlueprintProtected))
 	void EndCue();
 
 protected:

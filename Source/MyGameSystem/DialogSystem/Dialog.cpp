@@ -16,7 +16,7 @@ void UDialog::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 
 void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& OtherInterlocutors)
 {
-	if(GetNetRole() == ENetRole::Role_Authority)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		DialogMaster = Master;
 		DialogInitiator = Initiator;
@@ -36,7 +36,7 @@ void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& Ot
 
 void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUnit> NextDialogUnitClass)
 {
-	if (GetNetRole() == ENetRole::Role_Authority && GetCurrentDialogUnit() == DialogUnit)
+	if (GetNetRole() == ENetRole::ROLE_Authority && GetCurrentDialogUnit() == DialogUnit)
 	{
 		UDialogUnit* PrevDialogUnit = GetCurrentDialogUnit();
 
@@ -101,7 +101,7 @@ void UDialog::EndDialogForInterlocutors(const TArray<AActor*>& DialogInterlocuto
 
 void UDialog::SetCurrentDialogUnit(UDialogUnit* NewDialogUnit)
 {
-	if(GetNetRole() == ENetRole::Role_Authority)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		CurrentDialogUnit = NewDialogUnit;
 

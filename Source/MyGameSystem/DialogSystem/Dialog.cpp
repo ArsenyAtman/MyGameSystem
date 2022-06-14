@@ -103,18 +103,27 @@ void UDialog::SetCurrentDialogUnit(UDialogUnit* NewDialogUnit)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
+		UDialogUnit* PrevDialogUnit = GetCurrentDialogUnit();
 		CurrentDialogUnit = NewDialogUnit;
-
-		Broadcast_CurrentDialogUnit();
+		Broadcast_DialogConditionChanged(PrevDialogUnit);
 	}
 }
 
-void UDialog::OnRep_CurrentDialogUnit()
+void UDialog::OnRep_CurrentDialogUnit(UDialogUnit* PreReplicationDialogUnit)
 {
-	Broadcast_CurrentDialogUnit();
+	Broadcast_DialogConditionChanged(PreReplicationDialogUnit);
 }
 
-void UDialog::Broadcast_CurrentDialogUnit()
+void UDialog::Broadcast_DialogConditionChanged(UDialogUnit* PrevDialogUnit)
 {
+	if(PrevDialogUnit == nullptr && IsValid(GetCurrentDialogUnit()))
+	{
+		OnDialogStarted.Broadcast(this);
+	}
+	else if(GetCurrentDialogUnit() == nullptr && IsValid(PrevDialogUnit))
+	{
+		OnDialogEnded.Broadcast(this);
+	}
+
 	OnDialogUnitChanged.Broadcast(GetCurrentDialogUnit(), this);
 }

@@ -10,7 +10,7 @@
 /**
  * Delegate for handling changes of a dialog.
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogConditionDelegate, class UDialog*, Dialog);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogComponentConditionChangeDelegate, class UDialog*, Dialog);
 
 /**
  * ActorComponent that handles dialogs.
@@ -107,13 +107,13 @@ public:
 	 * Called after the current dialog has started.
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
-	FDialogConditionDelegate OnDialogStarted;
+	FDialogComponentConditionChangeDelegate OnDialogStarted;
 
 	/**
 	 * Called after the current dialog has ended.
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
-	FDialogConditionDelegate OnDialogEnded;
+	FDialogComponentConditionChangeDelegate OnDialogEnded;
 
 protected:
 

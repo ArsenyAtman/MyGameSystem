@@ -21,12 +21,13 @@ public:
 
 	/**
 	 * Select the next dialog unit to play.
-	 * @param CueIndex - The index of the next dialog unit to play.
+	 * @param NextDialogUnit - The next dialog unit to play.
+	 * @return Selected successfully.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Control")
-	void SelectNextCue(int CueIndex);
-	virtual void SelectNextCue_Implementation(int CueIndex);
+	bool SelectNextDialogUnit(TSubclassOf<class UDialogUnit> NextDialogUnit);
+	virtual bool SelectNextDialogUnit_Implementation(TSubclassOf<class UDialogUnit> NextDialogUnit);
 
 	/**
 	 * Get the list of available options for the selection.

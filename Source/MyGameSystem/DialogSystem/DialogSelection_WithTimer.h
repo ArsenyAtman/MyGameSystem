@@ -41,7 +41,7 @@ private:
      * The index of an option to select.
      */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection_WithTimer|Timer", meta = (AllowPrivateAccess = true))
-    int DefaultOption = 0;
+    TSubclassOf<class UDialogUnit> DefaultOption = nullptr;
 
     FTimerHandle SelectionEndTimer;
 

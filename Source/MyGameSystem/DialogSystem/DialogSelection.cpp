@@ -15,22 +15,20 @@ void UDialogSelection::Activate_Implementation()
 	}
 }
 
-void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
+bool UDialogSelection::SelectNextDialogUnit_Implementation(TSubclassOf<UDialogUnit> NextDialogUnit)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
 		TArray<TSubclassOf<UDialogUnit>> AvailableOptions = GetAvailableOptions();
-		if (AvailableOptions.IsValidIndex(CueIndex))
+		if (AvailableOptions.Find(NextDialogUnit) != INDEX_NONE)
 		{
-			GetOwningDialog()->OnDialogUnitPassed(this, AvailableOptions[CueIndex]);
+			GetOwningDialog()->OnDialogUnitPassed(this, NextDialogUnit);
+			OnSelectionEnded();
+			return true;
 		}
-		else
-		{
-			GetOwningDialog()->OnDialogUnitPassed(this, nullptr);
-		}
-
-		OnSelectionEnded();
 	}
+
+	return false;
 }
 
 TArray<TSubclassOf<UDialogUnit>> UDialogSelection::GetAvailableOptions() const

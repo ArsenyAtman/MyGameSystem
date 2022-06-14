@@ -39,11 +39,11 @@ public:
 
 	/**
 	 * Select the next dialog cue from the current selection.
-	 * @param CueIndex - The cue index to select.
+	 * @param NextDialogUnit - The dialog unit to select.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "DialogComponent|Control")
-	void SelectDialogCue(const int CueIndex);
+	void SelectNextDialogUnit(TSubclassOf<class UDialogUnit> NextDialogUnit);
 
 	/**
 	 * Notify about a dialog start, that involves this component.

@@ -7,7 +7,7 @@
 #include "DialogCue_AnimationAndSound.generated.h"
 
 /**
- * 
+ * DialogCue with animations and an audio.
  */
 UCLASS()
 class MYGAMESYSTEM_API UDialogCue_AnimationAndSound : public UDialogCue
@@ -16,9 +16,17 @@ class MYGAMESYSTEM_API UDialogCue_AnimationAndSound : public UDialogCue
 
 public:
 
+	/**
+	 * Start the audio of this cue.
+	 * @warning Server-only!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Audio")
 	void StartAudio();
 
+	/**
+	 * Start the animation of this cue.
+	 * @warning Server-only!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
 

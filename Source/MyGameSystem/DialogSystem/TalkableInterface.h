@@ -14,15 +14,18 @@ class UTalkableInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for actors with a DialogComponent.
  */
 class MYGAMESYSTEM_API ITalkableInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Get the dialog component of this actor.
+	 * @return The dialog component.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "TalkableInterface")
 	class UDialogComponent* GetDialogComponent() const;
 	virtual class UDialogComponent* GetDialogComponent_Implementation() const = 0;

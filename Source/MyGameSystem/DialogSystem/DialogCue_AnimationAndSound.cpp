@@ -42,12 +42,18 @@ void UDialogCue_AnimationAndSound::OnCueEnded_Implementation()
 
 void UDialogCue_AnimationAndSound::StartAudio()
 {
-	PlayAudio();
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		PlayAudio();
+	}
 }
 
 void UDialogCue_AnimationAndSound::StartAnimation()
 {
-	PlayAnimation();
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		PlayAnimation();
+	}
 }
 
 void UDialogCue_AnimationAndSound::PlayAudio_Implementation()

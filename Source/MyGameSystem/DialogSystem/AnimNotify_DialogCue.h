@@ -7,7 +7,7 @@
 #include "AnimNotify_DialogCue.generated.h"
 
 /**
- * 
+ * Base class for AnimNotidies of the DialogSystem.
  */
 UCLASS()
 class MYGAMESYSTEM_API UAnimNotify_DialogCue : public UAnimNotify
@@ -16,6 +16,7 @@ class MYGAMESYSTEM_API UAnimNotify_DialogCue : public UAnimNotify
 
 protected:
 
+	// Gets the current dialog cue.
 	virtual class UDialogCue_AnimationAndSound* GetCurrentDialogCue(const class USkeletalMeshComponent* MeshComponent) const;
 	
 };

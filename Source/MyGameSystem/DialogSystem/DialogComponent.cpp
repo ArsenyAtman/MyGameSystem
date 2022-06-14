@@ -71,11 +71,14 @@ void UDialogComponent::DialogStarted(UDialog* NewDialog)
 	}
 }
 
-void UDialogComponent::DialogEnded()
+void UDialogComponent::DialogEnded(UDialog* Dialog)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		SetCurrentDialog(nullptr);
+		if(Dialog == GetCurrentDialog())
+		{
+			SetCurrentDialog(nullptr);
+		}
 	}
 }
 

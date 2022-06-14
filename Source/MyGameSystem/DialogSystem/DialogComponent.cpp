@@ -45,7 +45,7 @@ void UDialogComponent::BeginDialogue(AActor* Initiator, const TArray<AActor*>& A
 	}
 }
 
-void UDialogComponent::SelectDialogCue_Implementation(int CueIndex)
+void UDialogComponent::SelectNextDialogUnit_Implementation(TSubclassOf<UDialogUnit> NextDialogUnit)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
@@ -54,7 +54,7 @@ void UDialogComponent::SelectDialogCue_Implementation(int CueIndex)
 			UDialogSelection* ActiveSelection = Cast<UDialogSelection>(GetCurrentDialog()->GetCurrentDialogUnit());
 			if (IsValid(ActiveSelection))
 			{
-				ActiveSelection->SelectNextCue(CueIndex);
+				ActiveSelection->SelectNextDialogUnit(NextDialogUnit);
 			}
 		}
 	}

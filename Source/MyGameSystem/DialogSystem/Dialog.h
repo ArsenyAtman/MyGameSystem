@@ -12,6 +12,11 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDialogUnitChangeDelegate, class UDialogUnit*, NewDialogUnit, class UDialog*, OfDialog);
 
 /**
+ * Delegate for handling changes of a dialog.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogConditionDelegate, class UDialog*, Dialog);
+
+/**
  * Object, that handles dialog units.
  */
 UCLASS(BlueprintType, Blueprintable)
@@ -48,7 +53,7 @@ public:
 	 * @return The current dialog unit.
 	 */
 	UFUNCTION(BlueprintGetter, Category = "Dialog|CurrentDialogUnit")
-	class UDialogUnit* GetCurrentDialogUnit() const {return CurrentDialogUnit; }
+	class UDialogUnit* GetCurrentDialogUnit() const { return CurrentDialogUnit; }
 
 	/**
 	 * Get the additional interlocutors.
@@ -86,6 +91,18 @@ public:
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "Dialog|Delegates")
 	FDialogUnitChangeDelegate OnDialogUnitChanged;
+
+	/**
+	 * Called after the dialog start.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Dialog|Delegates")
+	FDialogConditionDelegate OnDialogStarted;
+
+	/**
+	 * Called after the dialog end.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Dialog|Delegates")
+	FDialogConditionDelegate OnDialogEnded;
 
 protected:
 
@@ -143,13 +160,13 @@ private:
 	 * The current dialog unit to process.
 	 */
 	UPROPERTY(BlueprintGetter = GetCurrentDialogUnit, BlueprintSetter = SetCurrentDialogUnit, ReplicatedUsing = OnRep_CurrentDialogUnit, Category = "Dialog|CurrentDialogUnit")
-	class UDialogUnit* CurrentDialogUnit;
+	class UDialogUnit* CurrentDialogUnit = nullptr;
 
-	// OnRep event of CurrentDialogUnit
+	// OnRep event of CurrentDialogUnit.
 	UFUNCTION()
-	void OnRep_CurrentDialogUnit();
+	void OnRep_CurrentDialogUnit(class UDialogUnit* PreReplicationDialogUnit);
 
-	// Broadcast OnDialogUnitChanged delegate.
-	void Broadcast_CurrentDialogUnit();
+	// Broadcast a delegate of a condition change.
+	void Broadcast_DialogConditionChanged(class UDialogUnit* PrevDialogUnit);
 	
 };

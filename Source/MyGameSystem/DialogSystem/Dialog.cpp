@@ -93,7 +93,7 @@ void UDialog::EndDialogForInterlocutors(const TArray<AActor*>& DialogInterlocuto
 			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
 			if (IsValid(DialogComponent))
 			{
-				DialogComponent->DialogEnded();
+				DialogComponent->DialogEnded(this);
 			}
 		}
 	}

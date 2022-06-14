@@ -55,10 +55,11 @@ public:
 
 	/**
 	 * Notify this component about the current dialog end.
+	 * @param Dialog - The dialog that ends.
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Internal")
-	void DialogEnded();
+	void DialogEnded(class UDialog* Dialog);
 
 	/**
 	 * Get the current dialog.

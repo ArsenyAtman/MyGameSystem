@@ -106,6 +106,8 @@ public:
 
 protected:
 
+	virtual void EndPlay_Implementation() override;
+
 	/**
 	 * Involve the listed interlocutors (without the master actor, bcz he already knows about the dialog) in this dialog.
 	 * @param DialogInterlocutorsWithoutMaster - All interlocutors without the master (but it isn't critical).
@@ -164,9 +166,18 @@ private:
 
 	// OnRep event of CurrentDialogUnit.
 	UFUNCTION()
-	void OnRep_CurrentDialogUnit(class UDialogUnit* PreReplicationDialogUnit);
+	void OnRep_CurrentDialogUnit();
 
-	// Broadcast a delegate of a condition change.
-	void Broadcast_DialogConditionChanged(class UDialogUnit* PrevDialogUnit);
+	// Broadcast the related delegate to the change event.
+	void Broadcast_DialogConditionChanged();
+
+	// Broadcast the related delegate to the start event.
+	void Broadcast_DialogStart();
+
+	// Broadcast the related delegate to the end event.
+	void Broadcast_DialogEnd();
+
+	// Flag for the start delegate.
+	bool bOnStartedFired = false;
 	
 };

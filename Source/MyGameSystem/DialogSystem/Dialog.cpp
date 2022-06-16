@@ -52,6 +52,8 @@ void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUni
 		{
 			SetCurrentDialogUnit(nullptr);
 			EndDialogForInterlocutors(GetAllInterlocutors());
+
+			this->Destroy();
 		}
 	}
 }
@@ -67,6 +69,13 @@ TArray<AActor*> UDialog::GetAllInterlocutors() const
 UDialogComponent* UDialog::GetOwningDialogComponent() const
 {
 	return Cast<UDialogComponent>(GetOuter());
+}
+
+void UDialog::EndPlay_Implementation()
+{
+	Super::EndPlay_Implementation();
+
+	Broadcast_DialogEnd();
 }
 
 void UDialog::BeginDialogForInterlocutors(const TArray<AActor*>& DialogInterlocutorsWithoutMaster)
@@ -103,27 +112,33 @@ void UDialog::SetCurrentDialogUnit(UDialogUnit* NewDialogUnit)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		UDialogUnit* PrevDialogUnit = GetCurrentDialogUnit();
 		CurrentDialogUnit = NewDialogUnit;
-		Broadcast_DialogConditionChanged(PrevDialogUnit);
+		Broadcast_DialogConditionChanged();
 	}
 }
 
-void UDialog::OnRep_CurrentDialogUnit(UDialogUnit* PreReplicationDialogUnit)
+void UDialog::OnRep_CurrentDialogUnit()
 {
-	Broadcast_DialogConditionChanged(PreReplicationDialogUnit);
+	Broadcast_DialogConditionChanged();
 }
 
-void UDialog::Broadcast_DialogConditionChanged(UDialogUnit* PrevDialogUnit)
+void UDialog::Broadcast_DialogConditionChanged()
 {
-	if(PrevDialogUnit == nullptr && IsValid(GetCurrentDialogUnit()))
+	if(!bOnStartedFired)
 	{
-		OnDialogStarted.Broadcast(this);
-	}
-	else if(GetCurrentDialogUnit() == nullptr && IsValid(PrevDialogUnit))
-	{
-		OnDialogEnded.Broadcast(this);
+		Broadcast_DialogStart();
+		bOnStartedFired = true;
 	}
 
 	OnDialogUnitChanged.Broadcast(GetCurrentDialogUnit(), this);
+}
+
+void UDialog::Broadcast_DialogStart()
+{
+	OnDialogStarted.Broadcast(this);
+}
+
+void UDialog::Broadcast_DialogEnd()
+{
+	OnDialogEnded.Broadcast(this);
 }

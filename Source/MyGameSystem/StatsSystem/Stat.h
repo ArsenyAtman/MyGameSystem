@@ -15,12 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatEffectDelegate, class UStat*, 
 /**
  * Delegate that handles events related to values of a stat.
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, class UStat*, Stat, FStatValues, Delta);
-
-/**
- * Delegate that handles changes of a stat and it's state.
- */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatConditionChangeDelegate, class UStat*, Stat);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, class UStat*, Stat, FStatValues, PrevValues);
 
 /**
  * Object that handles values of some stat an impact of effects.
@@ -90,6 +85,13 @@ public:
 	class UStatsComponent* GetOwningStatsComponent() const;
 
 	/**
+	 * Get the name of this stat.
+	 * @return The name of this stat.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "Stat|Name")
+	FName GetStatName() const { return StatName; }
+
+	/**
 	 * Called after the values change.
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
@@ -99,13 +101,13 @@ public:
 	 * Called when the current value equals to the min value.
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
-	FStatConditionChangeDelegate OnMinReached;
+	FStatValueChangeDelegate OnMinReached;
 
 	/**
 	 * Called when the current value equals to the max value.
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "Stat|Delegates")
-	FStatConditionChangeDelegate OnMaxReached;
+	FStatValueChangeDelegate OnMaxReached;
 
 	/**
 	 * Called after an effect addition.
@@ -122,11 +124,44 @@ public:
 protected:
 
 	/**
+	 * Called after the values changed.
+	 * @param PrevValues - The previous values.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stat|Control", meta = (BlueprintProtected))
+	void ValuesChanged(FStatValues PrevValues);
+	virtual void ValuesChanged_Implementation(FStatValues PrevValues) { return; }
+
+	/**
+	 * Called when the current value equals to the min value.
+	 * @param PrevValues - The previous values.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stat|Control", meta = (BlueprintProtected))
+	void MinReached(FStatValues PrevValues);
+	virtual void MinReached_Implementation(FStatValues PrevValues) { return; }
+
+	/**
+	 * Called when the current value equals to the max value.
+	 * @param PrevValues - The previous values.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stat|Control", meta = (BlueprintProtected))
+	void MaxReached(FStatValues PrevValues);
+	virtual void MaxReached_Implementation(FStatValues PrevValues) { return; }
+
+	/**
 	 * Set the stat values.
 	 * @param NewStatValues - The new stat values.
 	 */
 	UFUNCTION(BlueprintSetter, Category = "Stat|Condition", meta = (BlueprintProtected))
 	void SetStatValues(FStatValues NewStatValues);
+
+	/**
+	 * A name for indetification of this stat.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetStatName, Category = "Stat|Name", meta = (BlueprintProtected))
+	FName StatName = "None";
 
 private:
 
@@ -140,8 +175,13 @@ private:
 	UFUNCTION()
 	void OnRep_StatValues(FStatValues PreReplicationStatValues);
 
+	// Notify about the values change.
+	void Changed_StatValues(FStatValues PrevValues);
+
 	// Broadcast a related delegate.
-	void BroadcastChange_StatValues(FStatValues PrevValues);
+	void Broadcast_OnValuesChanged(FStatValues PrevValues);
+	void Broadcast_OnMinReached(FStatValues PrevValues);
+	void Broadcast_OnMaxReached(FStatValues PrevValues);
 
 	/**
 	 * Base values of this stat.
@@ -160,7 +200,7 @@ private:
 	void OnRep_Effects(const TArray<class UEffect*>& PreReplicationEffects);
 
 	// Broadcast a related delegate.
-	void BroadcastChange_Effects(const TArray<class UEffect*>& PrevEffects);
+	void Broadcast_Effects(const TArray<class UEffect*>& PrevEffects);
 
 	// Broadcast the delegate.
 	void Broadcast_OnEffectAdded(class UEffect* Effect);

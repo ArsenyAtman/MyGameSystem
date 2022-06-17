@@ -76,41 +76,71 @@ void UStat::SetStatValues(FStatValues NewStatValues)
 		StatValues = NewStatValues;
 		StatValues.Value = FMath::Clamp(StatValues.Value, StatValues.Min, StatValues.Max);
 
-		BroadcastChange_StatValues(PrevValues);
+		Changed_StatValues(PrevValues);
 	}
 }
 
 void UStat::OnRep_StatValues(FStatValues PreReplicationStatValues)
 {
-	BroadcastChange_StatValues(PreReplicationStatValues);
+	Changed_StatValues(PreReplicationStatValues);
 }
 
-void UStat::BroadcastChange_StatValues(FStatValues PrevValues)
+void UStat::Changed_StatValues(FStatValues PrevValues)
 {
 	FStatValues CurrentValues = GetStatValues();
 
 	if(PrevValues != CurrentValues)
 	{
-		OnValuesChanged.Broadcast(this, CurrentValues - PrevValues);
+		if(HasAuthority())
+		{
+			ValuesChanged(PrevValues);
+		}
+
+		Broadcast_OnValuesChanged(PrevValues);
 
 		if(CurrentValues.Value == CurrentValues.Min && (PrevValues.Value != CurrentValues.Value || PrevValues.Min != CurrentValues.Min))
 		{
-			OnMinReached.Broadcast(this);
+			if(HasAuthority())
+			{
+				MinReached(PrevValues);
+			}
+
+			Broadcast_OnMinReached(PrevValues);
 		}
 
 		if(CurrentValues.Value == CurrentValues.Max && (PrevValues.Value != CurrentValues.Value || PrevValues.Max != CurrentValues.Max))
 		{
-			OnMaxReached.Broadcast(this);
+			if(HasAuthority())
+			{
+				MaxReached(PrevValues);
+			}
+			
+			Broadcast_OnMaxReached(PrevValues);
 		}
 	}
 }
 
-void UStat::OnRep_Effects(const TArray<UEffect*>& PreReplicationEffects)
+void UStat::Broadcast_OnValuesChanged(FStatValues PrevValues)
 {
-	BroadcastChange_Effects(PreReplicationEffects);
+	OnValuesChanged.Broadcast(this, PrevValues);
 }
 
-void UStat::BroadcastChange_Effects(const TArray<UEffect*>& PrevEffects)
+void UStat::Broadcast_OnMinReached(FStatValues PrevValues)
+{
+	OnMinReached.Broadcast(this, PrevValues);
+}
+
+void UStat::Broadcast_OnMaxReached(FStatValues PrevValues)
+{
+	OnMaxReached.Broadcast(this, PrevValues);
+}
+
+void UStat::OnRep_Effects(const TArray<UEffect*>& PreReplicationEffects)
+{
+	Broadcast_Effects(PreReplicationEffects);
+}
+
+void UStat::Broadcast_Effects(const TArray<UEffect*>& PrevEffects)
 {
 	TArray<UEffect*> AddedEffects = FindMissingEffects(Effects, PrevEffects);
 	TArray<UEffect*> RemovedEffects = FindMissingEffects(PrevEffects, Effects);

@@ -73,6 +73,23 @@ void UStatsComponent::RemoveEffect(UEffect* Effect)
 	}
 }
 
+bool UStatsComponent::AddStat(UStat* NewStat)
+{
+	Stats.Add(NewStat);
+	return true;
+}
+
+bool UStatsComponent::RemoveStat(UStat* Stat)
+{
+	if(Stats.Find(Stat) != INDEX_NONE)
+	{
+		Stats.Remove(Stat);
+		return true;
+	}
+
+	return false;
+}
+
 TArray<UEffect*> UStatsComponent::GetEffectsOfClass(TSubclassOf<UEffect> EffectClass) const
 {
 	TArray<UEffect*> FoundEffects;
@@ -107,6 +124,19 @@ TArray<UStat*> UStatsComponent::GetStatsOfClass(TSubclassOf<UStat> StatClass) co
 	}
 
 	return FoundStats;
+}
+
+UStat* UStatsComponent::GetStatByName(FName StatName) const
+{
+	for (UStat* Stat : GetStats())
+	{
+		if(Stat->GetStatName() == StatName)
+		{
+			return Stat;
+		}
+	}
+
+	return nullptr;
 }
 
 void UStatsComponent::OnRep_Effects(const TArray<UEffect*>& PreReplicationEffects)

@@ -6,6 +6,14 @@
 #include "Effect.h"
 #include "StatEffect.generated.h"
 
+UENUM(BlueprintType)
+enum class ERelatedStatsSearchType : uint8
+{
+	SearchByNameOnly			UMETA(DisplayName = "SearchByNameOnly"),
+	SearchByClassOnly			UMETA(DisplayName = "SearchByClassOnly"),
+	SearchByNameAndByClass		UMETA(DisplayName = "SearchByNameAndByClass")
+};
+
 /**
  * Effect that applies to a Stat.
  * @see UStat class.
@@ -22,7 +30,7 @@ public:
 	 * @return Related stats.
 	 */
 	UFUNCTION(BlueprintPure, Category = "StatEffect|RelatedStats")
-	TArray<class UStat*> GetRelatedStats() const { return RelatedStats; }
+	TArray<class UStat*> GetRelatedStats() const;
 	
 protected:
 
@@ -33,14 +41,25 @@ protected:
 	virtual void OnDeactivating_Implementation() override;
 
 	/**
+	 * Define the search method for related stats.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StatEffect|RelatedStats", meta = (ExposeOnSpawn = true, BlueprintProtected))
+	ERelatedStatsSearchType RelatedStatsSearchType = ERelatedStatsSearchType::SearchByNameAndByClass;
+
+	/**
 	 * Class of stats affected by this effect.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StatEffect|RelatedStats", meta = (ExposeOnSpawn = true, BlueprintProtected))
 	TSubclassOf<class UStat> ForStatsOfClass;
 
+	/**
+	 * Name of a stat affected by this effect.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StatEffect|RelatedStats", meta = (ExposeOnSpawn = true, BlueprintProtected))
+	FName ForStatOfName;
+
 private:
 
-	// Stats that are related to this effect.
-	TArray<class UStat*> RelatedStats;
+	// ...
 
 };

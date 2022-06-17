@@ -60,6 +60,24 @@ public:
 	void RemoveEffect(class UEffect* Effect);
 
 	/**
+	 * Add a new stat to this component.
+	 * @param NewStat - The new stat to add (with this stats component as its outer).
+	 * @return Addition result (false if failed to add).
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, Category = "StatsComponent|Stats")
+	bool AddStat(class UStat* NewStat);
+
+	/**
+	 * Remove a stat from this component.
+	 * @param NewStat - The stat to remove.
+	 * @return Removal result (false if failed to remove).
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, Category = "StatsComponent|Stats")
+	bool RemoveStat(class UStat* Stat);
+
+	/**
 	 * Get all applied effects to this component.
 	 * @return List of effects.
 	 */
@@ -88,6 +106,14 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "StatComponent|Stats")
 	TArray<class UStat*> GetStatsOfClass(TSubclassOf<class UStat> StatClass) const;
+
+	/**
+	 * Get stat of a specified name.
+	 * @param StatName - The name of a stat.
+	 * @return The first found stat with this name.
+	 */
+	UFUNCTION(BlueprintPure, Category = "StatComponent|Stats")
+	class UStat* GetStatByName(FName StatName) const;
 
 	/**
 	 * Called after an effect addition.

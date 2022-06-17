@@ -73,9 +73,9 @@ UDialogComponent* UDialog::GetOwningDialogComponent() const
 
 void UDialog::EndPlay_Implementation()
 {
-	Super::EndPlay_Implementation();
-
 	Broadcast_DialogEnd();
+
+	Super::EndPlay_Implementation();
 }
 
 void UDialog::BeginDialogForInterlocutors(const TArray<AActor*>& DialogInterlocutorsWithoutMaster)

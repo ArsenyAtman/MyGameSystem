@@ -4,7 +4,8 @@
 #include "Effect.h"
 #include "Stat.h"
 #include "Net/UnrealNetwork.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
+
 
 // Sets default values for this component's properties
 UStatsComponent::UStatsComponent()
@@ -21,8 +22,8 @@ void UStatsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UStatsComponent, Stats);
 	DOREPLIFETIME(UStatsComponent, Effects);
+	DOREPLIFETIME(UStatsComponent, Stats);
 }
 
 void UStatsComponent::ApplyEffect(UEffect* Effect)
@@ -76,6 +77,7 @@ void UStatsComponent::RemoveEffect(UEffect* Effect)
 bool UStatsComponent::AddStat(UStat* NewStat)
 {
 	Stats.Add(NewStat);
+	Broadcast_OnStatAdded(NewStat);
 	return true;
 }
 
@@ -84,6 +86,7 @@ bool UStatsComponent::RemoveStat(UStat* Stat)
 	if(Stats.Find(Stat) != INDEX_NONE)
 	{
 		Stats.Remove(Stat);
+		Broadcast_OnStatRemoved(Stat);
 		return true;
 	}
 
@@ -170,17 +173,33 @@ void UStatsComponent::Broadcast_OnEffectRemoved(UEffect* Effect)
 	OnEffectRemoved.Broadcast(Effect);
 }
 
-TArray<UEffect*> UStatsComponent::FindMissingEffects(const TArray<UEffect*>& FromArray, const TArray<UEffect*>& InArray) const
+void UStatsComponent::OnRep_Stats(const TArray<UStat*>& PreReplicationStats)
 {
-	TArray<UEffect*> MissingEffects;
+	BroadcastChange_Stats(PreReplicationStats);
+}
 
-	for(UEffect* Effect : FromArray)
+void UStatsComponent::BroadcastChange_Stats(const TArray<UStat*>& PrevStats)
+{
+	TArray<UStat*> AddedStats = UArrayFunctionLibrary::FindMissing(Stats, PrevStats);
+	TArray<UStat*> RemovedStats = UArrayFunctionLibrary::FindMissing(PrevStats, Stats);
+
+	for(UStat* Stat : AddedStats)
 	{
-		if(InArray.Find(Effect) == INDEX_NONE)
-		{
-			MissingEffects.Add(Effect);
-		}
+		Broadcast_OnStatAdded(Stat);
 	}
 
-	return MissingEffects;
+	for(UStat* Stat : RemovedStats)
+	{
+		Broadcast_OnStatRemoved(Stat);
+	}
+}
+
+void UStatsComponent::Broadcast_OnStatAdded(UStat* Stat)
+{
+	OnStatAdded.Broadcast(Stat);
+}
+
+void UStatsComponent::Broadcast_OnStatRemoved(UStat* Stat)
+{
+	OnStatRemoved.Broadcast(Stat);
 }

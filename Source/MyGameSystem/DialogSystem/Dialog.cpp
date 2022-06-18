@@ -1,67 +1,93 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Dialog.h"
 #include "TalkableInterface.h"
 #include "DialogComponent.h"
 #include "DialogUnit.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 
-void UDialog::Begin(UDialogComponent* OwnDialogComponent, class AActor* Master, class AActor* Initiator, const TArray<class AActor*>& OtherInterlocutors)
+
+void UDialog::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	OwningDialogComponent = OwnDialogComponent;
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DialogMaster = Master;
-	DialogInitiator = Initiator;
+	DOREPLIFETIME(UDialog, CurrentDialogUnit);
+}
 
-	Interlocutors = OtherInterlocutors;
-	Interlocutors.Add(DialogMaster);
-	Interlocutors.Add(DialogInitiator);
-
-	BeginDialogForInterlocutors(OwningDialogComponent, Interlocutors);
-
-	ActiveDialogUnit = NewObject<UDialogUnit>(this, InitialDialogUnit);
-	if (IsValid(ActiveDialogUnit))
+void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& OtherInterlocutors)
+{
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		ActiveDialogUnit->Activate(this);
-		UnitStartedForInterlocutors(ActiveDialogUnit, Interlocutors);
+		DialogMaster = Master;
+		DialogInitiator = Initiator;
+		AdditionalInterlocutors = OtherInterlocutors;
+
+		TArray<AActor*> InterlocutorsWithoutMaster = GetAdditionalInterlocutors();
+		InterlocutorsWithoutMaster.Add(DialogInitiator);
+		BeginDialogForInterlocutors(InterlocutorsWithoutMaster);
+
+		SetCurrentDialogUnit(NewObject<UDialogUnit>(this, InitialDialogUnit));
+		if (IsValid(GetCurrentDialogUnit()))
+		{
+			GetCurrentDialogUnit()->Activate();
+		}
 	}
 }
 
 void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUnit> NextDialogUnitClass)
 {
-	if (ActiveDialogUnit == DialogUnit)
+	if (GetNetRole() == ENetRole::ROLE_Authority && GetCurrentDialogUnit() == DialogUnit)
 	{
-		UDialogUnit* PrevDialogUnit = ActiveDialogUnit;
-		UnitEndedForInterlocutors(PrevDialogUnit, Interlocutors);
+		UDialogUnit* PrevDialogUnit = GetCurrentDialogUnit();
 
 		if (IsValid(NextDialogUnitClass))
 		{
-			ActiveDialogUnit = NewObject<UDialogUnit>(this, NextDialogUnitClass);
-			if (IsValid(ActiveDialogUnit))
+			SetCurrentDialogUnit(NewObject<UDialogUnit>(this, NextDialogUnitClass));
+			if (IsValid(GetCurrentDialogUnit()))
 			{
-				ActiveDialogUnit->Activate(this);
-				UnitStartedForInterlocutors(ActiveDialogUnit, Interlocutors);
+				GetCurrentDialogUnit()->Activate();
 			}
 		}
 		else
 		{
-			ActiveDialogUnit = nullptr;
-			EndDialogForInterlocutors(Interlocutors);
+			SetCurrentDialogUnit(nullptr);
+			EndDialogForInterlocutors(GetAllInterlocutors());
+
+			this->Destroy();
 		}
 	}
 }
 
-void UDialog::BeginDialogForInterlocutors(UDialogComponent* MasterDialogComponent, const TArray<AActor*>& DialogInterlocutors)
+TArray<AActor*> UDialog::GetAllInterlocutors() const
 {
-	for (const AActor* Interlocutor : DialogInterlocutors)
+	TArray<AActor*> AllInterlocutors = AdditionalInterlocutors;
+	AllInterlocutors.Add(DialogInitiator);
+	AllInterlocutors.Add(DialogMaster);
+	return AllInterlocutors;
+}
+
+UDialogComponent* UDialog::GetOwningDialogComponent() const
+{
+	return Cast<UDialogComponent>(GetOuter());
+}
+
+void UDialog::EndPlay_Implementation()
+{
+	Broadcast_DialogEnd();
+
+	Super::EndPlay_Implementation();
+}
+
+void UDialog::BeginDialogForInterlocutors(const TArray<AActor*>& DialogInterlocutorsWithoutMaster)
+{
+	for (const AActor* Interlocutor : DialogInterlocutorsWithoutMaster)
 	{
 		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
 		{
 			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
 			if (IsValid(DialogComponent))
 			{
-				DialogComponent->DialogStarted(MasterDialogComponent);
+				DialogComponent->DialogStarted(this);
 			}
 		}
 	}
@@ -76,38 +102,43 @@ void UDialog::EndDialogForInterlocutors(const TArray<AActor*>& DialogInterlocuto
 			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
 			if (IsValid(DialogComponent))
 			{
-				DialogComponent->DialogEnded();
+				DialogComponent->DialogEnded(this);
 			}
 		}
 	}
 }
 
-void UDialog::UnitStartedForInterlocutors(UDialogUnit* DialogUnit, const TArray<AActor*>& DialogInterlocutors)
+void UDialog::SetCurrentDialogUnit(UDialogUnit* NewDialogUnit)
 {
-	for (const AActor* Interlocutor : DialogInterlocutors)
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
-		{
-			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-			if (IsValid(DialogComponent))
-			{
-				DialogComponent->UnitStarted(DialogUnit->GetDialogUnitData());
-			}
-		}
+		CurrentDialogUnit = NewDialogUnit;
+		Broadcast_DialogConditionChanged();
 	}
 }
 
-void UDialog::UnitEndedForInterlocutors(UDialogUnit* DialogUnit, const TArray<AActor*>& DialogInterlocutors)
+void UDialog::OnRep_CurrentDialogUnit()
 {
-	for (const AActor* Interlocutor : DialogInterlocutors)
+	Broadcast_DialogConditionChanged();
+}
+
+void UDialog::Broadcast_DialogConditionChanged()
+{
+	if(!bOnStartedFired)
 	{
-		if (IsValid(Interlocutor) && Interlocutor->Implements<UTalkableInterface>())
-		{
-			UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Interlocutor);
-			if (IsValid(DialogComponent))
-			{
-				DialogComponent->UnitPassed(DialogUnit->GetDialogUnitData());
-			}
-		}
+		Broadcast_DialogStart();
+		bOnStartedFired = true;
 	}
+
+	OnDialogUnitChanged.Broadcast(GetCurrentDialogUnit(), this);
+}
+
+void UDialog::Broadcast_DialogStart()
+{
+	OnDialogStarted.Broadcast(this);
+}
+
+void UDialog::Broadcast_DialogEnd()
+{
+	OnDialogEnded.Broadcast(this);
 }

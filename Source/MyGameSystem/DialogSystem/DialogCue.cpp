@@ -7,31 +7,28 @@
 #include "Dialog.h"
 #include "DialogComponent.h"
 #include "TalkableInterface.h"
-#include "DialogCueDataAsset.h"
 
-void UDialogCue::Activate_Implementation(class UDialog* OwnDialog)
+void UDialogCue::Activate_Implementation()
 {
-	OwningDialog = OwnDialog;
-	OnCueBeginned();
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		OnCueBeginned();
+	}
 }
 
 void UDialogCue::PlayNextDialogCue()
 {
-	EndCue();
-}
-
-void UDialogCue::OnCueBeginned_Implementation()
-{
-	return;
-}
-
-void UDialogCue::OnCueEnded_Implementation()
-{
-	return;
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		EndCue();
+	}
 }
 
 void UDialogCue::EndCue()
 {
-	OnCueEnded();
-	OwningDialog->OnDialogUnitPassed(this, NextDialogUnit);
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		OnCueEnded();
+		GetOwningDialog()->OnDialogUnitPassed(this, NextDialogUnit);
+	}
 }

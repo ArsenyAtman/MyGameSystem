@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "DialogUnit.h"
-#include "DialogCueDataAsset.h"
-#include "DialogSystemTypes.h"
 #include "DialogCue.generated.h"
 
+/**
+ * DialogUnit that represents some dialog cue.
+ */
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UDialogCue : public UDialogUnit
 {
@@ -15,27 +16,39 @@ class MYGAMESYSTEM_API UDialogCue : public UDialogUnit
 
 public:
 
-	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
+	// Override the activation.
+	virtual void Activate_Implementation() override;
 
-	virtual class UDialogCueDataAsset* GetDialogUnitData_Implementation() const override { return CueData; }
-
+	/**
+	 * Play the next dialog cue.
+	 * @warning Server-only!
+	 */
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
 
-	UFUNCTION(BlueprintGetter, Category = "DialogCue|Dialog")
-	class UDialog* GetOwningDialog() const { return OwningDialog; }
-
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
+	/**
+	 * Called after the cue start.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control", meta = (BlueprintProtected))
 	void OnCueBeginned();
-	virtual void OnCueBeginned_Implementation();
+	virtual void OnCueBeginned_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
+	/**
+	 * Called before the cue end.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control", meta = (BlueprintProtected))
 	void OnCueEnded();
-	virtual void OnCueEnded_Implementation();
+	virtual void OnCueEnded_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal")
+	/**
+	 * End this cue.
+	 * @warning Use this function only if you know what you are doing!
+	 */
+	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal", meta = (BlueprintProtected))
 	void EndCue();
 
 protected:
@@ -44,13 +57,10 @@ protected:
 
 private:
 
+	/**
+	 * The next dialog cue to play.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|DialogFlow", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class UDialogUnit> NextDialogUnit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogCue|Data", meta = (AllowPrivateAccess = true))
-	class UDialogCueDataAsset* CueData;
-
-	UPROPERTY(BlueprintGetter = GetOwningDialog)
-	class UDialog* OwningDialog;
 
 };

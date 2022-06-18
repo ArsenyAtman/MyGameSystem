@@ -16,14 +16,10 @@ UDialogCue_AnimationAndSound* UAnimNotify_DialogCue::GetCurrentDialogCue(const U
 		UDialogComponent* DialogComponent = ITalkableInterface::Execute_GetDialogComponent(Owner);
 		if (IsValid(DialogComponent))
 		{
-			UDialogComponent* MasterDialogComponent = DialogComponent->GetMasterDialogComponent();
-			if (IsValid(MasterDialogComponent))
+			UDialog* CurrentDialog = DialogComponent->GetCurrentDialog();
+			if (IsValid(CurrentDialog))
 			{
-				UDialog* CurrentDialog = MasterDialogComponent->GetCurrentDialog();
-				if (IsValid(CurrentDialog))
-				{
-					return Cast<UDialogCue_AnimationAndSound>(CurrentDialog->GetCurrentDialogUnit());
-				}
+				return Cast<UDialogCue_AnimationAndSound>(CurrentDialog->GetCurrentDialogUnit());
 			}
 		}
 	}

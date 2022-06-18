@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "DialogSelection.h"
-#include "DialogAutoSelectionDataAsset.h"
 #include "DialogAutoSelection.generated.h"
 
+/**
+ * DialogSelection that automatically selects the first available option.
+ */
 UCLASS()
 class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogSelection
 {
@@ -14,7 +16,7 @@ class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogSelection
 
 public:
 
-	virtual class UDialogAutoSelectionDataAsset* GetDialogUnitData_Implementation() const override;
+	// ...
 
 protected:
 
@@ -22,9 +24,15 @@ protected:
 
 private:
 
+	/**
+	 * Should it check all options from the end of the list.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|DialogFlow", meta = (AllowPrivateAccess = true))
 	bool bCheckFromEnd = false;
 
+	/**
+	 * Should it pick the first unavailable option instead of the first available.
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogAutoSelection|DialogFlow", meta = (AllowPrivateAccess = true))
 	bool bSelectFalseCondition = false;
 	

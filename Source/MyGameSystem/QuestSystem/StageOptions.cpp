@@ -54,7 +54,7 @@ void UStageOptions::AbortAllObjectives_Implementation()
 UClass* UStageOptions::GetNextStage(UObjective* OfObjective, const TArray<FOption>& FromOptions) const
 {
 	TArray<UObjective*> Objectives = GetStageObjectives();
-	for (int i = 0; i < Options.Num(); ++i)
+	for (int16 i = 0; i < Options.Num(); ++i)
 	{
 		if(Objectives[i] == OfObjective)
 		{

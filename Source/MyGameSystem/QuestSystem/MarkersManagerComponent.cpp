@@ -55,7 +55,7 @@ void UMarkersManagerComponent::MarkActorsLocally(const TArray<AActor*>& ActorsTo
 
 void UMarkersManagerComponent::DeleteAllMarkersLocally()
 {
-	for (int i = Markers.Num() - 1; i >= 0; --i)
+	for (int16 i = Markers.Num() - 1; i >= 0; --i)
 	{
 		auto Marker = Markers[i];
 		if (IsValid(Marker))

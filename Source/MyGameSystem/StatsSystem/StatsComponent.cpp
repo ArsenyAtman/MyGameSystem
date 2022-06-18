@@ -146,8 +146,8 @@ void UStatsComponent::OnRep_Effects(const TArray<UEffect*>& PreReplicationEffect
 
 void UStatsComponent::BroadcastChange_Effects(const TArray<UEffect*>& PrevEffects)
 {
-	TArray<UEffect*> AddedEffects = FindMissingEffects(Effects, PrevEffects);
-	TArray<UEffect*> RemovedEffects = FindMissingEffects(PrevEffects, Effects);
+	TArray<UEffect*> AddedEffects = UArrayFunctionLibrary::FindMissing(Effects, PrevEffects);
+	TArray<UEffect*> RemovedEffects = UArrayFunctionLibrary::FindMissing(PrevEffects, Effects);
 
 	for(UEffect* Effect : AddedEffects)
 	{

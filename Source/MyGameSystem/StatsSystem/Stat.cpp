@@ -7,6 +7,7 @@
 #include "StatsComponent.h"
 #include "Effect.h"
 #include "Net/UnrealNetwork.h"
+#include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
 
 void UStat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -142,8 +143,8 @@ void UStat::OnRep_Effects(const TArray<UEffect*>& PreReplicationEffects)
 
 void UStat::Broadcast_Effects(const TArray<UEffect*>& PrevEffects)
 {
-	TArray<UEffect*> AddedEffects = FindMissingEffects(Effects, PrevEffects);
-	TArray<UEffect*> RemovedEffects = FindMissingEffects(PrevEffects, Effects);
+	TArray<UEffect*> AddedEffects = UArrayFunctionLibrary::FindMissing(Effects, PrevEffects);
+	TArray<UEffect*> RemovedEffects = UArrayFunctionLibrary::FindMissing(PrevEffects, Effects);
 
 	for(UEffect* Effect : AddedEffects)
 	{
@@ -164,19 +165,4 @@ void UStat::Broadcast_OnEffectAdded(UEffect* Effect)
 void UStat::Broadcast_OnEffectRemoved(UEffect* Effect)
 {
 	OnEffectRemoved.Broadcast(this, Effect);
-}
-
-TArray<UEffect*> UStat::FindMissingEffects(const TArray<UEffect*>& FromArray, const TArray<UEffect*>& InArray) const
-{
-	TArray<UEffect*> MissingEffects;
-
-	for(UEffect* Effect : FromArray)
-	{
-		if(InArray.Find(Effect) == INDEX_NONE)
-		{
-			MissingEffects.Add(Effect);
-		}
-	}
-
-	return MissingEffects;
 }

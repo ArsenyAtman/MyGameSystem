@@ -18,6 +18,28 @@ void UActorAction::StartAction()
 	if(HasAuthority())
 	{
 		OnActionStarted();
+
+		Notify_ActionStart();
+	}
+}
+
+void UActorAction::EndAction()
+{
+	if(HasAuthority())
+	{
+		if (bEventStarted)
+		{
+			EndActionEvent();
+		}
+
+		if (IsValid(GetActionDriverComponent()))
+		{
+			GetActionDriverComponent()->ActionCompleted(this);
+		}
+
+		OnActionEnded();
+
+		Notify_ActionEnd();
 	}
 }
 
@@ -57,22 +79,24 @@ void UActorAction::EndComboWindow()
 	}
 }
 
-void UActorAction::EndAction()
+void UActorAction::Notify_ActionStart_Implementation()
 {
-	if(HasAuthority())
-	{
-		if (bEventStarted)
-		{
-			EndActionEvent();
-		}
+	Broadcast_ActionStart();
+}
 
-		if (IsValid(GetActionDriverComponent()))
-		{
-			GetActionDriverComponent()->ActionCompleted(this);
-		}
+void UActorAction::Notify_ActionEnd_Implementation()
+{
+	Broadcast_ActionEnd();
+}
 
-		OnActionEnded();
-	}
+void UActorAction::Broadcast_ActionStart()
+{
+	OnActorActionStarted.Broadcast(this);
+}
+
+void UActorAction::Broadcast_ActionEnd()
+{
+	OnActorActionEnded.Broadcast(this);
 }
 
 AActor* UActorAction::GetControlledActor() const

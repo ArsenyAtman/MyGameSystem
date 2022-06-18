@@ -32,7 +32,7 @@ void UAxisInputHandler::Unbind_Implementation()
 
 	if (IsValid(RelatedPlayerController) && IsValid(RelatedPlayerController->InputComponent))
 		{
-			for (int i = RelatedPlayerController->InputComponent->AxisBindings.Num() - 1; i >= 0; --i)
+			for (int16 i = RelatedPlayerController->InputComponent->AxisBindings.Num() - 1; i >= 0; --i)
 			{
 				FInputAxisBinding Binding = RelatedPlayerController->InputComponent->AxisBindings[i];
 				if (Binding.AxisName == InputAxisBinding.AxisName && Binding.AxisDelegate.GetDelegateForManualSet().GetHandle() == InputAxisBinding.AxisDelegate.GetDelegateForManualSet().GetHandle())

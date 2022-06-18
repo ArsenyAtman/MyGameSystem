@@ -141,7 +141,7 @@ void UQuestComponent::BroadcastChange_QuestFailed(UQuest* Quest)
 
 void UQuestComponent::PerformFunctionForArrayDiff(const TArray<UQuest*>& ArrayBefore, const TArray<UQuest*>& ArrayAfter, BroadcastChangeFunction Function)
 {
-	for (int i = 0; i < ArrayAfter.Num(); ++i)
+	for (int16 i = 0; i < ArrayAfter.Num(); ++i)
 	{
 		if(i >= ArrayBefore.Num() || ArrayAfter[i] != ArrayBefore[i])
 		{

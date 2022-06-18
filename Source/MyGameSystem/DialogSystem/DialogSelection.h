@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "DialogUnit.h"
-#include "DialogSelectionDataAsset.h"
 #include "DialogSelection.generated.h"
 
+/**
+ * DialogUnit to controll the flow of a dialog.
+ */
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API UDialogSelection : public UDialogUnit
 {
@@ -14,38 +16,49 @@ class MYGAMESYSTEM_API UDialogSelection : public UDialogUnit
 
 public:
 
-	virtual void Activate_Implementation(class UDialog* OwnDialog) override;
+	// Override activation.
+	virtual void Activate_Implementation() override;
 
-	virtual class UDialogSelectionDataAsset* GetDialogUnitData_Implementation() const override { return SelectionData; }
+	/**
+	 * Select the next dialog unit to play.
+	 * @param NextDialogUnit - The next dialog unit to play.
+	 * @return Selected successfully.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Control")
+	bool SelectNextDialogUnit(TSubclassOf<class UDialogUnit> NextDialogUnit);
+	virtual bool SelectNextDialogUnit_Implementation(TSubclassOf<class UDialogUnit> NextDialogUnit);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Internal")
-	void SelectNextCue(int CueIndex);
-	virtual void SelectNextCue_Implementation(int CueIndex);
-
+	/**
+	 * Get the list of available options for the selection.
+	 */
 	UFUNCTION(BlueprintPure, Category = "DialogSelection|Data")
 	TArray<TSubclassOf<class UDialogUnit>> GetAvailableOptions() const;
 
-	UFUNCTION(BlueprintPure, Category = "DialogSelection|OwningDialog")
-	class UDialog* GetOwningDialog() const { return OwningDialog; }
-
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	/**
+	 * Called after the start of this selection.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Control", meta = (BlueprintProtected))
 	void OnSelectionStarted();
 	virtual void OnSelectionStarted_Implementation() { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	/**
+	 * Called after the end of this selection.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogSelection|Control", meta = (BlueprintProtected))
 	void OnSelectionEnded();
 	virtual void OnSelectionEnded_Implementation() { return; }
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Options", meta = (AllowPrivateAccess = true))
+	/**
+	 * Options to choose from.
+	 */
+	UPROPERTY(EditDefaultsOnly, Category = "DialogSelection|Options", meta = (AllowPrivateAccess = true))
 	TArray<TSubclassOf<class UDialogUnit>> Options;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DialogSelection|Data", meta = (AllowPrivateAccess = true))
-	class UDialogSelectionDataAsset* SelectionData;
-
-	class UDialog* OwningDialog;
 	
 };

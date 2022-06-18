@@ -1,16 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "DialogComponent.h"
 #include "TalkableInterface.h"
 #include "Dialog.h"
 #include "DialogCue.h"
 #include "DialogSelection.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Sound/DialogueWave.h"
 #include "Sound/DialogueVoice.h"
+
 
 // Sets default values for this component's properties
 UDialogComponent::UDialogComponent()
@@ -27,75 +26,58 @@ void UDialogComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(UDialogComponent, MasterDialogComponent, COND_OwnerOnly);
-
+	DOREPLIFETIME(UDialogComponent, CurrentDialog);
 }
 
 void UDialogComponent::BeginDialogue(AActor* Initiator, const TArray<AActor*>& AdditionalInterlocutors)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (!IsValid(CurrentDialog) && !IsValid(MasterDialogComponent) && IsValid(DialogClass))
+		if (!IsValid(GetCurrentDialog()) && IsValid(DialogClass))
 		{
-			CurrentDialog = NewObject<UDialog>(this, DialogClass);
-			if (IsValid(CurrentDialog))
+			SetCurrentDialog(NewObject<UDialog>(this, DialogClass));
+			if (IsValid(GetCurrentDialog()))
 			{
-				CurrentDialog->Begin(this, this->GetOwner(), Initiator, AdditionalInterlocutors);
-
-				if (OnDialogStarted.IsBound())
-				{
-					OnDialogStarted.Broadcast();
-				}
+				AActor* DialogMaster = this->GetOwner();
+				GetCurrentDialog()->Begin(DialogMaster, Initiator, AdditionalInterlocutors);
 			}
 		}
 	}
 }
 
-void UDialogComponent::SelectDialogCue_Implementation(int CueIndex)
+void UDialogComponent::SelectNextDialogUnit_Implementation(TSubclassOf<UDialogUnit> NextDialogUnit)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(MasterDialogComponent))
+		if (IsValid(GetCurrentDialog()))
 		{
-			UDialog* CurrentDialogOfMaster = MasterDialogComponent->GetCurrentDialog();
-			if (IsValid(CurrentDialogOfMaster))
+			UDialogSelection* ActiveSelection = Cast<UDialogSelection>(GetCurrentDialog()->GetCurrentDialogUnit());
+			if (IsValid(ActiveSelection))
 			{
-				UDialogSelection* ActiveSelection = Cast<UDialogSelection>(CurrentDialogOfMaster->GetCurrentDialogUnit());
-				if (IsValid(ActiveSelection))
-				{
-					ActiveSelection->SelectNextCue(CueIndex);
-				}
+				ActiveSelection->SelectNextDialogUnit(NextDialogUnit);
 			}
 		}
 	}
 }
 
-void UDialogComponent::DialogStarted(class UDialogComponent* NewMasterDialogComponent)
+void UDialogComponent::DialogStarted(UDialog* NewDialog)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (!IsValid(MasterDialogComponent))
+		if (!IsValid(GetCurrentDialog()))
 		{
-			MasterDialogComponent = NewMasterDialogComponent;
-
-			if (OnDialogStarted.IsBound())
-			{
-				OnDialogStarted.Broadcast();
-			}
+			SetCurrentDialog(NewDialog);
 		}
 	}
 }
 
-void UDialogComponent::DialogEnded()
+void UDialogComponent::DialogEnded(UDialog* Dialog)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		MasterDialogComponent = nullptr;
-		CurrentDialog = nullptr;
-
-		if (OnDialogEnded.IsBound())
+		if(Dialog == GetCurrentDialog())
 		{
-			OnDialogEnded.Broadcast();
+			SetCurrentDialog(nullptr);
 		}
 	}
 }
@@ -116,40 +98,31 @@ void UDialogComponent::RemoveNote(const FString& NoteToRemove)
 	}
 }
 
-void UDialogComponent::UnitStarted_Implementation(UDialogUnitDataAsset* DialogUnitData)
+void UDialogComponent::SetCurrentDialog(UDialog* NewDialog)
 {
-	CurrentDialogUnitData = DialogUnitData;
-
-	if (OnDialogUnitStarted.IsBound())
+	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		OnDialogUnitStarted.Broadcast(DialogUnitData);
+		UDialog* PrevDialog = GetCurrentDialog();
+
+		CurrentDialog = NewDialog;
+
+		Broadcast_CurrentDialog(PrevDialog);
 	}
 }
 
-void UDialogComponent::UnitPassed_Implementation(UDialogUnitDataAsset* DialogUnitData)
+void UDialogComponent::OnRep_CurrentDialog(UDialog* PreReplicationCurrentDialog)
 {
-	CurrentDialogUnitData = nullptr;
-
-	if (OnDialogUnitEnded.IsBound())
-	{
-		OnDialogUnitEnded.Broadcast(DialogUnitData);
-	}
+	Broadcast_CurrentDialog(PreReplicationCurrentDialog);
 }
 
-void UDialogComponent::OnRep_MasterDialogComponent()
+void UDialogComponent::Broadcast_CurrentDialog(UDialog* PrevDialog)
 {
-	if (IsValid(MasterDialogComponent))
+	if (IsValid(GetCurrentDialog()))
 	{
-		if (OnDialogStarted.IsBound())
-		{
-			OnDialogStarted.Broadcast();
-		}
+		OnDialogStarted.Broadcast(GetCurrentDialog());
 	}
 	else
 	{
-		if (OnDialogEnded.IsBound())
-		{
-			OnDialogEnded.Broadcast();
-		}
+		OnDialogEnded.Broadcast(PrevDialog);
 	}
 }

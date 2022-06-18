@@ -7,7 +7,7 @@
 #include "AnimNotify_PlayNextDialogCue.generated.h"
 
 /**
- * 
+ * Starts the next dialog cue immediately.
  */
 UCLASS()
 class MYGAMESYSTEM_API UAnimNotify_PlayNextDialogCue : public UAnimNotify_DialogCue

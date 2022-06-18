@@ -6,28 +6,29 @@
 #include "DialogUnit.h"
 #include "DialogComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "DialogSelectionDataAsset.h"
 
-void UDialogSelection::Activate_Implementation(UDialog* OwnDialog)
+void UDialogSelection::Activate_Implementation()
 {
-	OwningDialog = OwnDialog;
-	
-	OnSelectionStarted();
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		OnSelectionStarted();
+	}
 }
 
-void UDialogSelection::SelectNextCue_Implementation(int CueIndex)
+bool UDialogSelection::SelectNextDialogUnit_Implementation(TSubclassOf<UDialogUnit> NextDialogUnit)
 {
-	TArray<TSubclassOf<UDialogUnit>> AvailableOptions = GetAvailableOptions();
-	if (AvailableOptions.IsValidIndex(CueIndex))
+	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		OwningDialog->OnDialogUnitPassed(this, AvailableOptions[CueIndex]);
-	}
-	else
-	{
-		OwningDialog->OnDialogUnitPassed(this, nullptr);
+		TArray<TSubclassOf<UDialogUnit>> AvailableOptions = GetAvailableOptions();
+		if (AvailableOptions.Find(NextDialogUnit) != INDEX_NONE)
+		{
+			GetOwningDialog()->OnDialogUnitPassed(this, NextDialogUnit);
+			OnSelectionEnded();
+			return true;
+		}
 	}
 
-	OnSelectionEnded();
+	return false;
 }
 
 TArray<TSubclassOf<UDialogUnit>> UDialogSelection::GetAvailableOptions() const

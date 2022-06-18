@@ -6,6 +6,9 @@
 #include "AnimNotify_DialogCue.h"
 #include "AnimNotify_PlayAudioOfDialogCue.generated.h"
 
+/**
+ * Starts an audio of the current dialog cue.
+ */
 UCLASS()
 class MYGAMESYSTEM_API UAnimNotify_PlayAudioOfDialogCue : public UAnimNotify_DialogCue
 {

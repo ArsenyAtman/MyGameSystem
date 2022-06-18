@@ -214,6 +214,4 @@ private:
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = "Stat|DeltaApplier", meta = (AllowPrivateAccess = true))
 	class UStatDeltaApplier* StatDeltaApplier;
 
-	// Find elements that are not present in the second array.
-	TArray<class UEffect*> FindMissingEffects(const TArray<class UEffect*>& FromArray, const TArray<class UEffect*>& InArray) const;
 };

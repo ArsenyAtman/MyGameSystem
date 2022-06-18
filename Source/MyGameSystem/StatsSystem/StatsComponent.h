@@ -158,7 +158,6 @@ private:
 	// Broadcast the delegate.
 	void Broadcast_OnEffectRemoved(class UEffect* Effect);
 
-	// Find elements that are not present in the second array.
-	TArray<class UEffect*> FindMissingEffects(const TArray<class UEffect*>& FromArray, const TArray<class UEffect*>& InArray) const;
+	// OnRep event of Stats
 
 };

@@ -8,6 +8,11 @@
 #include "Condition.generated.h"
 
 /**
+ * Delegate for handling changes of a Condition.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConditionStateDelegate, class UCondition*, Condition);
+
+/**
  * Object that implements a behavior of the controlled actor.
  * @see ConditionComponent
  */
@@ -39,7 +44,21 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Condition")
 	class UConditionComponent* GetConditionComponent() const;
 
+	/**
+	 * Called after the condition start.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FConditionStateDelegate OnConditionStarted;
+
+	/**
+	 * Called after the condition end.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FConditionStateDelegate OnConditionEnded;
+
 protected:
+
+	virtual void EndPlay_Implementation() override;
 
 	/**
 	 * Abort this condition and start a new one. See NextCondition description.
@@ -54,15 +73,25 @@ protected:
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Condition|Control", meta = (BlueprintProtected))
-	void OnConditionStarted();
-	virtual void OnConditionStarted_Implementation() { return; }
+	void ConditionStarted();
+	virtual void ConditionStarted_Implementation() { return; }
 
 	/**
 	 * Called once before the end of this condition.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Condition|Control", meta = (BlueprintProtected))
-	void OnConditionEnded();
-	virtual void OnConditionEnded_Implementation() { return; }
+	void ConditionEnded();
+	virtual void ConditionEnded_Implementation() { return; }
+
+private:
+
+	// Notify all machines about the condition start.
+	UFUNCTION(NetMulticast, Reliable)
+	void Notify_ConditionStart();
+
+	// Broadcast delegates.
+	void Broadcast_ConditionStart();
+	void Broadcast_ConditionEnd();
 
 };

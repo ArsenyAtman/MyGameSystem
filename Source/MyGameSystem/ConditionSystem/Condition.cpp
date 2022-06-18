@@ -8,7 +8,9 @@ void UCondition::StartCondition()
 {
 	if(HasAuthority())
 	{
-		OnConditionStarted();
+		ConditionStarted();
+
+		Notify_ConditionStart();
 	}
 }
 
@@ -30,6 +32,13 @@ UConditionComponent* UCondition::GetConditionComponent() const
 	return nullptr;
 }
 
+void UCondition::EndPlay_Implementation()
+{
+	Broadcast_ConditionEnd();
+
+	Super::EndPlay_Implementation();
+}
+
 void UCondition::ChangeCondition(UCondition* NextCondition)
 {
 	if(HasAuthority())
@@ -37,7 +46,23 @@ void UCondition::ChangeCondition(UCondition* NextCondition)
 		if (IsValid(GetConditionComponent()) && IsValid(NextCondition))
 		{
 			GetConditionComponent()->ConditionChange(NextCondition);
-			OnConditionEnded();
+
+			ConditionEnded();
 		}
 	}
+}
+
+void UCondition::Notify_ConditionStart_Implementation()
+{
+	Broadcast_ConditionStart();
+}
+
+void UCondition::Broadcast_ConditionStart()
+{
+	OnConditionStarted.Broadcast(this);
+}
+
+void UCondition::Broadcast_ConditionEnd()
+{
+	OnConditionEnded.Broadcast(this);
 }

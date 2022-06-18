@@ -13,6 +13,11 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatComponentEffectDelegate, class UEffect*, Effect);
 
 /**
+ * Delegate that handles events of a stat addition or removal.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatComponentStatDelegate, class UStat*, Stat);
+
+/**
  * ActorComponent that handles effects and stats.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable)
@@ -127,6 +132,18 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
 	FStatComponentEffectDelegate OnEffectRemoved;
 
+	/**
+	 * Called after a stat addition.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
+	FStatComponentStatDelegate OnStatAdded;
+
+	/**
+	 * Called after a stat removal.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "StatComponent|Delegates")
+	FStatComponentStatDelegate OnStatRemoved;
+
 protected:
 
 	// ...
@@ -136,7 +153,7 @@ private:
 	/**
 	 * Stats of this component.
 	 */
-	UPROPERTY(EditAnywhere, Instanced, BlueprintGetter = GetStats, Replicated, Category = "StatComponent|Stats")
+	UPROPERTY(EditAnywhere, Instanced, BlueprintGetter = GetStats, ReplicatedUsing = OnRep_Stats, Category = "StatComponent|Stats")
 	TArray<class UStat*> Stats;
 
 	/**
@@ -159,5 +176,16 @@ private:
 	void Broadcast_OnEffectRemoved(class UEffect* Effect);
 
 	// OnRep event of Stats
+	UFUNCTION()
+	void OnRep_Stats(const TArray<class UStat*>& PreReplicationStats);
+
+	// Broadcast the delegate.
+	void BroadcastChange_Stats(const TArray<class UStat*>& PrevStats);
+
+	// Broadcast the delegate.
+	void Broadcast_OnStatAdded(class UStat* Stat);
+
+	// Broadcast the delegate.
+	void Broadcast_OnStatRemoved(class UStat* Stat);
 
 };

@@ -19,32 +19,34 @@ void UReplicator::ReplicateSubobjectsOfOwner(UActorChannel* Channel, FOutBunch* 
 {
 	for (FObjectProperty* ObjectProperty : ObjectProperties)
 	{
-		// Replicate the property.
+		// Get the property value.
 		UObject* Object = ObjectProperty->GetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(GetOuter()));
-		OutWroteSomething |= Channel->ReplicateSubobject(Object, *Bunch, *RepFlags);
-
 		// If the property contains a replicable object...
 		UReplicableObject* ReplicableObject = Cast<UReplicableObject>(Object);
 		if(IsValid(ReplicableObject))
 		{
-			// than replicate its subobjects.
+			// than replicate the object ...
+			OutWroteSomething |= Channel->ReplicateSubobject(ReplicableObject, *Bunch, *RepFlags);
+
+			// and replicate its subobjects.
 			ReplicableObject->ReplicateSubobjects(Channel, Bunch, RepFlags, OutWroteSomething);
 		}
 	}
 
 	for(FArrayProperty* ArrayProperty : ArrayProperties)
 	{
-		// Replicate the property.
+		// Get the property value.
 		TArray<UObject*> Array = *ArrayProperty->ContainerPtrToValuePtr<TArray<UObject*>>(GetOuter());
-		OutWroteSomething |= Channel->ReplicateSubobjectList(Array, *Bunch, *RepFlags);
-
+		
 		for(UObject* Object : Array)
 		{
-			// If the property contains a replicable object...
+			// If the array element contains a replicable object...
 			UReplicableObject* ReplicableObject = Cast<UReplicableObject>(Object);
 			if(IsValid(ReplicableObject))
 			{
-				// than replicate its subobjects.
+				// than replicate it ...
+				OutWroteSomething |= Channel->ReplicateSubobject(ReplicableObject, *Bunch, *RepFlags);
+				// and its subobjects.
 				ReplicableObject->ReplicateSubobjects(Channel, Bunch, RepFlags, OutWroteSomething);
 			}
 		}

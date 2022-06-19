@@ -6,6 +6,9 @@
 #include "Instance.h"
 #include "PickableInstance.generated.h"
 
+
+class UInventoryItem;
+
 UCLASS()
 class MYGAMESYSTEM_API APickableInstance : public AInstance
 {

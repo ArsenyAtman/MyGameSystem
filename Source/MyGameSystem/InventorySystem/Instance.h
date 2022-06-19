@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Instance.generated.h"
 
+
+class UInventoryItem;
+
 UCLASS()
 class MYGAMESYSTEM_API AInstance : public AActor
 {
@@ -21,11 +24,8 @@ public:
 	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
 #endif
 
-	UFUNCTION(BlueprintGetter)
-	class UUniversalMeshComponent* GetUniversalMesh();
-
 	UFUNCTION(BlueprintSetter)
-	void SetInventoryItem(class UInventoryItem* NewInventoryItem);
+	void SetInventoryItem(UInventoryItem* NewInventoryItem) { InventoryItem = NewInventoryItem; }
 
 protected:
 
@@ -36,18 +36,11 @@ protected:
 	virtual void Destroyed() override;
 
 	UFUNCTION(BlueprintGetter)
-	class UInventoryItem* GetInventoryItem();
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	class USceneComponent* DefaultRoot;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
-	class UUniversalMeshComponent* UniversalMesh;
+	UInventoryItem* GetInventoryItem() const { return InventoryItem; }
 
 private:
 
 	UPROPERTY(Instanced, EditAnywhere, BlueprintGetter = GetInventoryItem, BlueprintSetter = SetInventoryItem, meta = (AllowPrivateAccess = true, ExposeOnSpawn = true))
-	class UInventoryItem* InventoryItem;
+	UInventoryItem* InventoryItem;
 
-	class UStaticMesh* DummyMesh;
 };

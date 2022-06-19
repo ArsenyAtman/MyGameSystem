@@ -7,6 +7,10 @@
 #include "Place.h"
 #include "ComplexItem.generated.h"
 
+
+class UPlace;
+class AInstance;
+
 /**
  * 
  */

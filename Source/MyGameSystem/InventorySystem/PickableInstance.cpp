@@ -4,10 +4,6 @@
 #include "Instance.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-void APickableInstance::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-}
 
 UInventoryItem* APickableInstance::PickUp_Implementation()
 {

@@ -2,6 +2,7 @@
 
 
 #include "AdvancedObject.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void UAdvancedObject::PostInitProperties()
 {
@@ -27,6 +28,11 @@ UWorld* UAdvancedObject::GetWorld() const
 void UAdvancedObject::Destroy()
 {
     MulticastBeginDestroy();
+}
+
+void UAdvancedObject::ChangeOuter(UObject* NewOuter)
+{
+    Rename(*GetName(), NewOuter, REN_None);
 }
 
 void UAdvancedObject::MulticastBeginDestroy_Implementation()

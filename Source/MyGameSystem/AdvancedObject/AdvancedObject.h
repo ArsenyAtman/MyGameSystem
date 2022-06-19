@@ -33,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Destroy();
 
+	UFUNCTION(BlueprintCallable)
+	void ChangeOuter(class UObject* NewOuter);
+
 protected:
 
 	/**

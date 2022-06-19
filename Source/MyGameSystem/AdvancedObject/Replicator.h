@@ -35,4 +35,7 @@ private:
 	TArray<class FObjectProperty*> ObjectProperties;
 	TArray<class FArrayProperty*> ArrayProperties;
 
+	void ReplicateObjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+	void ReplicateArrays(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+
 };

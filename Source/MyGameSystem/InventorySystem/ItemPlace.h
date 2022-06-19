@@ -21,7 +21,7 @@ public:
 	virtual void Uninstance_Implementation() override;
 
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
-	TArray<UItem*> GetItems();
-	virtual TArray<UItem*> GetItems_Implementation() { return TArray<UItem*>(); }
+	TArray<UItem*> GetItems() const;
+	virtual TArray<UItem*> GetItems_Implementation() const { return TArray<UItem*>(); }
 	
 };

@@ -36,8 +36,14 @@ void UReplicableObject::PostInitProperties()
 
 void UReplicableObject::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
 {
+    // This object is replicating now (cyclic pointers protection).
+    SetIsReplicatingNow(true);
+
     // Delegate all the job to the Replicatior.
     Replicator->ReplicateSubobjectsOfOwner(Channel, Bunch, RepFlags, OutWroteSomething);
+
+    // This object is not replicating now.
+    SetIsReplicatingNow(false);
 }
 
 bool UReplicableObject::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParameters, FFrame* Stack)

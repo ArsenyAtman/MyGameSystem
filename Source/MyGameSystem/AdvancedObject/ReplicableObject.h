@@ -34,6 +34,12 @@ public:
 	 */
 	virtual void ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
 
+	/**
+	 * Whether this object is currently being replicated.
+	 * @return Is this object replicating now.
+	 */
+	bool GetIsReplicatingNow() const { return bIsReplicatingNow; }
+
 protected:
 
 	/**
@@ -57,6 +63,12 @@ protected:
 	UFUNCTION(BlueprintPure, meta = (BlueprintProtected))
 	ENetRole GetNetRole() const;
 
+	/**
+	 * Set is this object replicating now.
+	 * @param bNewIsReplicatingNow - The new value.
+	 */
+	void SetIsReplicatingNow(bool bNewIsReplicatingNow) { bIsReplicatingNow = bNewIsReplicatingNow; }
+
 private:
 
 	UPROPERTY()
@@ -66,5 +78,7 @@ private:
 	class AActor* FirstOuterActor = nullptr;
 
 	class AActor* FindFirstOuterActor();
+
+	bool bIsReplicatingNow = false;
 
 };

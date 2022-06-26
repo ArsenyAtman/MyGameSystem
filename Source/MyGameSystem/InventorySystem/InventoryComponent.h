@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyGameSystem/AdvancedObject/ReplicatingActorComponent.h"
+#include "Components/ActorComponent.h"
 #include "StorageInterface.h"
+#include "ComplexStorageInterface.h"
 #include "InventoryComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MYGAMESYSTEM_API UInventoryComponent : public UReplicatingActorComponent, public IStorageInterface
+class MYGAMESYSTEM_API UInventoryComponent : public UActorComponent, public IStorageInterface, public IComplexStorageInterface
 {
 	GENERATED_BODY()
 
@@ -17,6 +18,9 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
-	virtual TArray<UItemPlace*> GetItemPlaces_Implementation() const override { return TArray<UItemPlace*>(); }
+	virtual bool AddItem_Implementation(AItem* Item);
+	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
+
+	virtual TArray<UItemPlace*> GetPlaces_Implementation() const;
 		
 };

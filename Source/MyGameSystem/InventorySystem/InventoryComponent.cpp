@@ -3,6 +3,8 @@
 
 #include "InventoryComponent.h"
 
+#include "ItemPlace.h"
+
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -13,4 +15,45 @@ UInventoryComponent::UInventoryComponent()
 	// ...
 }
 
+bool UInventoryComponent::AddItem_Implementation(AItem* Item)
+{
+    TArray<UItemPlace*> Places = GetPlaces();
+    for (UItemPlace* Place : Places)
+    {
+        if(IsValid(Place) && Place->AddItem(Item))
+        {
+            return true;
+        }
+    }
 
+    return false;
+}
+
+TArray<AItem*> UInventoryComponent::FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const
+{
+    TArray<AItem*> FoundItems;
+
+    TArray<UItemPlace*> Places = GetPlaces();
+    for (UItemPlace* Place : Places)
+    {
+        if(IsValid(Place))
+        {
+            FoundItems.Append(Place->FindItemsByClass(ItemClass));
+        }
+    }
+
+    FoundItems.Remove(nullptr);
+
+    return FoundItems;
+}
+
+TArray<UItemPlace*> UInventoryComponent::GetPlaces_Implementation() const
+{
+    TArray<UItemPlace*> FoundPlaces;
+    bool bIncludeComponentsFromChildActors = true;
+	if(IsValid(GetOwner()))
+	{
+		GetOwner()->GetComponents(FoundPlaces, bIncludeComponentsFromChildActors);
+	}
+    return FoundPlaces;
+}

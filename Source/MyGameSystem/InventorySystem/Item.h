@@ -3,31 +3,45 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
-#include "InstancingInterface.h"
+#include "GameFramework/Actor.h"
+#include "InstanceInterface.h"
 #include "Item.generated.h"
 
 
-class AItemInstance;
+class UItemPlace;
+class UInventoryComponent;
 
 UCLASS()
-class MYGAMESYSTEM_API UItem : public UAdvancedObject, public IInstancingInterface
+class MYGAMESYSTEM_API AItem : public AActor, public IInstanceInterface
 {
 	GENERATED_BODY()
 
 public:
 
-	virtual void Instance_Implementation(AItemInstance* ParentInstance) override;
+	virtual void Instance_Implementation() override;
 	virtual void Uninstance_Implementation() override;
-	
+
 	UFUNCTION(BlueprintGetter)
-	AItemInstance* GetItemInstance() const { return ItemInstance; }
+	UItemPlace* GetPossessingPlace() const { return PossessingPlace; }
+
+	UFUNCTION(BlueprintPure)
+	UInventoryComponent* GetRelatedInventory() const;
+
+	UFUNCTION(BlueprintPure)
+	bool GetSizeForPlace(TSubclassOf<UItemPlace> PlaceClass, FVector& OutSize);
+
+	UFUNCTION(BlueprintPure)
+	bool GetLocationInPlace(FVector& OutLocation);
 
 private:
 
-	void SetItemInstance(AItemInstance* NewItemInstance);
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TMap<TSubclassOf<UItemPlace>, FVector> Sizes;
+	
+	UPROPERTY()
+	FVector LocationInPlace;
 
-	UPROPERTY(BlueprintGetter = GetItemInstance)
-	AItemInstance* ItemInstance;
+	UPROPERTY(BlueprintGetter = GetPossessingPlace)
+	UItemPlace* PossessingPlace;
 	
 };

@@ -4,14 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "InstancingInterface.generated.h"
-
-
-class AItemInstance;
+#include "ComplexStorageInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UInstancingInterface : public UInterface
+class UComplexStorageInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -19,7 +16,7 @@ class UInstancingInterface : public UInterface
 /**
  * 
  */
-class MYGAMESYSTEM_API IInstancingInterface
+class MYGAMESYSTEM_API IComplexStorageInterface
 {
 	GENERATED_BODY()
 
@@ -27,11 +24,6 @@ class MYGAMESYSTEM_API IInstancingInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Instance(AItemInstance* ParentInstance);
-	virtual void Instance_Implementation(AItemInstance* ParentInstance) = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Uninstance();
-	virtual void Uninstance_Implementation() = 0;
-
+	TArray<UItemPlace*> GetPlaces() const;
+	virtual TArray<UItemPlace*> GetPlaces_Implementation() const = 0;
 };

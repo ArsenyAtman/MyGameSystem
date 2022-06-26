@@ -35,6 +35,11 @@ void UAdvancedObject::ChangeOuter(UObject* NewOuter)
     Rename(*GetName(), NewOuter, REN_None);
 }
 
+UObject* UAdvancedObject::GetDefaultObject()
+{
+    return StaticClass()->GetDefaultObject();
+}
+
 void UAdvancedObject::MulticastBeginDestroy_Implementation()
 {
     RemoveTick();

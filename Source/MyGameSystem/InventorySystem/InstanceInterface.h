@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "StorageInterface.generated.h"
-
-class AItem;
-class UItemPlace;
+#include "InstanceInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UStorageInterface : public UInterface
+class UInstanceInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class MYGAMESYSTEM_API IStorageInterface
+/**
+ * 
+ */
+class MYGAMESYSTEM_API IInstanceInterface
 {
 	GENERATED_BODY()
 
@@ -24,11 +24,10 @@ class MYGAMESYSTEM_API IStorageInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool AddItem(AItem* Item);
-	virtual bool AddItem_Implementation(AItem* Item) = 0;
+	void Instance();
+	virtual void Instance_Implementation() = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	TArray<AItem*> FindItemsByClass(TSubclassOf<AItem> ItemClass) const;
-	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const = 0;
-
+	void Uninstance();
+	virtual void Uninstance_Implementation() = 0;
 };

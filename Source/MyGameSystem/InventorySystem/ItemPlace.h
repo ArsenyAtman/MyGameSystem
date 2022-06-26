@@ -3,25 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyGameSYstem/AdvancedObject/AdvancedObject.h"
-#include "InstancingInterface.h"
+#include "Components/SceneComponent.h"
+#include "StorageInterface.h"
+#include "InstanceInterface.h"
 #include "ItemPlace.generated.h"
 
 
 class UItem;
+class UObject;
 
 UCLASS(Abstract)
-class MYGAMESYSTEM_API UItemPlace : public UAdvancedObject, public IInstancingInterface
+class MYGAMESYSTEM_API UItemPlace : public USceneComponent, public IStorageInterface, public IInstanceInterface
 {
 	GENERATED_BODY()
 
 public:
 
-	virtual void Instance_Implementation(AItemInstance* ParentInstance) override;
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+	TArray<AItem*> GetItems() const;
+	virtual TArray<AItem*> GetItems_Implementation() const { return TArray<AItem*>(); }
+
+	virtual bool AddItem_Implementation(AItem* Item);
+	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
+
+	virtual void Instance_Implementation() override;
 	virtual void Uninstance_Implementation() override;
 
-	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
-	TArray<UItem*> GetItems() const;
-	virtual TArray<UItem*> GetItems_Implementation() const { return TArray<UItem*>(); }
+	UFUNCTION(BlueprintGetter)
+	UObject* GetPossessor() const;
 	
 };

@@ -5,18 +5,25 @@
 #include "CoreMinimal.h"
 #include "MyGameSystem/InventorySystem/Item.h"
 #include "StorageInterface.h"
+#include "ComplexStorageInterface.h"
 #include "ComplexItem.generated.h"
 
 
 class UItemPlace;
 
 UCLASS()
-class MYGAMESYSTEM_API UComplexItem : public UItem, public IStorageInterface
+class MYGAMESYSTEM_API AComplexItem : public AItem, public IStorageInterface, public IComplexStorageInterface
 {
 	GENERATED_BODY()
 
 public:
 
-	virtual TArray<UItemPlace*> GetItemPlaces_Implementation() const override { return TArray<UItemPlace*>(); }
+	virtual void Instance_Implementation() override;
+	virtual void Uninstance_Implementation() override;
+
+	virtual bool AddItem_Implementation(AItem* Item);
+	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
+	
+	virtual TArray<UItemPlace*> GetPlaces_Implementation() const;
 	
 };

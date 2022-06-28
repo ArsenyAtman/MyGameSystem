@@ -61,8 +61,8 @@ protected:
 	virtual void EndPlay_Implementation() override;
 
 	/**
-	 * Abort this condition and start a new one. See NextCondition description.
-	 * @param NextCondition - A new condition with the same outer as this condition has (the same ConditionComponent).
+	 * Abort this condition and start a new one.
+	 * @param NextCondition - A new condition.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Condition|Control", meta = (BlueprintProtected))

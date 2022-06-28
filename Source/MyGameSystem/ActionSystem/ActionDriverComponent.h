@@ -27,8 +27,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/**
-	 * Start an action. See the Action parameter description.
-	 * @param Action - A new action with this ActionDriverComponent as the outer.
+	 * Start an action.
+	 * @param Action - A new action.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "ActionDriver|ActionControl")

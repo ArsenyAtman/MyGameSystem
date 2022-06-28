@@ -30,8 +30,9 @@ void UStatsComponent::ApplyEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(Effect) && Effect->GetOuter() == this)
+		if (IsValid(Effect))
 		{
+			Effect->ChangeOuter(this);
 			Effect->Activate();
 		}
 	}
@@ -41,7 +42,7 @@ void UStatsComponent::AbortEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (Effect->GetRelatedStatsComponent() == this)
+		if (IsValid(Effect) && Effect->GetRelatedStatsComponent() == this)
 		{
 			Effect->Deactivate();
 		}
@@ -52,10 +53,9 @@ void UStatsComponent::AddEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (Effect->GetRelatedStatsComponent() == this)
+		if (IsValid(Effect) && Effect->GetRelatedStatsComponent() == this)
 		{
 			Effects.Add(Effect);
-
 			Broadcast_OnEffectAdded(Effect);
 		}
 	}
@@ -65,7 +65,7 @@ void UStatsComponent::RemoveEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (Effect->GetRelatedStatsComponent() == this)
+		if (IsValid(Effect) && Effect->GetRelatedStatsComponent() == this)
 		{
 			Effects.Remove(Effect);
 
@@ -76,9 +76,15 @@ void UStatsComponent::RemoveEffect(UEffect* Effect)
 
 bool UStatsComponent::AddStat(UStat* NewStat)
 {
-	Stats.Add(NewStat);
-	Broadcast_OnStatAdded(NewStat);
-	return true;
+	if(IsValid(NewStat))
+	{
+		NewStat->ChangeOuter(this);
+		Stats.Add(NewStat);
+		Broadcast_OnStatAdded(NewStat);
+		return true;
+	}
+
+	return false;
 }
 
 bool UStatsComponent::RemoveStat(UStat* Stat)

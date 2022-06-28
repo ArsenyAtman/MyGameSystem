@@ -29,8 +29,11 @@ void UActionDriverComponent::StartAction(UActorAction* Action)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(Action) && Action->GetOuter() == this)
+		if (IsValid(Action))
 		{
+			// Set this action driver as outer for the new action.
+			Action->ChangeOuter(this);
+
 			// If the current action is valid and running...
 			if (IsValid(GetCurrentAction()))
 			{

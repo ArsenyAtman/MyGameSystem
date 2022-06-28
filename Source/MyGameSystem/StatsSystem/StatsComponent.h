@@ -33,8 +33,8 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/**
-	 * Apply a new effect with this component as outer.
-	 * @param Effect - The new effect with this component as outer.
+	 * Apply a new effect.
+	 * @param Effect - The new effect.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "StatComponent|Control")
@@ -66,7 +66,7 @@ public:
 
 	/**
 	 * Add a new stat to this component.
-	 * @param NewStat - The new stat to add (with this stats component as its outer).
+	 * @param NewStat - The new stat to add.
 	 * @return Addition result (false if failed to add).
 	 * @warning Server-only!
 	 */

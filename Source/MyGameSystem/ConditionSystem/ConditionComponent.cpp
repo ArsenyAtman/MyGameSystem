@@ -42,10 +42,9 @@ void UConditionComponent::ConditionChange(UCondition* NewCondition)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		// If the new condition is valid and its outer is this component...
-		if (IsValid(NewCondition) && NewCondition->GetOuter() == this)
+		if (IsValid(NewCondition))
 		{
-			// than set this condition as a new one.
+			NewCondition->ChangeOuter(this);
 			SetCurrentCondition(NewCondition);
 		}
 	}

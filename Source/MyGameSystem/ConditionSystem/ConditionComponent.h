@@ -32,8 +32,8 @@ public:
 	virtual void BeginPlay() override;
 
 	/**
-	 * Abort the current condition and start a new one. See the NewCondition description.
-	 * @param NewCondition - A new condition with this ConditionComponent as the outer.
+	 * Abort the current condition and start a new one.
+	 * @param NewCondition - A new condition.
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "ConditionComponent|Internal")

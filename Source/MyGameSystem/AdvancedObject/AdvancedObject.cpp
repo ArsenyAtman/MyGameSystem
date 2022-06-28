@@ -32,7 +32,7 @@ void UAdvancedObject::Destroy()
 
 void UAdvancedObject::ChangeOuter(UObject* NewOuter)
 {
-    Rename(*GetName(), NewOuter, REN_None);
+    Rename(nullptr, NewOuter, REN_None);
 }
 
 void UAdvancedObject::MulticastBeginDestroy_Implementation()

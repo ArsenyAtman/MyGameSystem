@@ -9,7 +9,7 @@
 #include "InventoryComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UInventoryComponent : public UActorComponent, public IStorageInterface, public IComplexStorageInterface
 {
 	GENERATED_BODY()

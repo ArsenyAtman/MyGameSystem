@@ -7,10 +7,32 @@
 #include "ComplexItem.h"
 #include "InventoryComponent.h"
 #include "ActorWithInventoryInterface.h"
+#include "Math\Box2D.h"
 
 bool UItemPlace::AddItem_Implementation(AItem* Item)
 {
-    // ...
+    for (int32 X = 0; X < PlaceSize.X; ++X)
+    {
+        for (int32 Y = 0; Y < PlaceSize.Y; ++Y)
+        {
+            if (this->PlaceItem(Item, FIntPoint(X, Y)))
+            {
+                return true;
+            }
+        }
+    }
+
+    for (AItem* ItemInPlace : GetItems())
+    {
+        AComplexItem* ComplexItemInPlace = Cast<AComplexItem>(ItemInPlace);
+        if (IsValid(ComplexItemInPlace))
+        {
+            if (ComplexItemInPlace->AddItem(Item))
+            {
+                return true;
+            }
+        }
+    }
 
     return false;
 }
@@ -19,16 +41,15 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
 {
     TArray<AItem*> FoundItems;
 
-    TArray<AItem*> Items = GetItems();
     for (AItem* Item : Items)
     {
-        if(IsValid(Item) && Item->StaticClass()->IsChildOf(ItemClass))
+        if (IsValid(Item) && Item->StaticClass()->IsChildOf(ItemClass))
         {
             FoundItems.Add(Item);
         }
 
         AComplexItem* ComplexItem = Cast<AComplexItem>(Item);
-        if(IsValid(ComplexItem))
+        if (IsValid(ComplexItem))
         {
             FoundItems.Append(ComplexItem->FindItemsByClass(ItemClass));
         }
@@ -41,10 +62,9 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
 
 void UItemPlace::Instance_Implementation()
 {
-    TArray<AItem*> Items = GetItems();
     for (AItem* Item : Items)
     {
-        if(IsValid(Item))
+        if (IsValid(Item))
         {
             Item->Instance();
         }
@@ -53,10 +73,9 @@ void UItemPlace::Instance_Implementation()
 
 void UItemPlace::Uninstance_Implementation()
 {
-    TArray<AItem*> Items = GetItems();
     for (AItem* Item : Items)
     {
-        if(IsValid(Item))
+        if (IsValid(Item))
         {
             Item->Uninstance();
         }
@@ -68,15 +87,53 @@ UObject* UItemPlace::GetPossessor() const
     AActor* Owner = GetOwner();
 
     AComplexItem* ComplexItem = Cast<AComplexItem>(Owner);
-    if(IsValid(ComplexItem))
+    if (IsValid(ComplexItem))
     {
         return ComplexItem;
     }
 
-    if(Owner->Implements<UActorWithInventoryInterface>())
+    if (Owner->Implements<UActorWithInventoryInterface>())
     {
         return IActorWithInventoryInterface::Execute_GetInventoryComponent(Owner);
     }
 
     return nullptr;
+}
+
+bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
+{
+    FBox2D NewItemBox = NewItem->GetBox();
+    FBox2D PlaceBox = this->GetBox();
+
+    if (PlaceBox.IsInside(NewItemBox))
+    {
+        for (const AItem* Item : Items)
+        {
+            FBox2D ItemBox = Item->GetBox();
+            if (NewItemBox.Intersect(ItemBox))
+            {
+                return false;
+            }
+        }
+
+        Items.Add(NewItem);
+        NewItem->PlacedInPlace(this, NewItemPosition);
+        ItemPlaced(NewItem);
+        return true;
+    }
+
+    return false;
+}
+
+bool UItemPlace::RemoveItem(AItem* Item)
+{
+    if (Items.Find(Item) != INDEX_NONE)
+    {
+        Items.Remove(Item);
+        Item->RemovedFromPlace();
+        ItemRemoved(Item);
+        return true;
+    }
+
+    return false;
 }

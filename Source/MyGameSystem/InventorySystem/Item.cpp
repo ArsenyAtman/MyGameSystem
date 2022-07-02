@@ -6,6 +6,7 @@
 #include "InventoryComponent.h"
 #include "ComplexItem.h"
 #include "ItemPlace.h"
+#include "ItemResizer.h"
 
 void AItem::Instance_Implementation()
 {
@@ -19,7 +20,12 @@ void AItem::Uninstance_Implementation()
 
 FVector2D AItem::GetInventorySize() const
 {
-    return GetInventorySizeForPlace(GetPossessingPlace()->StaticClass());
+    if(IsValid(ItemResizer))
+    {
+        return ItemResizer->GetInventorySize(this, GetPossessingPlace());
+    }
+    
+    return FVector2D::ZeroVector;
 }
 
 UInventoryComponent* AItem::GetRelatedInventory() const
@@ -47,16 +53,6 @@ UInventoryComponent* AItem::GetRelatedInventory() const
     }
     
     return nullptr;
-}
-
-FVector2D AItem::GetInventorySizeForPlace(TSubclassOf<UItemPlace> PlaceClass) const
-{
-    if(IsValid(PlaceClass) && Sizes.Contains(PlaceClass))
-    {
-        return Sizes[PlaceClass];
-    }
-
-    return FIntPoint::NoneValue;
 }
 
 void AItem::PlacedInPlace(UItemPlace* NewPlace, FVector2D NewLocation)

@@ -17,6 +17,11 @@ void AItem::Uninstance_Implementation()
     // ...
 }
 
+FVector2D AItem::GetInventorySize() const
+{
+    return GetInventorySizeForPlace(GetPossessingPlace()->StaticClass());
+}
+
 UInventoryComponent* AItem::GetRelatedInventory() const
 {
     if(IsValid(PossessingPlace))
@@ -44,24 +49,32 @@ UInventoryComponent* AItem::GetRelatedInventory() const
     return nullptr;
 }
 
-bool AItem::GetSizeForPlace(TSubclassOf<UItemPlace> PlaceClass, FVector& OutSize)
+FVector2D AItem::GetInventorySizeForPlace(TSubclassOf<UItemPlace> PlaceClass) const
 {
     if(IsValid(PlaceClass) && Sizes.Contains(PlaceClass))
     {
-        OutSize = Sizes[PlaceClass];
-        return true;
+        return Sizes[PlaceClass];
     }
 
-    return false;
+    return FIntPoint::NoneValue;
 }
 
-bool AItem::GetLocationInPlace(FVector& OutLocation)
+void AItem::PlacedInPlace(UItemPlace* NewPlace, FVector2D NewLocation)
 {
     if(IsValid(GetPossessingPlace()))
     {
-        OutLocation = LocationInPlace;
-        return true;
+        GetPossessingPlace()->RemoveItem(this);
     }
 
-    return false;
+    SetPossessingPlace(NewPlace);
+    SetInventoryLocation(NewLocation);
+    Placed(NewPlace);
+}
+
+void AItem::RemovedFromPlace()
+{
+    UItemPlace* PrevPlace = GetPossessingPlace();
+    SetPossessingPlace(nullptr);
+    SetInventoryLocation(FVector2D::ZeroVector);
+    Removed(PrevPlace);
 }

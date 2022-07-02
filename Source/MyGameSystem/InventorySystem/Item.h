@@ -13,6 +13,7 @@
 class AItem;
 class UItemPlace;
 class UInventoryComponent;
+class UItemResizer;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemConditionDelegate, AItem*, Item, UItemPlace*, ItemPlace);
 
@@ -32,9 +33,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	UInventoryComponent* GetRelatedInventory() const;
 
-	UFUNCTION(BlueprintPure)
-	FVector2D GetInventorySizeForPlace(TSubclassOf<UItemPlace> PlaceClass) const;
-
 	UFUNCTION(BlueprintGetter)
 	UItemPlace* GetPossessingPlace() const { return PossessingPlace; }
 
@@ -51,6 +49,9 @@ public:
 	FItemConditionDelegate OnRemoved;
 
 protected:
+
+	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly)
+	UItemResizer* ItemResizer;
 
 	UFUNCTION(BlueprintSetter)
 	void SetInventoryLocation(FVector2D NewLocation) { InventoryLocation = NewLocation; }

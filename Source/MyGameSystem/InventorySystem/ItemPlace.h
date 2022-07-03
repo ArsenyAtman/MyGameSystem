@@ -14,6 +14,7 @@
 class AItem;
 class UObject;
 class UItemPlace;
+class UItemLocator;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemPlaceConditionDelegate, UItemPlace*, ItemPlace, AItem*, Item);
 
@@ -46,6 +47,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool RemoveItem(AItem* Item);
 
+	UFUNCTION(BlueprintGetter)
+	bool GetIsInstancing() { return bIsInstancing; }
+
+	UFUNCTION(BlueprintSetter)
+	void SetIsInstancing(bool bNewIsInstancing);
+
+	UFUNCTION(BlueprintPure)
+	FTransform GetRelativeTransformForItem(AItem* Item);
+
 	UPROPERTY(BlueprintAssignable)
 	FItemPlaceConditionDelegate OnPlaced;
 
@@ -53,6 +63,9 @@ public:
 	FItemPlaceConditionDelegate OnRemoved;
 
 protected:
+
+	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly)
+	UItemLocator* ItemLocator;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void ItemPlaced(AItem* Item);
@@ -67,7 +80,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FIntPoint PlaceSize;
 
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	float PlaceGridSize;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+		FRotator ItemsRelativeRotation;
+
 	UPROPERTY()
 	TArray<AItem*> Items;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsInstancing, BlueprintSetter = SetIsInstancing, meta = (AllowPrivateAccess = true))
+	bool bIsInstancing = true;
 	
 };

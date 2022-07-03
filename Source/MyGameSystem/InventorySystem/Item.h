@@ -67,15 +67,19 @@ protected:
 	void Removed(UItemPlace* ItemPlace);
 	virtual void Removed_Implementation(UItemPlace* ItemPlace) { return; }
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void ShowView();
+	virtual void ShowView_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void HideView();
+	virtual void HideView_Implementation() { return; }
+
 private:
 
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TMap<TSubclassOf<UItemPlace>, FVector2D> Sizes;
-	
 	UPROPERTY(BlueprintSetter = SetInventoryLocation)
 	FVector2D InventoryLocation;
 
 	UPROPERTY(BlueprintGetter = GetPossessingPlace, BlueprintSetter = SetPossessingPlace)
 	UItemPlace* PossessingPlace;
-	
 };

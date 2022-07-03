@@ -10,54 +10,66 @@
 
 void AItem::Instance_Implementation()
 {
-    // ...
+    UItemPlace* OwningPlace = GetPossessingPlace();
+    if (IsValid(OwningPlace))
+    {
+        AttachToComponent(OwningPlace, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+        SetActorRelativeTransform(OwningPlace->GetRelativeTransformForItem(this));
+    }
+
+    ShowView();
 }
 
 void AItem::Uninstance_Implementation()
 {
-    // ...
+    if (IsValid(GetPossessingPlace()))
+    {
+        DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+    }
+
+    HideView();
 }
 
 FVector2D AItem::GetInventorySize() const
 {
-    if(IsValid(ItemResizer))
+    if (IsValid(ItemResizer))
     {
         return ItemResizer->GetInventorySize(this, GetPossessingPlace());
     }
-    
+
     return FVector2D::ZeroVector;
 }
 
 UInventoryComponent* AItem::GetRelatedInventory() const
 {
-    if(IsValid(PossessingPlace))
+    if (IsValid(PossessingPlace))
     {
         UObject* Possessor = PossessingPlace->GetPossessor();
-    
-        while(Possessor)
+
+        while (Possessor)
         {
             UInventoryComponent* Inventory = Cast<UInventoryComponent>(Possessor);
-            if(IsValid(Inventory))
+            if (IsValid(Inventory))
             {
                 return Inventory;
             }
             else
             {
-                AComplexItem* ComplexItem = Cast<AComplexItem>(Possessor);
-                if(IsValid(ComplexItem->GetPossessingPlace()))
+                AItem* Item = Cast<AItem>(Possessor);
+                if (IsValid(Item) && IsValid(Item->GetPossessingPlace()))
                 {
-                    Possessor = ComplexItem->GetPossessingPlace()->GetPossessor();
+                    Possessor = Item->GetPossessingPlace()->GetPossessor();
                 }
             }
         }
     }
-    
+
     return nullptr;
 }
 
 void AItem::PlacedInPlace(UItemPlace* NewPlace, FVector2D NewLocation)
 {
-    if(IsValid(GetPossessingPlace()))
+    if (IsValid(GetPossessingPlace()))
     {
         GetPossessingPlace()->RemoveItem(this);
     }

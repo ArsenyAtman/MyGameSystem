@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ItemPlace.h"
 
 #include "Item.h"
@@ -8,6 +7,7 @@
 #include "InventoryComponent.h"
 #include "ActorWithInventoryInterface.h"
 #include "Math\Box2D.h"
+#include "ItemLocator.h"
 
 bool UItemPlace::AddItem_Implementation(AItem* Item)
 {
@@ -62,11 +62,14 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
 
 void UItemPlace::Instance_Implementation()
 {
-    for (AItem* Item : Items)
+    if (bIsInstancing)
     {
-        if (IsValid(Item))
+        for (AItem* Item : Items)
         {
-            Item->Instance();
+            if (IsValid(Item))
+            {
+                Item->Instance();
+            }
         }
     }
 }
@@ -136,4 +139,31 @@ bool UItemPlace::RemoveItem(AItem* Item)
     }
 
     return false;
+}
+
+void UItemPlace::SetIsInstancing(bool bNewIsInstancing)
+{
+    if (bIsInstancing != bNewIsInstancing)
+    {
+        bIsInstancing = bNewIsInstancing;
+
+        if (bIsInstancing)
+        {
+            Instance();
+        }
+        else
+        {
+            Uninstance();
+        }
+    }
+}
+
+FTransform UItemPlace::GetRelativeTransformForItem(AItem* Item)
+{
+    if (IsValid(ItemLocator))
+    {
+        return ItemLocator->GetItemRelativeTransform(this, Item);
+    }
+
+    return FTransform::Identity;
 }

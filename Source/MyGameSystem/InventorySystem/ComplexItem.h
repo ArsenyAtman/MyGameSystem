@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyGameSystem/InventorySystem/Item.h"
+#include "Item.h"
 #include "StorageInterface.h"
 #include "ComplexStorageInterface.h"
 #include "ComplexItem.generated.h"

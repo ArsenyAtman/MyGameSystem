@@ -37,7 +37,7 @@ public:
 protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void ItemDropped();
-	virtual void ItemDropped_Implementation() { return; }
+	void ItemDropped(AItem* Item);
+	virtual void ItemDropped_Implementation(AItem* Item) { return; }
 		
 };

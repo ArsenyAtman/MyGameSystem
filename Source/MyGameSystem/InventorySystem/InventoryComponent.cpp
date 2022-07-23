@@ -68,5 +68,6 @@ void UInventoryComponent::DropItem(AItem* Item)
         Item->SetActorTransform(DropTransform);
         Item->RemoveFromPlace();
         Item->Instance();
+        ItemDropped(Item);
     }
 }

@@ -120,7 +120,7 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
         }
 
         Items.Add(NewItem);
-        NewItem->PlacedInPlace(this, NewItemPosition);
+        NewItem->PlaceInPlace(this, NewItemPosition);
         ItemPlaced(NewItem);
         return true;
     }
@@ -133,7 +133,7 @@ bool UItemPlace::RemoveItem(AItem* Item)
     if (Items.Find(Item) != INDEX_NONE)
     {
         Items.Remove(Item);
-        Item->RemovedFromPlace();
+        Item->RemoveFromPlace();
         ItemRemoved(Item);
         return true;
     }

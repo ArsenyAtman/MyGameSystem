@@ -30,7 +30,7 @@ void AStackableItem::MergedWithItem(int32 CountOfTakenItems)
 
     if(CountInStack <= 0)
     {
-        this->RemovedFromPlace();
+        this->RemoveFromPlace();
         this->Destroy();
     }
 }

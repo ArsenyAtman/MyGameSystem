@@ -67,7 +67,7 @@ UInventoryComponent* AItem::GetRelatedInventory() const
     return nullptr;
 }
 
-void AItem::PlacedInPlace(UItemPlace* NewPlace, FVector2D NewLocation)
+void AItem::PlaceInPlace(UItemPlace* NewPlace, FVector2D NewLocation)
 {
     if (IsValid(GetPossessingPlace()))
     {
@@ -79,7 +79,7 @@ void AItem::PlacedInPlace(UItemPlace* NewPlace, FVector2D NewLocation)
     Placed(NewPlace);
 }
 
-void AItem::RemovedFromPlace()
+void AItem::RemoveFromPlace()
 {
     UItemPlace* PrevPlace = GetPossessingPlace();
     SetPossessingPlace(nullptr);

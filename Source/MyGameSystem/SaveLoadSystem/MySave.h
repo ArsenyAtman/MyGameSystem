@@ -1,7 +1,3 @@
-
-/**
- * 
- */
 UCLASS(Blueprintable)
 class WORLDSCOLLIDE_API USaveGameC : public USaveGame
 {

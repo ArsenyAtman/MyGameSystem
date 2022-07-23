@@ -12,7 +12,7 @@
 
 class AItem;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FItemDroppedDelegate, UInventoryComponent*, Inventory, AItem*, Item)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemDroppedDelegate, UInventoryComponent*, Inventory, AItem*, Item);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UInventoryComponent : public UActorComponent, public IStorageInterface, public IComplexStorageInterface
@@ -39,5 +39,10 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void ItemDropped(AItem* Item);
 	virtual void ItemDropped_Implementation(AItem* Item) { return; }
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Notify_ItemDropped(AItem* Item);
+
+	void Broadcast_ItemDropped(AItem* Item);
 		
 };

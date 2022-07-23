@@ -8,9 +8,23 @@
 #include "ActorWithInventoryInterface.h"
 #include "Math\Box2D.h"
 #include "ItemLocator.h"
+#include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
+#include "Net/UnrealNetwork.h"
+
+void UItemPlace::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(UItemPlace, Items);
+}
 
 bool UItemPlace::AddItem_Implementation(AItem* Item)
 {
+    if(GetOwner()->HasAuthority() == false)
+    {
+        return false;
+    }
+
     for (int32 X = 0; X < PlaceSize.X; ++X)
     {
         for (int32 Y = 0; Y < PlaceSize.Y; ++Y)
@@ -105,6 +119,11 @@ UObject* UItemPlace::GetPossessor() const
 
 bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
 {
+    if(GetOwner()->HasAuthority() == false)
+    {
+        return false;
+    }
+
     FBox2D NewItemBox = NewItem->GetBox();
     FBox2D PlaceBox = this->GetBox();
 
@@ -122,6 +141,7 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
         Items.Add(NewItem);
         NewItem->PlaceInPlace(this, NewItemPosition);
         ItemPlaced(NewItem);
+        Broadcast_ItemPlaced(NewItem);
         return true;
     }
 
@@ -130,11 +150,17 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
 
 bool UItemPlace::RemoveItem(AItem* Item)
 {
+    if(GetOwner()->HasAuthority() == false)
+    {
+        return false;
+    }
+
     if (Items.Find(Item) != INDEX_NONE)
     {
         Items.Remove(Item);
         Item->RemoveFromPlace();
         ItemRemoved(Item);
+        Broadcast_ItemRemoved(Item);
         return true;
     }
 
@@ -143,6 +169,11 @@ bool UItemPlace::RemoveItem(AItem* Item)
 
 void UItemPlace::SetIsInstancing(bool bNewIsInstancing)
 {
+    if(GetOwner()->HasAuthority() == false)
+    {
+        return;
+    }
+
     if (bIsInstancing != bNewIsInstancing)
     {
         bIsInstancing = bNewIsInstancing;
@@ -166,4 +197,35 @@ FTransform UItemPlace::GetRelativeTransformForItem(AItem* Item)
     }
 
     return FTransform::Identity;
+}
+
+void UItemPlace::OnRep_Items(const TArray<AItem*>& PrevItems)
+{
+    BroadcastChange_Items(PrevItems);
+}
+
+void UItemPlace::BroadcastChange_Items(const TArray<AItem*>& PrevItems)
+{
+    TArray<AItem*> AddedItems = UArrayFunctionLibrary::FindMissing(Items, PrevItems);
+	TArray<AItem*> RemovedItems = UArrayFunctionLibrary::FindMissing(PrevItems, Items);
+
+	for(AItem* Item : AddedItems)
+	{
+		Broadcast_ItemPlaced(Item);
+	}
+
+	for(AItem* Item : RemovedItems)
+	{
+		Broadcast_ItemRemoved(Item);
+	}
+}
+
+void UItemPlace::Broadcast_ItemPlaced(AItem* Item)
+{
+    OnPlaced.Broadcast(this, Item);
+}
+
+void UItemPlace::Broadcast_ItemRemoved(AItem* Item)
+{
+    OnRemoved.Broadcast(this, Item);
 }

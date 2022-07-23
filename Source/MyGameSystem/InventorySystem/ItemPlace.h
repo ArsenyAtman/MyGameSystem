@@ -25,6 +25,8 @@ class MYGAMESYSTEM_API UItemPlace : public USceneComponent, public IStorageInter
 
 public:
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
 	TArray<AItem*> GetItems() const;
 	virtual TArray<AItem*> GetItems_Implementation() const { return TArray<AItem*>(); }
@@ -86,10 +88,17 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FRotator ItemsRelativeRotation;
 
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_Items)
 	TArray<AItem*> Items;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsInstancing, BlueprintSetter = SetIsInstancing, meta = (AllowPrivateAccess = true))
 	bool bIsInstancing = true;
+
+	UFUNCTION()
+	void OnRep_Items(const TArray<AItem*>& PrevItems);
+
+	void BroadcastChange_Items(const TArray<AItem*>& PrevItems);
+	void Broadcast_ItemPlaced(AItem* Item);
+	void Broadcast_ItemRemoved(AItem* Item);
 	
 };

@@ -29,4 +29,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UInventoryComponent* GetInventoryComponent();
 	virtual UInventoryComponent* GetInventoryComponent_Implementation() = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	FTransform GetDropTransform();
+	virtual FTransform GetDropTransform_Implementation() = 0;
 };

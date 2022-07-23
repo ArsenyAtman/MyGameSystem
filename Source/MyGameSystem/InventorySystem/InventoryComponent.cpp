@@ -3,7 +3,9 @@
 
 #include "InventoryComponent.h"
 
+#include "Item.h"
 #include "ItemPlace.h"
+#include "ActorWithInventoryInterface.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -56,4 +58,15 @@ TArray<UItemPlace*> UInventoryComponent::GetPlaces_Implementation() const
 		GetOwner()->GetComponents(FoundPlaces, bIncludeComponentsFromChildActors);
 	}
     return FoundPlaces;
+}
+
+void UInventoryComponent::DropItem(AItem* Item)
+{
+    if(IsValid(GetOwner()) && GetOwner()->Implements<UActorWithInventoryInterface>())
+    {
+        FTransform DropTransform = IActorWithInventoryInterface::Execute_GetDropTransform(GetOwner());
+        Item->SetActorTransform(DropTransform);
+        Item->RemoveFromPlace();
+        Item->Instance();
+    }
 }

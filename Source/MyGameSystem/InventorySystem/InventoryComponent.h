@@ -33,5 +33,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FItemDroppedDelegate OnItemDropped;
+
+protected:
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void ItemDropped();
+	virtual void ItemDropped_Implementation() { return; }
 		
 };

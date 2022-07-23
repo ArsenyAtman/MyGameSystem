@@ -15,7 +15,27 @@ class UItemPlace;
 class UInventoryComponent;
 class UItemResizer;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemPossessionChangeDelegate, AItem*, Item, UItemPlace*, ItemPlace);
+USTRUCT(BlueprintType, Blueprintable)
+struct MYGAMESYSTEM_API FItemPossessionInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector2D InventoryLocation;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UItemPlace* PossessingPlace;
+
+	FItemPossessionInfo(FVector2D Location = FVector2D::ZeroVector, UItemPlace* Place = nullptr)
+	{
+		InventoryLocation = Location;
+		PossessingPlace = Place;
+	}
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FItemPossessionChangeDelegate, AItem*, Item, FItemPossessionInfo, NewPossessionInfo, FItemPossessionInfo, PrevPossessionInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemConditionChangeDelegate, AItem*, Item);
 
 UCLASS(BlueprintType, Blueprintable)
@@ -25,17 +45,19 @@ class MYGAMESYSTEM_API AItem : public AActor, public IInstanceInterface, public 
 
 public:
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void Instance_Implementation() override;
 	virtual void Uninstance_Implementation() override;
 
-	virtual FVector2D GetInventoryLocation() const override { return InventoryLocation; }
+	virtual FVector2D GetInventoryLocation() const override { return ItemPossession.InventoryLocation; }
 	virtual FVector2D GetInventorySize() const override;
 
 	UFUNCTION(BlueprintPure)
 	UInventoryComponent* GetRelatedInventory() const;
 
-	UFUNCTION(BlueprintGetter)
-	UItemPlace* GetPossessingPlace() const { return PossessingPlace; }
+	UFUNCTION(BlueprintPure)
+	UItemPlace* GetPossessingPlace() const { return ItemPossession.PossessingPlace; }
 
 	UFUNCTION(BlueprintCallable)
 	void PlaceInPlace(UItemPlace* NewPlace, FVector2D NewLocation);
@@ -44,10 +66,7 @@ public:
 	void RemoveFromPlace();
 
 	UPROPERTY(BlueprintAssignable)
-	FItemPossessionChangeDelegate OnPlaced;
-
-	UPROPERTY(BlueprintAssignable)
-	FItemPossessionChangeDelegate OnRemoved;
+	FItemPossessionChangeDelegate OnPossessionChanged;
 
 	UPROPERTY(BlueprintAssignable)
 	FItemConditionChangeDelegate OnResized;
@@ -63,11 +82,8 @@ protected:
 	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly)
 	UItemResizer* ItemResizer;
 
-	UFUNCTION(BlueprintSetter)
-	void SetInventoryLocation(FVector2D NewLocation) { InventoryLocation = NewLocation; }
-
-	UFUNCTION(BlueprintSetter)
-	void SetPossessingPlace(UItemPlace* NewPossessingPlace) { PossessingPlace = NewPossessingPlace; }
+	UFUNCTION(BlueprintCallable)
+	void SetPossession(FItemPossessionInfo NewPossessionInfo);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Placed(UItemPlace* ItemPlace);
@@ -87,9 +103,20 @@ protected:
 
 private:
 
-	UPROPERTY(BlueprintSetter = SetInventoryLocation)
-	FVector2D InventoryLocation;
+	UPROPERTY(BlueprintSetter = SetPossession, ReplicatedUsing = OnRep_ItemPossession)
+	FItemPossessionInfo ItemPossession;
 
-	UPROPERTY(BlueprintGetter = GetPossessingPlace, BlueprintSetter = SetPossessingPlace)
-	UItemPlace* PossessingPlace;
+	UFUNCTION()
+	void OnRep_ItemPossession(FItemPossessionInfo PrevPossession);
+
+	void Broadcast_PossessionChanged(FItemPossessionInfo PrevPossession);
+
+	void Broadcast_ItemInstanced();
+	void Broadcast_ItemUninstanced();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void InstanceItem();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void UninstanceItem();
 };

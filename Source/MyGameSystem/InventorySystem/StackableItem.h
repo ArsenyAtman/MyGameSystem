@@ -11,7 +11,7 @@
 
 class AItem;
 
-DECLARE_MULTICAST_DYNAMIC_DELEGATE(FCountInStackChangeDelegate, AStackableItem*, StackableItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FCountInStackChangeDelegate, AStackableItem*, StackableItem, int32, NewCountInStack, int32, PrevCountInStack);
 
 UCLASS()
 class MYGAMESYSTEM_API AStackableItem : public AItem, public IStorageInterface
@@ -19,6 +19,8 @@ class MYGAMESYSTEM_API AStackableItem : public AItem, public IStorageInterface
 	GENERATED_BODY()
 
 public:
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual bool AddItem_Implementation(AItem* Item) override;
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const override { return TArray<AItem*>(); }
@@ -38,7 +40,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AStackableItem* Split(int32 CountToTake);
 
-	UFUNCTION(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable)
 	FCountInStackChangeDelegate OnCountInStackChanged;
 
 protected:
@@ -46,12 +48,20 @@ protected:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	int32 MergeWithItem(AStackableItem* Item);
 
+	UFUNCTION(BlueprintSetter)
+	void SetCountInStack(int32 NewCountInStack);
+
 private:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCountInStack)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCountInStack, BlueprintSetter = SetCountInStack, ReplicatedUsing = OnRep_CountInStack)
 	int32 CountInStack;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxCountInStack)
 	int32 MaxCountInStack;
+
+	UFUNCTION()
+	void OnRep_CountInStack(int32 PrevCountInStack);
+
+	void Broadcast_CountInStackChanged(int32 PrevCountInStack);
 	
 };

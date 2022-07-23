@@ -6,6 +6,7 @@
 #include "Item.h"
 #include "ItemPlace.h"
 #include "ActorWithInventoryInterface.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -62,6 +63,11 @@ TArray<UItemPlace*> UInventoryComponent::GetPlaces_Implementation() const
 
 void UInventoryComponent::DropItem(AItem* Item)
 {
+    if(GetOwner()->HasAuthority() == false)
+    {
+        return;
+    }
+
     if(IsValid(GetOwner()) && GetOwner()->Implements<UActorWithInventoryInterface>() && Item->GetRelatedInventory() == this)
     {
         FTransform DropTransform = IActorWithInventoryInterface::Execute_GetDropTransform(GetOwner());
@@ -69,5 +75,16 @@ void UInventoryComponent::DropItem(AItem* Item)
         Item->RemoveFromPlace();
         Item->Instance();
         ItemDropped(Item);
+        Notify_ItemDropped(Item);
     }
+}
+
+void UInventoryComponent::Notify_ItemDropped_Implementation(AItem* Item)
+{
+    Broadcast_ItemDropped(Item);
+}
+
+void UInventoryComponent::Broadcast_ItemDropped(AItem* Item)
+{
+    OnItemDropped.Broadcast(this, Item);
 }

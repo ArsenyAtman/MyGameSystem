@@ -3,8 +3,22 @@
 
 #include "StackableItem.h"
 
+#include "Net/UnrealNetwork.h"
+
+void AStackableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AStackableItem, CountInStack);
+}
+
 bool AStackableItem::AddItem_Implementation(AItem* Item)
 {
+    if(HasAuthority() == false)
+    {
+        return false;
+    }
+
     AStackableItem* StackableItem = Cast<AStackableItem>(Item);
     int32 CountOfItemsBeforeMerge = StackableItem->GetCountInStack();
     if (IsValid(StackableItem) && StackableItem->StaticClass() == this->StaticClass())
@@ -21,12 +35,27 @@ bool AStackableItem::AddItem_Implementation(AItem* Item)
 
 void AStackableItem::InitializeCountInStack(int32 InitCountInStack)
 {
-    CountInStack = InitCountInStack;
+    if(HasAuthority() == false)
+    {
+        return;
+    }
+
+    if(IsActorInitialized())
+    {
+        return;
+    }
+
+    SetCountInStack(InitCountInStack);
 }
 
 void AStackableItem::MergedWithItem(int32 CountOfTakenItems)
 {
-    CountInStack -= CountOfTakenItems;
+    if(HasAuthority() == false)
+    {
+        return;
+    }
+
+    SetCountInStack(GetCountInStack() - CountOfTakenItems);
 
     if(CountInStack <= 0)
     {
@@ -37,13 +66,19 @@ void AStackableItem::MergedWithItem(int32 CountOfTakenItems)
 
 int32 AStackableItem::MergeWithItem(AStackableItem* Item)
 {
+    if(HasAuthority() == false)
+    {
+        return false;
+    }
+
     int32 IncomingCount = Item->GetCountInStack();
     int32 CurrentCount = this->GetCountInStack();
     int32 MaxCount = this->GetMaxCountInStack();
 
     int32 CountOfAddedItems = FMath::Clamp(IncomingCount, 0, MaxCount - CurrentCount);
 
-    CountInStack += CountOfAddedItems;
+    SetCountInStack(GetCountInStack() + CountOfAddedItems);
+
     Item->MergedWithItem(CountOfAddedItems);
 
     int32 CountOfItemsLeft = IncomingCount - CountOfAddedItems;
@@ -52,15 +87,42 @@ int32 AStackableItem::MergeWithItem(AStackableItem* Item)
 
 AStackableItem* AStackableItem::Split(int32 CountToTake)
 {
+    if(HasAuthority() == false)
+    {
+        return nullptr;
+    }
+
     if (CountToTake >= this->GetCountInStack())
     {
         return this;
     }
 
-    CountInStack -= CountToTake;
+    SetCountInStack(GetCountInStack() - CountToTake);
 
     AStackableItem* NewItem = GetWorld()->SpawnActorDeferred<AStackableItem>(this->StaticClass(), FTransform::Identity, this->GetOwner(), nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
     NewItem->InitializeCountInStack(CountToTake);
     NewItem->FinishSpawning(FTransform::Identity);
     return NewItem;
+}
+
+void AStackableItem::SetCountInStack(int32 NewCountInStack)
+{
+    if(HasAuthority() == false)
+    {
+        return;
+    }
+
+    int32 PrevCountInStack = GetCountInStack();
+    CountInStack = NewCountInStack;
+    Broadcast_CountInStackChanged(PrevCountInStack);
+}
+
+void AStackableItem::OnRep_CountInStack(int32 PrevCountInStack)
+{
+    Broadcast_CountInStackChanged(PrevCountInStack);
+}
+
+void AStackableItem::Broadcast_CountInStackChanged(int32 PrevCountInStack)
+{
+    OnCountInStackChanged.Broadcast(this, GetCountInStack(), PrevCountInStack);
 }

@@ -22,5 +22,8 @@ public:
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
 
 	virtual TArray<UItemPlace*> GetPlaces_Implementation() const;
+
+	UFUNCTION(BlueprintCallable)
+	void DropItem(AItem* Item);
 		
 };

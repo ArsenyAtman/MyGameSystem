@@ -46,6 +46,14 @@ protected:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	int32 MergeWithItem(AStackableItem* Item);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Merged();
+	virtual void Merged_Implementation() { return; }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Splitted();
+	virtual void Splitted_Implementation() { return; }
+
 private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCountInStack)

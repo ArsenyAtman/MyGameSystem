@@ -50,9 +50,6 @@ public:
 	FItemPossessionChangeDelegate OnRemoved;
 
 	UPROPERTY(BlueprintAssignable)
-	FItemConditionChangeDelegate OnDropped;
-
-	UPROPERTY(BlueprintAssignable)
 	FItemConditionChangeDelegate OnResized;
 
 	UPROPERTY(BlueprintAssignable)
@@ -79,14 +76,6 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Removed(UItemPlace* ItemPlace);
 	virtual void Removed_Implementation(UItemPlace* ItemPlace) { return; }
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Dropped(UItemPlace* ItemPlace);
-	virtual void Dropped_Implementation(UItemPlace* ItemPlace) { return; }
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Resized(UItemPlace* ItemPlace);
-	virtual void Resized_Implementation(UItemPlace* ItemPlace) { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void ShowView();

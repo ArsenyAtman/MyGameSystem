@@ -84,7 +84,7 @@ private:
 	float PlaceGridSize;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-		FRotator ItemsRelativeRotation;
+	FRotator ItemsRelativeRotation;
 
 	UPROPERTY()
 	TArray<AItem*> Items;

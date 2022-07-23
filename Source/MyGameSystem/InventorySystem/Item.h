@@ -37,10 +37,10 @@ public:
 	UItemPlace* GetPossessingPlace() const { return PossessingPlace; }
 
 	UFUNCTION(BlueprintCallable)
-	void PlacedInPlace(UItemPlace* NewPlace, FVector2D NewLocation);
+	void PlaceInPlace(UItemPlace* NewPlace, FVector2D NewLocation);
 
 	UFUNCTION(BlueprintCallable)
-	void RemovedFromPlace();
+	void RemoveFromPlace();
 
 	UPROPERTY(BlueprintAssignable)
 	FItemConditionDelegate OnPlaced;

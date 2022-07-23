@@ -15,7 +15,8 @@ class UItemPlace;
 class UInventoryComponent;
 class UItemResizer;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemConditionDelegate, AItem*, Item, UItemPlace*, ItemPlace);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemPossessionChangeDelegate, AItem*, Item, UItemPlace*, ItemPlace);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemConditionChangeDelegate, AItem*, Item);
 
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEM_API AItem : public AActor, public IInstanceInterface, public ISizedInterface
@@ -43,10 +44,22 @@ public:
 	void RemoveFromPlace();
 
 	UPROPERTY(BlueprintAssignable)
-	FItemConditionDelegate OnPlaced;
+	FItemPossessionChangeDelegate OnPlaced;
 
 	UPROPERTY(BlueprintAssignable)
-	FItemConditionDelegate OnRemoved;
+	FItemPossessionChangeDelegate OnRemoved;
+
+	UPROPERTY(BlueprintAssignable)
+	FItemConditionChangeDelegate OnDropped;
+
+	UPROPERTY(BlueprintAssignable)
+	FItemConditionChangeDelegate OnResized;
+
+	UPROPERTY(BlueprintAssignable)
+	FItemConditionChangeDelegate OnInstanced;
+
+	UPROPERTY(BlueprintAssignable)
+	FItemConditionChangeDelegate OnUninstanced;
 
 protected:
 

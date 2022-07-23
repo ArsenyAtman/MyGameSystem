@@ -6,8 +6,13 @@
 #include "Components/ActorComponent.h"
 #include "StorageInterface.h"
 #include "ComplexStorageInterface.h"
+
 #include "InventoryComponent.generated.h"
 
+
+class AItem;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FItemDroppedDelegate, UInventoryComponent*, Inventory, AItem*, Item)
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
 class MYGAMESYSTEM_API UInventoryComponent : public UActorComponent, public IStorageInterface, public IComplexStorageInterface
@@ -25,5 +30,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DropItem(AItem* Item);
+
+	UPROPERTY(BlueprintAssignable)
+	FItemDroppedDelegate OnItemDropped;
 		
 };

@@ -5,9 +5,13 @@
 #include "CoreMinimal.h"
 #include "Item.h"
 #include "StorageInterface.h"
+
 #include "StackableItem.generated.h"
 
+
 class AItem;
+
+DECLARE_MULTICAST_DYNAMIC_DELEGATE(FCountInStackChangeDelegate, AStackableItem*, StackableItem);
 
 UCLASS()
 class MYGAMESYSTEM_API AStackableItem : public AItem, public IStorageInterface
@@ -33,6 +37,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	AStackableItem* Split(int32 CountToTake);
+
+	UFUNCTION(BlueprintAssignable)
+	FCountInStackChangeDelegate OnCountInStackChanged;
 
 protected:
 

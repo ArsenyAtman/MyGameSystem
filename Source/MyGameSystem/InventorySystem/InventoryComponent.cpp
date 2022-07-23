@@ -62,7 +62,7 @@ TArray<UItemPlace*> UInventoryComponent::GetPlaces_Implementation() const
 
 void UInventoryComponent::DropItem(AItem* Item)
 {
-    if(IsValid(GetOwner()) && GetOwner()->Implements<UActorWithInventoryInterface>())
+    if(IsValid(GetOwner()) && GetOwner()->Implements<UActorWithInventoryInterface>() && Item->GetRelatedInventory() == this)
     {
         FTransform DropTransform = IActorWithInventoryInterface::Execute_GetDropTransform(GetOwner());
         Item->SetActorTransform(DropTransform);

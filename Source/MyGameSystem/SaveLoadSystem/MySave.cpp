@@ -1,66 +1,212 @@
+// Fill out your copyright notice in the Description page of Project Settings.
 
-/**
- * 
- */
-UCLASS(Blueprintable)
-class WORLDSCOLLIDE_API USaveGameC : public USaveGame
+#include "MySave.h"
+
+#include "GameFramework/Actor.h"
+#include "Serialization/MemoryReader.h"
+#include "Serialization/MemoryWriter.h"
+#include "Engine/World.h"
+#include "MyGameArchive.h"
+//#include "UObject/NoExportTypes.h"
+
+//DEFINE_LOG_CATEGORY(LogSaveGame)
+
+void UMySave::ActorArraySaver(TArray<AActor*>& SaveActors)
 {
-    GENERATED_BODY()
+    for (AActor* SaveActor : SaveActors)
+    {
+        ActorSaver(SaveActor);
+    }
+}
 
-public:
+void UMySave::ActorSaver(AActor* SaveActor)
+{
     
+
+    int32 Index = ObjectRecords.Emplace();
+    FObjectRecord& ObjectRecord = ObjectRecords[Index];
+
+    ObjectRecord.Name = SaveActor->GetFName();
+    ObjectRecord.Transform = SaveActor->GetTransform();
+    ObjectRecord.Class = SaveActor->GetClass();
+    ObjectRecord.bActor = true;
+
+    SaveData(SaveActor, ObjectRecord.Data);
+
+    this->TempObjects.Add(SaveActor);
+    //UE_LOG(LogSaveGame, Display, TEXT("Complete Save Actor %s"), *SaveActor->GetName())
     
+}
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray GalaxyData;
+void UMySave::ActorPreloader(AActor* WorldActor, FObjectRecord& ActorRecord)
+{
 
-    // All object data in one array
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray ObjectRecords;
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Name = ActorRecord.Name;
 
-    // used for temp loading objects before serializing but after loading
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray TempObjects;
+    // TODO: change this to SpawnActorDeferred so you can de-serialize and apply data before it calls constructor\BeginPlay
+    AActor* NewActor = WorldActor->GetWorld()->SpawnActor<AActor>(ActorRecord.Class, ActorRecord.Transform, SpawnParams);
+    //AActor* NewActor = WorldActor->GetWorld()->SpawnActorDeferred
+        
+    // BUG? actor doesn't appear to load scale correctly using transform so I specifically apply the scale after loading
+    NewActor->SetActorScale3D(ActorRecord.Transform.GetScale3D());
 
-    // outers that are part of the map or otherwise preloaded so won't be in the list of TempObjects
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-        TArray PersistentOuters;
+    // don't load now, load after all objects are preloaded
+    //LoadData(LoadObject, ObjectRecord.Data);
 
-public:
+    // add to temp array for lookup it another object using already loaded objects as outers (array gets cleared once all objects loaded)
+    this->TempObjects.Add(NewActor);
 
-    // basically just a wrapper so you don't have to do a for loop in blueprints
-    UFUNCTION(BlueprintCallable)
-        void ActorArraySaver(UPARAM(ref)TArray& SaveActors);
+    //UE_LOG(LogSaveGame, Display, TEXT("Complete Load Actor %s"), *NewActor->GetPathName())
+}
 
-    // Save individual Actors
-    UFUNCTION(BlueprintCallable)
-        void ActorSaver(AActor* SaveActor);
+void UMySave::UObjectArraySaver(TArray<UObject*>& SaveObjects)
+{
+    for (UObject* SaveObject : SaveObjects)
+    {
+        UObjectSaver(SaveObject);
+    }
+}
 
-    // Create all saved actors without any data serialized yet
-    UFUNCTION(BlueprintCallable)
-        void ActorPreloader(AActor* WorldActor, FObjectRecord& ActorRecord);
+void UMySave::UObjectSaver(UObject* SaveObject)
+{
+    if (SaveObject == nullptr)
+    {
+        //UE_LOG(LogSaveGame, Error, TEXT("Invalid Save Object!"))
+        return;
+    }
 
-    // basically just a wrapper so you don't have to do a for loop in blueprints
-    UFUNCTION(BlueprintCallable)
-        void UObjectArraySaver(UPARAM(ref) TArray& SaveObjects);
+    if (SaveObject->HasAnyFlags(EObjectFlags::RF_Transient))
+    {
+        //UE_LOG(LogSaveGame, Warning, TEXT("Saving RF_Transient object"))
+        return;
+    }
 
-    // Save individual objects
-    UFUNCTION(BlueprintCallable)
-        void UObjectSaver(UObject* SaveObject);
+    if (SaveObject->StaticClass()->IsChildOf(AActor::StaticClass()))
+    {
+        ActorSaver(Cast<AActor>(SaveObject));
+        return;
+    }
 
-    // create all saved objects without any data serialized yet
-    UFUNCTION(BlueprintCallable)
-        void UObjectsPreloader(AActor* WorldActor);
+    int32 Index = ObjectRecords.Emplace();
+    FObjectRecord& ObjectRecord = ObjectRecords[Index];
 
-    // load all data after all objects exist so all pointers will load
-    UFUNCTION(BlueprintCallable)
-        void UObjectDataLoader();
+    // Use custom IDs for save\retrieving outer pointers
+    // * Negative IDs if outer is a permanent map object (i.e. not loaded from SaveGame)
+    // * Negative IDs start from -2 because -1 is already assigned to INDEX_NONE, and 0+ is used for SaveGame loaded objects
+    ObjectRecord.OuterID = TempObjects.Find(SaveObject->GetOuter());
+    ObjectRecord.bActor = false;
 
-    // serialize the data
-    UFUNCTION(BlueprintCallable)
-        void SaveData(UObject* Object, TArray& Data);
+    // if outer is a saved object then don't try to save the direct object pointer
+    if (ObjectRecord.OuterID == INDEX_NONE)
+    {
+        ObjectRecord.OuterID = PersistentOuters.Find(SaveObject->GetOuter());
+        if (ObjectRecord.OuterID != INDEX_NONE)
+        {
+            ObjectRecord.OuterID = -(ObjectRecord.OuterID + 2);
+        }
+        else
+        {
+            Index = PersistentOuters.Add(SaveObject->GetOuter());
+            ObjectRecord.OuterID = -(Index + 2);
+            //UE_LOG(LogSaveGame, Display, TEXT("Save Outer %s"), *SaveObject->GetOuter()->GetPathName())
 
-    // de-serialize the data
-    UFUNCTION(BlueprintCallable)
-        void LoadData(UObject* Object, UPARAM(ref) TArray& Data);
-};
+        }
+    }
+
+    ObjectRecord.Name = SaveObject->GetFName();
+    ObjectRecord.Class = SaveObject->GetClass();
+
+    SaveData(SaveObject, ObjectRecord.Data);
+
+    this->TempObjects.Add(SaveObject);
+
+    //UE_LOG(LogSaveGame, Display, TEXT("Complete Save UObject %s"), *SaveObject->GetName())
+}
+
+void UMySave::UObjectsPreloader(AActor* WorldActor)
+{
+    UObject* LoadOuter = nullptr;
+
+    for (FObjectRecord& ObjectRecord : ObjectRecords)
+    {
+        if (ObjectRecord.bActor == false)
+        {
+            if (ObjectRecord.OuterID != INDEX_NONE)
+            {
+                if (TempObjects.IsValidIndex(ObjectRecord.OuterID) == true)
+                {
+                    LoadOuter = TempObjects[ObjectRecord.OuterID];
+                    if (LoadOuter == nullptr)
+                    {
+                        //UE_LOG(LogSaveGame, Error, TEXT("Unable to find Outer for object (invalid array object)"))
+                    }
+                }
+                else
+                {
+                    int32 NewIndex = FMath::Abs(ObjectRecord.OuterID) - 2;
+
+                    if (PersistentOuters.IsValidIndex(NewIndex)) 
+                    {
+                        LoadOuter = PersistentOuters[NewIndex];
+                    }
+                    else 
+                    {
+                        //UE_LOG(LogSaveGame, Error, TEXT("Unable to find Outer for object (invalid ID)"))
+                    }   
+                }
+            }
+            if (LoadOuter == nullptr)
+            {
+                //UE_LOG(LogSaveGame, Error, TEXT("Unable to find Outer for object (no pointer)"))
+                continue;
+            }
+
+            UObject* LoadObject = NewObject<UObject>(LoadOuter, ObjectRecord.Class, ObjectRecord.Name);
+            
+            if (LoadObject == nullptr) return;
+
+            // don't load now, load after all objects are preloaded
+            //LoadData(LoadObject, ObjectRecord.Data);
+
+            // add to here to cycle through and keep a pointer temporarly to avoid garbage collection (not sure if required but to be safe)
+            this->TempObjects.Add(LoadObject);
+
+            //UE_LOG(LogSaveGame, Display, TEXT("Complete Load UObject %s %d"), *LoadObject->GetPathName(), this->TempObjects.Num() - 1)
+        }
+
+        else
+        {
+            ActorPreloader(WorldActor, ObjectRecord);
+        }
+    }
+}
+
+void UMySave::UObjectDataLoader()
+{
+    for (int32 a = 0 ; ObjectRecords.IsValidIndex(a) ; a++)
+    {
+        // Load now after all objects are preloaded
+        LoadData(TempObjects[a], ObjectRecords[a].Data);
+    }
+}
+
+void UMySave::SaveData(UObject* Object, TArray<uint8>& Data)
+{
+    if (Object == nullptr) return;
+
+    FMemoryWriter MemoryWriter = FMemoryWriter(Data, true);
+    FMyGameArchive MyArchive = FMyGameArchive(MemoryWriter);
+
+    Object->Serialize(MyArchive);
+}
+
+void UMySave::LoadData(UObject* Object, TArray<uint8>& Data)
+{
+    if (Object == nullptr) return;
+
+    FMemoryReader MemoryReader(Data, true);
+
+    FMyGameArchive Ar(MemoryReader);
+    Object->Serialize(Ar);
+}

@@ -40,6 +40,9 @@ public:
 	virtual FVector2D GetInventoryLocation() const override { return FVector2D::ZeroVector; }
 	virtual FVector2D GetInventorySize() const override { return PlaceSize; }
 
+	UFUNCTION(BlueprintPure)
+	UInventoryComponent* GetRelatedInventory() const;
+
 	UFUNCTION(BlueprintGetter)
 	UObject* GetPossessor() const;
 

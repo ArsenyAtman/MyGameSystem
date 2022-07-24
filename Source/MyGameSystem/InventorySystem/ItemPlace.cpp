@@ -99,6 +99,22 @@ void UItemPlace::Uninstance_Implementation()
     }
 }
 
+UInventoryComponent* UItemPlace::GetRelatedInventory() const
+{
+    AItem* OwningItem = Cast<AComplexItem>(GetOwner());
+    if (IsValid(OwningItem))
+    {
+        return OwningItem->GetRelatedInventory();
+    }
+
+    if (GetOwner()->Implements<UActorWithInventoryInterface>())
+    {
+        return IActorWithInventoryInterface::Execute_GetInventoryComponent(GetOwner());
+    }
+
+    return nullptr;
+}
+
 UObject* UItemPlace::GetPossessor() const
 {
     AActor* Owner = GetOwner();

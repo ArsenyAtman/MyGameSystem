@@ -26,11 +26,15 @@ class MYGAMESYSTEM_API IActorWithInventoryInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithInventoryInterface")
 	UInventoryComponent* GetInventoryComponent();
 	virtual UInventoryComponent* GetInventoryComponent_Implementation() = 0;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithInventoryInterface")
+	UInventoryManagerComponent* GetInventoryManagerComponent();
+	virtual UInventoryManagerComponent* GetInventoryManagerComponent_Implementation() = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithInventoryInterface")
 	FTransform GetDropTransform();
 	virtual FTransform GetDropTransform_Implementation() = 0;
 };

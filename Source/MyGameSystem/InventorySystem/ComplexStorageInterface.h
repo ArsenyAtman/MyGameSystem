@@ -23,7 +23,7 @@ class MYGAMESYSTEM_API IComplexStorageInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ComplexStorageInterface")
 	TArray<UItemPlace*> GetPlaces() const;
 	virtual TArray<UItemPlace*> GetPlaces_Implementation() const = 0;
 };

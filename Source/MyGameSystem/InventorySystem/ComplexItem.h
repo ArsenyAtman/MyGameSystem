@@ -18,8 +18,7 @@ class MYGAMESYSTEM_API AComplexItem : public AItem, public IStorageInterface, pu
 
 public:
 
-	virtual void Instance_Implementation() override;
-	virtual void Uninstance_Implementation() override;
+	virtual void SetIsInstanced_Implementation(bool bNewIsInstanced) override;
 
 	virtual bool AddItem_Implementation(AItem* Item);
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;

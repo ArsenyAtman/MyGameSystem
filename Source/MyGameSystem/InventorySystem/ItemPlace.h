@@ -25,6 +25,8 @@ class MYGAMESYSTEM_API UItemPlace : public USceneComponent, public IStorageInter
 
 public:
 
+	UItemPlace();
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
@@ -34,8 +36,7 @@ public:
 	virtual bool AddItem_Implementation(AItem* Item);
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
 
-	virtual void Instance_Implementation() override;
-	virtual void Uninstance_Implementation() override;
+	virtual void SetIsInstanced_Implementation(bool bNewIsInstanced) override;
 
 	virtual FVector2D GetInventorySize_Implementation() const override { return PlaceSize; }
 
@@ -83,12 +84,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FIntPoint PlaceSize;
-
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	float PlaceGridSize;
-
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	FRotator ItemsRelativeRotation;
 
 	UPROPERTY(ReplicatedUsing = OnRep_Items)
 	TArray<AItem*> Items;

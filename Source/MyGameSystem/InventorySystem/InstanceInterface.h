@@ -24,10 +24,6 @@ class MYGAMESYSTEM_API IInstanceInterface
 public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Instance();
-	virtual void Instance_Implementation() = 0;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Uninstance();
-	virtual void Uninstance_Implementation() = 0;
+	void SetIsInstanced(bool bNewIsInstanced);
+	virtual void SetIsInstanced_Implementation(bool bNewIsInstanced) = 0;
 };

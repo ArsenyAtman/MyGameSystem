@@ -16,7 +16,7 @@ UInventoryManagerComponent::UInventoryManagerComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	SetIsReplicatedByDefault(true);
 }
 
 void UInventoryManagerComponent::ChangeItemPossession_Implementation(AItem* Item, FItemPossessionInfo NewPossessionInfo)
@@ -45,7 +45,7 @@ void UInventoryManagerComponent::PickupItem_Implementation(AItem* Item)
 	if (GetOwner()->Implements<UActorWithInventoryInterface>())
     {
         UInventoryComponent* MainInventory = IActorWithInventoryInterface::Execute_GetInventoryComponent(GetOwner());
-		MainInventory->AddItem(Item);
+		IStorageInterface::Execute_AddItem(MainInventory, Item);
     }
 }
 

@@ -41,7 +41,7 @@ bool UItemPlace::AddItem_Implementation(AItem* Item)
         AComplexItem* ComplexItemInPlace = Cast<AComplexItem>(ItemInPlace);
         if (IsValid(ComplexItemInPlace))
         {
-            if (ComplexItemInPlace->AddItem(Item))
+            if (IStorageInterface::Execute_AddItem(ComplexItemInPlace, Item))
             {
                 return true;
             }
@@ -65,7 +65,7 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
         AComplexItem* ComplexItem = Cast<AComplexItem>(Item);
         if (IsValid(ComplexItem))
         {
-            FoundItems.Append(ComplexItem->FindItemsByClass(ItemClass));
+            FoundItems.Append(IStorageInterface::Execute_FindItemsByClass(ComplexItem, ItemClass));
         }
     }
 
@@ -82,7 +82,7 @@ void UItemPlace::Instance_Implementation()
         {
             if (IsValid(Item))
             {
-                Item->Instance();
+                IInstanceInterface::Execute_Instance(Item);
             }
         }
     }
@@ -94,7 +94,7 @@ void UItemPlace::Uninstance_Implementation()
     {
         if (IsValid(Item))
         {
-            Item->Uninstance();
+            IInstanceInterface::Execute_Uninstance(Item);
         }
     }
 }
@@ -140,22 +140,27 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
         return false;
     }
 
-    FBox2D NewItemBox = NewItem->GetBox();
     FBox2D PlaceBox = this->GetBox();
+    FBox2D NewItemBox = NewItem->GetBoxForPlace(NewItemPosition, this);
+    
+    // Correction for comparsions
+    FVector2D Correction = FVector2D(0.1, 0.1);
+    NewItemBox.Min += Correction;
+    NewItemBox.Max -= Correction;
 
     if (PlaceBox.IsInside(NewItemBox))
     {
         for (const AItem* Item : Items)
         {
             FBox2D ItemBox = Item->GetBox();
-            if (NewItemBox.Intersect(ItemBox))
+            if (NewItemBox.Intersect(ItemBox) && NewItem != Item)
             {
                 return false;
             }
         }
 
-        Items.Add(NewItem);
         NewItem->PlaceInPlace(this, NewItemPosition);
+        Items.Add(NewItem);
         ItemPlaced(NewItem);
         Broadcast_ItemPlaced(NewItem);
         return true;
@@ -196,7 +201,7 @@ void UItemPlace::SetIsInstancing(bool bNewIsInstancing)
 
         if (bIsInstancing)
         {
-            Instance();
+            IInstanceInterface::Execute_Instance(this);
         }
         else
         {

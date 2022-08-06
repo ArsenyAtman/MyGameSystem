@@ -15,15 +15,15 @@ UInventoryComponent::UInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	SetIsReplicatedByDefault(true);
 }
 
 bool UInventoryComponent::AddItem_Implementation(AItem* Item)
 {
-    TArray<UItemPlace*> Places = GetPlaces();
+    TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
     for (UItemPlace* Place : Places)
     {
-        if(IsValid(Place) && Place->AddItem(Item))
+        if(IsValid(Place) && IStorageInterface::Execute_AddItem(Place, Item))
         {
             return true;
         }
@@ -36,12 +36,12 @@ TArray<AItem*> UInventoryComponent::FindItemsByClass_Implementation(TSubclassOf<
 {
     TArray<AItem*> FoundItems;
 
-    TArray<UItemPlace*> Places = GetPlaces();
+    TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
     for (UItemPlace* Place : Places)
     {
         if(IsValid(Place))
         {
-            FoundItems.Append(Place->FindItemsByClass(ItemClass));
+            FoundItems.Append(IStorageInterface::Execute_FindItemsByClass(Place, ItemClass));
         }
     }
 
@@ -73,7 +73,7 @@ void UInventoryComponent::DropItem(AItem* Item)
         FTransform DropTransform = IActorWithInventoryInterface::Execute_GetDropTransform(GetOwner());
         Item->SetActorTransform(DropTransform);
         Item->RemoveFromPlace();
-        Item->Instance();
+        IInstanceInterface::Execute_Instance(Item);
         ItemDropped(Item);
         Notify_ItemDropped(Item);
     }

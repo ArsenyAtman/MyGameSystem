@@ -50,8 +50,9 @@ public:
 	virtual void Instance_Implementation() override;
 	virtual void Uninstance_Implementation() override;
 
-	virtual FVector2D GetInventoryLocation() const override { return ItemPossession.InventoryLocation; }
-	virtual FVector2D GetInventorySize() const override;
+	virtual FVector2D GetInventoryLocation_Implementation() const override { return ItemPossession.InventoryLocation; }
+	virtual FVector2D GetInventorySize_Implementation() const override;
+	virtual FVector2D GetInventorySizeForPlace_Implementation(UItemPlace* Place) const override;
 
 	UFUNCTION(BlueprintPure)
 	UInventoryComponent* GetRelatedInventory() const;

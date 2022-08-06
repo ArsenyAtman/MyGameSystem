@@ -9,12 +9,12 @@ void AComplexItem::Instance_Implementation()
 {
     Super::Instance_Implementation();
 
-    TArray<UItemPlace*> Places = GetPlaces();
+    TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
     for (UItemPlace* Place : Places)
     {
         if(IsValid(Place))
         {
-            Place->Instance();
+            IInstanceInterface::Execute_Instance(Place);
         }
     }
 }
@@ -23,22 +23,22 @@ void AComplexItem::Uninstance_Implementation()
 {
     Super::Uninstance_Implementation();
 
-    TArray<UItemPlace*> Places = GetPlaces();
+    TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
     for (UItemPlace* Place : Places)
     {
         if(IsValid(Place))
         {
-            Place->Uninstance();
+            IInstanceInterface::Execute_Uninstance(Place);
         }
     }
 }
 
 bool AComplexItem::AddItem_Implementation(AItem* Item)
 {
-    TArray<UItemPlace*> Places = GetPlaces();
+    TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
     for (UItemPlace* Place : Places)
     {
-        if(IsValid(Place) && Place->AddItem(Item))
+        if(IsValid(Place) && IStorageInterface::Execute_AddItem(Place, Item))
         {
             return true;
         }
@@ -51,12 +51,12 @@ TArray<AItem*> AComplexItem::FindItemsByClass_Implementation(TSubclassOf<AItem> 
 {
     TArray<AItem*> FoundItems;
 
-    TArray<UItemPlace*> Places = GetPlaces();
+    TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
     for (const UItemPlace* Place : Places)
     {
         if(IsValid(Place))
         {
-            FoundItems.Append(Place->FindItemsByClass(ItemClass));
+            FoundItems.Append(IStorageInterface::Execute_FindItemsByClass(Place, ItemClass));
         }
     }
 

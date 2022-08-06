@@ -29,7 +29,7 @@ public:
 
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
 	TArray<AItem*> GetItems() const;
-	virtual TArray<AItem*> GetItems_Implementation() const { return TArray<AItem*>(); }
+	virtual TArray<AItem*> GetItems_Implementation() const { return Items; }
 
 	virtual bool AddItem_Implementation(AItem* Item);
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
@@ -37,8 +37,7 @@ public:
 	virtual void Instance_Implementation() override;
 	virtual void Uninstance_Implementation() override;
 
-	virtual FVector2D GetInventoryLocation() const override { return FVector2D::ZeroVector; }
-	virtual FVector2D GetInventorySize() const override { return PlaceSize; }
+	virtual FVector2D GetInventorySize_Implementation() const override { return PlaceSize; }
 
 	UFUNCTION(BlueprintPure)
 	UInventoryComponent* GetRelatedInventory() const;

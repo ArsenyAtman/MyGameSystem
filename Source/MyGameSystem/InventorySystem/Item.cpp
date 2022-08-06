@@ -38,11 +38,21 @@ void AItem::Uninstance_Implementation()
     UninstanceItem();
 }
 
-FVector2D AItem::GetInventorySize() const
+FVector2D AItem::GetInventorySize_Implementation() const
 {
     if (IsValid(ItemResizer))
     {
         return ItemResizer->GetInventorySize(this, GetPossessingPlace());
+    }
+
+    return FVector2D::ZeroVector;
+}
+
+FVector2D AItem::GetInventorySizeForPlace_Implementation(UItemPlace* Place) const
+{
+    if (IsValid(ItemResizer))
+    {
+        return ItemResizer->GetInventorySize(this, Place);
     }
 
     return FVector2D::ZeroVector;

@@ -11,6 +11,11 @@
 #include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
+UItemPlace::UItemPlace()
+{
+    SetIsReplicatedByDefault(true);
+}
+
 void UItemPlace::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -74,7 +79,7 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
     return FoundItems;
 }
 
-void UItemPlace::Instance_Implementation()
+void UItemPlace::SetIsInstanced_Implementation(bool bNewIsInstanced)
 {
     if (bIsInstancing)
     {
@@ -82,19 +87,8 @@ void UItemPlace::Instance_Implementation()
         {
             if (IsValid(Item))
             {
-                IInstanceInterface::Execute_Instance(Item);
+                IInstanceInterface::Execute_SetIsInstanced(Item, bNewIsInstanced);
             }
-        }
-    }
-}
-
-void UItemPlace::Uninstance_Implementation()
-{
-    for (AItem* Item : Items)
-    {
-        if (IsValid(Item))
-        {
-            IInstanceInterface::Execute_Uninstance(Item);
         }
     }
 }
@@ -161,8 +155,12 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
 
         NewItem->PlaceInPlace(this, NewItemPosition);
         Items.Add(NewItem);
+
+        IInstanceInterface::Execute_SetIsInstanced(NewItem, bIsInstancing);
+
         ItemPlaced(NewItem);
         Broadcast_ItemPlaced(NewItem);
+
         return true;
     }
 
@@ -195,19 +193,9 @@ void UItemPlace::SetIsInstancing(bool bNewIsInstancing)
         return;
     }
 
-    if (bIsInstancing != bNewIsInstancing)
-    {
-        bIsInstancing = bNewIsInstancing;
+    bIsInstancing = bNewIsInstancing;
 
-        if (bIsInstancing)
-        {
-            IInstanceInterface::Execute_Instance(this);
-        }
-        else
-        {
-            Uninstance();
-        }
-    }
+    IInstanceInterface::Execute_SetIsInstanced(this, bIsInstancing);
 }
 
 FTransform UItemPlace::GetRelativeTransformForItem(AItem* Item)

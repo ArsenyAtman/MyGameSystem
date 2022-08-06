@@ -45,10 +45,11 @@ class MYGAMESYSTEM_API AItem : public AActor, public IInstanceInterface, public 
 
 public:
 
+	AItem();
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void Instance_Implementation() override;
-	virtual void Uninstance_Implementation() override;
+	virtual void SetIsInstanced_Implementation(bool bNewIsInstanced) override;
 
 	virtual FVector2D GetInventoryLocation_Implementation() const override { return ItemPossession.InventoryLocation; }
 	virtual FVector2D GetInventorySize_Implementation() const override;
@@ -56,6 +57,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	UInventoryComponent* GetRelatedInventory() const;
+
+	UFUNCTION(BlueprintGetter)
+	bool GetIsInstanced() const { return bIsInstanced; }
 
 	UFUNCTION(BlueprintPure)
 	UItemPlace* GetPossessingPlace() const { return ItemPossession.PossessingPlace; }
@@ -73,10 +77,7 @@ public:
 	FItemConditionChangeDelegate OnResized;
 
 	UPROPERTY(BlueprintAssignable)
-	FItemConditionChangeDelegate OnInstanced;
-
-	UPROPERTY(BlueprintAssignable)
-	FItemConditionChangeDelegate OnUninstanced;
+	FItemConditionChangeDelegate OnInstancedChanged;
 
 protected:
 
@@ -95,12 +96,8 @@ protected:
 	virtual void Removed_Implementation(UItemPlace* ItemPlace) { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void ShowView();
-	virtual void ShowView_Implementation() { return; }
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void HideView();
-	virtual void HideView_Implementation() { return; }
+	void IsInstancedChanged();
+	virtual void IsInstancedChanged_Implementation() { return; }
 
 private:
 
@@ -112,12 +109,11 @@ private:
 
 	void Broadcast_PossessionChanged(FItemPossessionInfo PrevPossession);
 
-	void Broadcast_ItemInstanced();
-	void Broadcast_ItemUninstanced();
+	UPROPERTY(BlueprintGetter = GetIsInstanced, ReplicatedUsing = OnRep_IsInstanced)
+	bool bIsInstanced = true;
 
-	UFUNCTION(NetMulticast, Reliable)
-	void InstanceItem();
+	UFUNCTION()
+	void OnRep_IsInstanced(bool PrevIsInstanced);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void UninstanceItem();
+	void Broadcast_ItemInstancedChanged();
 };

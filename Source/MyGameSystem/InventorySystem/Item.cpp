@@ -9,33 +9,44 @@
 #include "ItemResizer.h"
 #include "Net/UnrealNetwork.h"
 
+AItem::AItem()
+{
+    bReplicates = true;
+}
+
 void AItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME(AItem, ItemPossession);
+    DOREPLIFETIME(AItem, bIsInstanced);
 }
 
-void AItem::Instance_Implementation()
+void AItem::SetIsInstanced_Implementation(bool bNewIsInstanced)
 {
     if(HasAuthority() == false)
     {
         return;
     }
 
-    ShowView();
-    InstanceItem();
-}
+    bIsInstanced = bNewIsInstanced;
 
-void AItem::Uninstance_Implementation()
-{
-    if(HasAuthority() == false)
+    if(GetIsInstanced())
     {
-        return;
+        UItemPlace* OwningPlace = GetPossessingPlace();
+        if (IsValid(OwningPlace))
+        {
+            AttachToComponent(OwningPlace, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+            SetActorRelativeTransform(OwningPlace->GetRelativeTransformForItem(this));
+        }
+    }
+    else
+    {
+        DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
     }
 
-    HideView();
-    UninstanceItem();
+    IsInstancedChanged();
+    Broadcast_ItemInstancedChanged();
 }
 
 FVector2D AItem::GetInventorySize_Implementation() const
@@ -134,34 +145,16 @@ void AItem::Broadcast_PossessionChanged(FItemPossessionInfo PrevPossession)
     OnPossessionChanged.Broadcast(this, ItemPossession, PrevPossession);
 }
 
-void AItem::Broadcast_ItemInstanced()
+void AItem::OnRep_IsInstanced(bool PrevIsInstanced)
 {
-    OnInstanced.Broadcast(this);
-}
-
-void AItem::Broadcast_ItemUninstanced()
-{
-    OnUninstanced.Broadcast(this);
-}
-
-void AItem::InstanceItem_Implementation()
-{
-    UItemPlace* OwningPlace = GetPossessingPlace();
-    if (IsValid(OwningPlace))
+    if (GetIsInstanced() != PrevIsInstanced)
     {
-        AttachToComponent(OwningPlace, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-        SetActorRelativeTransform(OwningPlace->GetRelativeTransformForItem(this));
+        IsInstancedChanged();
+        Broadcast_ItemInstancedChanged();
     }
-
-    Broadcast_ItemInstanced();
 }
 
-void AItem::UninstanceItem_Implementation()
+void AItem::Broadcast_ItemInstancedChanged()
 {
-    if (IsValid(GetPossessingPlace()))
-    {
-        DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-    }
-
-    Broadcast_ItemUninstanced();
+    OnInstancedChanged.Broadcast(this);
 }

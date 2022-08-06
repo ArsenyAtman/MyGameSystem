@@ -5,30 +5,16 @@
 
 #include "ItemPlace.h"
 
-void AComplexItem::Instance_Implementation()
+void AComplexItem::SetIsInstanced_Implementation(bool bNewIsInstanced)
 {
-    Super::Instance_Implementation();
+    Super::SetIsInstanced_Implementation(bNewIsInstanced);
 
     TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
     for (UItemPlace* Place : Places)
     {
         if(IsValid(Place))
         {
-            IInstanceInterface::Execute_Instance(Place);
-        }
-    }
-}
-
-void AComplexItem::Uninstance_Implementation()
-{
-    Super::Uninstance_Implementation();
-
-    TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
-    for (UItemPlace* Place : Places)
-    {
-        if(IsValid(Place))
-        {
-            IInstanceInterface::Execute_Uninstance(Place);
+            IInstanceInterface::Execute_SetIsInstanced(Place, bNewIsInstanced);
         }
     }
 }

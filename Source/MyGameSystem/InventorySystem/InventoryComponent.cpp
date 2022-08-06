@@ -73,7 +73,7 @@ void UInventoryComponent::DropItem(AItem* Item)
         FTransform DropTransform = IActorWithInventoryInterface::Execute_GetDropTransform(GetOwner());
         Item->SetActorTransform(DropTransform);
         Item->RemoveFromPlace();
-        IInstanceInterface::Execute_Instance(Item);
+        IInstanceInterface::Execute_SetIsInstanced(Item, true);
         ItemDropped(Item);
         Notify_ItemDropped(Item);
     }

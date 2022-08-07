@@ -12,6 +12,7 @@
 AItem::AItem()
 {
     bReplicates = true;
+    SetReplicateMovement(true);
 }
 
 void AItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -31,14 +32,11 @@ void AItem::SetIsInstanced_Implementation(bool bNewIsInstanced)
 
     bIsInstanced = bNewIsInstanced;
 
-    if(GetIsInstanced())
+    UItemPlace* OwningPlace = GetPossessingPlace();
+    if(GetIsInstanced() && IsValid(OwningPlace))
     {
-        UItemPlace* OwningPlace = GetPossessingPlace();
-        if (IsValid(OwningPlace))
-        {
-            AttachToComponent(OwningPlace, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-            SetActorRelativeTransform(OwningPlace->GetRelativeTransformForItem(this));
-        }
+        AttachToComponent(OwningPlace, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+        SetActorRelativeTransform(OwningPlace->GetRelativeTransformForItem(this));
     }
     else
     {
@@ -147,11 +145,8 @@ void AItem::Broadcast_PossessionChanged(FItemPossessionInfo PrevPossession)
 
 void AItem::OnRep_IsInstanced(bool PrevIsInstanced)
 {
-    if (GetIsInstanced() != PrevIsInstanced)
-    {
-        IsInstancedChanged();
-        Broadcast_ItemInstancedChanged();
-    }
+    IsInstancedChanged();
+    Broadcast_ItemInstancedChanged();
 }
 
 void AItem::Broadcast_ItemInstancedChanged()

@@ -8,6 +8,7 @@
 #include "InventoryComponent.h"
 #include "ActorWithInventoryInterface.h"
 #include "Net/UnrealNetwork.h"
+#include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
 
 // Sets default values for this component's properties
 UInventoryManagerComponent::UInventoryManagerComponent()
@@ -19,6 +20,13 @@ UInventoryManagerComponent::UInventoryManagerComponent()
 	SetIsReplicatedByDefault(true);
 }
 
+void UInventoryManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UInventoryManagerComponent, Connections);
+}
+
 void UInventoryManagerComponent::ChangeItemPossession_Implementation(AItem* Item, FItemPossessionInfo NewPossessionInfo)
 {
 	if (!IsValid(Item))
@@ -26,7 +34,7 @@ void UInventoryManagerComponent::ChangeItemPossession_Implementation(AItem* Item
 		return;
 	}
 
-	if (Item->GetRelatedInventory() == GetInventoryOfOwner() && NewPossessionInfo.PossessingPlace == nullptr)
+	if (NewPossessionInfo.PossessingPlace == nullptr && (Item->GetRelatedInventory() == GetInventoryOfOwner() || Connections.Find(Item->GetRelatedInventory()) != INDEX_NONE))
 	{
 		DropItem(Item);
 	}
@@ -34,7 +42,7 @@ void UInventoryManagerComponent::ChangeItemPossession_Implementation(AItem* Item
 	{
 		PickupItem(Item);
 	}
-	else if (IsValid(Item) && IsValid(NewPossessionInfo.PossessingPlace) && (Item->GetRelatedInventory() == Item->GetRelatedInventory() || Connections.Find(Item->GetRelatedInventory()) != INDEX_NONE))
+	else if (IsValid(NewPossessionInfo.PossessingPlace) && (Item->GetRelatedInventory() == GetInventoryOfOwner() || Connections.Find(Item->GetRelatedInventory()) != INDEX_NONE))
 	{
 		NewPossessionInfo.PossessingPlace->PlaceItem(Item, NewPossessionInfo.InventoryLocation);
 	}
@@ -60,9 +68,14 @@ void UInventoryManagerComponent::DropItem_Implementation(AItem* Item)
 
 bool UInventoryManagerComponent::Connect(UInventoryComponent* InventoryComponent)
 {
-	if (IsValid(InventoryComponent))
+	if (GetOwner()->HasAuthority() && IsValid(InventoryComponent) && Connections.Find(InventoryComponent) == INDEX_NONE)
 	{
-		return Connections.Add(InventoryComponent) != INDEX_NONE;
+		bool bResult = Connections.Add(InventoryComponent) != INDEX_NONE;
+		if (bResult)
+		{
+			OnInventoryConnected.Broadcast(this, InventoryComponent);
+		}
+		return bResult;
 	}
 	
 	return false;
@@ -70,9 +83,14 @@ bool UInventoryManagerComponent::Connect(UInventoryComponent* InventoryComponent
 
 bool UInventoryManagerComponent::Disconnect(UInventoryComponent* InventoryComponent)
 {
-	if (IsValid(InventoryComponent))
+	if (GetOwner()->HasAuthority() && IsValid(InventoryComponent))
 	{
-		return Connections.Remove(InventoryComponent) > 0;
+		bool bResult = Connections.Remove(InventoryComponent) > 0;
+		if (bResult)
+		{
+			OnInventoryDisconnected.Broadcast(this, InventoryComponent);
+		}
+		return bResult;
 	}
 
 	return false;
@@ -88,6 +106,24 @@ UInventoryComponent* UInventoryManagerComponent::GetInventoryOfOwner() const
 	return nullptr;
 }
 
+void UInventoryManagerComponent::OnRep_Connections(const TArray<UInventoryComponent*>& PrevConnections)
+{
+	const TArray<UInventoryComponent*>& CurrentConnections = Connections;
+
+	TArray<UInventoryComponent*> AddedConnections = Connections.FilterByPredicate([PrevConnections](UInventoryComponent* const& Connection){ return PrevConnections.Find(Connection) == INDEX_NONE; });
+	TArray<UInventoryComponent*> RemovedConnections = PrevConnections.FilterByPredicate([CurrentConnections](UInventoryComponent* const& Connection){ return CurrentConnections.Find(Connection) == INDEX_NONE; });
+
+	for(UInventoryComponent* Connection : AddedConnections)
+	{
+		OnInventoryConnected.Broadcast(this, Connection);
+	}
+
+	for(UInventoryComponent* Connection : RemovedConnections)
+	{
+		OnInventoryDisconnected.Broadcast(this, Connection);
+	}
+}
+
 bool UInventoryManagerComponent::ChangeItemPossession_Validate(AItem* Item, FItemPossessionInfo NewPossessionInfo)
 {
 	return IsValid(Item);
@@ -100,5 +136,5 @@ bool UInventoryManagerComponent::PickupItem_Validate(AItem* Item)
 	
 bool UInventoryManagerComponent::DropItem_Validate(AItem* Item)
 {
-	return IsValid(Item) && Item->GetRelatedInventory() == GetInventoryOfOwner();
+	return IsValid(Item) && IsValid(Item->GetRelatedInventory());
 }

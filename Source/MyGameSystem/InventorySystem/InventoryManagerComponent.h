@@ -12,6 +12,8 @@
 class AItem;
 class UInventoryComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInventoryManagerConnectionDelegate, UInventoryManagerComponent*, InventoryManager, UInventoryComponent*, InventoryComponent);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYGAMESYSTEM_API UInventoryManagerComponent : public UActorComponent
 {
@@ -20,6 +22,8 @@ class MYGAMESYSTEM_API UInventoryManagerComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventoryManagerComponent();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
 	void ChangeItemPossession(AItem* Item, FItemPossessionInfo NewPossessionInfo);
@@ -36,15 +40,29 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool Disconnect(UInventoryComponent* InventoryComponent);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintGetter)
 	TArray<UInventoryComponent*> GetConnections() const { return Connections; }
 
 	UFUNCTION(BlueprintPure)
 	UInventoryComponent* GetInventoryOfOwner() const;
 
+	UPROPERTY(BlueprintAssignable)
+	FInventoryManagerConnectionDelegate OnInventoryConnected;
+
+	UPROPERTY(BlueprintAssignable)
+	FInventoryManagerConnectionDelegate OnInventoryDisconnected;
+
+protected:
+
+	// ...
+
 private:
 
+	UPROPERTY(BlueprintGetter = GetConnections, ReplicatedUsing = OnRep_Connections, meta = (AllowPrivateAccess))
 	TArray<UInventoryComponent*> Connections;
+
+	UFUNCTION()
+	void OnRep_Connections(const TArray<UInventoryComponent*>& PrevConnections);
 
 	bool ChangeItemPossession_Validate(AItem* Item, FItemPossessionInfo NewPossessionInfo);
 	bool PickupItem_Validate(AItem* Item);

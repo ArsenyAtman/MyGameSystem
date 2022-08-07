@@ -23,7 +23,7 @@ class MYGAMESYSTEM_API IInstanceInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InstancedInterface")
 	void SetIsInstanced(bool bNewIsInstanced);
 	virtual void SetIsInstanced_Implementation(bool bNewIsInstanced) = 0;
 };

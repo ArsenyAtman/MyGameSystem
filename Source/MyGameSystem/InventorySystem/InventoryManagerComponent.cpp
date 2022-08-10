@@ -4,6 +4,7 @@
 #include "InventoryManagerComponent.h"
 
 #include "Item.h"
+#include "ComplexItem.h"
 #include "StackableItem.h"
 #include "ItemPlace.h"
 #include "InventoryComponent.h"
@@ -65,6 +66,14 @@ void UInventoryManagerComponent::DropItem_Implementation(AItem* Item)
         UInventoryComponent* MainInventory = IActorWithInventoryInterface::Execute_GetInventoryComponent(GetOwner());
 		MainInventory->DropItem(Item);
     }
+}
+
+void UInventoryManagerComponent::AddItemToComplexItem_Implementation(AItem* Item, AComplexItem* ComplexItem)
+{
+	if (IsValid(Item) && IsValid(ComplexItem))
+	{
+		IStorageInterface::Execute_AddItem(ComplexItem, Item);
+	}
 }
 
 void UInventoryManagerComponent::MergeStackableItems_Implementation(AStackableItem* ReceivingItem, AStackableItem* IncomingItem)

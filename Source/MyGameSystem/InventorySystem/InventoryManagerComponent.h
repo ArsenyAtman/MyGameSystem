@@ -10,6 +10,7 @@
 
 
 class AItem;
+class AStackableItem;
 class UInventoryComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInventoryManagerConnectionDelegate, UInventoryManagerComponent*, InventoryManager, UInventoryComponent*, InventoryComponent);
@@ -33,6 +34,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void DropItem(AItem* Item);
+
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void MergeStackableItems(AStackableItem* ReceivingItem, AStackableItem* IncomingItem);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SplitStackableItem(AStackableItem* ItemToSplit, int32 CountToTake, FItemPossessionInfo PossessionInfo);
+
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void SplitAndMergeStackableItem(AStackableItem* ReceivingItem, AStackableItem* ItemToSplit, int32 CountToTake);
 
 	UFUNCTION(BlueprintCallable)
 	bool Connect(UInventoryComponent* InventoryComponent);

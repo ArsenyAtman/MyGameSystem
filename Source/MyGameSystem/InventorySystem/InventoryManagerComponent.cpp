@@ -4,6 +4,7 @@
 #include "InventoryManagerComponent.h"
 
 #include "Item.h"
+#include "StackableItem.h"
 #include "ItemPlace.h"
 #include "InventoryComponent.h"
 #include "ActorWithInventoryInterface.h"
@@ -64,6 +65,50 @@ void UInventoryManagerComponent::DropItem_Implementation(AItem* Item)
         UInventoryComponent* MainInventory = IActorWithInventoryInterface::Execute_GetInventoryComponent(GetOwner());
 		MainInventory->DropItem(Item);
     }
+}
+
+void UInventoryManagerComponent::MergeStackableItems_Implementation(AStackableItem* ReceivingItem, AStackableItem* IncomingItem)
+{
+	if (IsValid(ReceivingItem) && IsValid(IncomingItem))
+	{
+		IStorageInterface::Execute_AddItem(ReceivingItem, IncomingItem);
+	}
+}
+
+void UInventoryManagerComponent::SplitStackableItem_Implementation(AStackableItem* ItemToSplit, int32 CountToTake, FItemPossessionInfo PossessionInfo)
+{
+	if (IsValid(ItemToSplit) && CountToTake > 0)
+	{
+		AStackableItem* NewItem = ItemToSplit->Split(CountToTake);
+		if (IsValid(NewItem) == false)
+		{
+			return;
+		}
+
+		bool bPlaceResult = PossessionInfo.PossessingPlace->PlaceItem(NewItem, PossessionInfo.InventoryLocation);
+		if(bPlaceResult == false)
+		{
+			IStorageInterface::Execute_AddItem(ItemToSplit, NewItem);
+		}
+	}
+}
+
+void UInventoryManagerComponent::SplitAndMergeStackableItem_Implementation(AStackableItem* ReceivingItem, AStackableItem* ItemToSplit, int32 CountToTake)
+{
+	if (IsValid(ReceivingItem) && IsValid(ItemToSplit) && CountToTake > 0)
+	{
+		AStackableItem* NewItem = ItemToSplit->Split(CountToTake);
+		if (IsValid(NewItem) == false)
+		{
+			return;
+		}
+		
+		bool bAddResult = IStorageInterface::Execute_AddItem(ReceivingItem, NewItem);
+		if(bAddResult == false)
+		{
+			IStorageInterface::Execute_AddItem(ItemToSplit, NewItem);
+		}
+	}
 }
 
 bool UInventoryManagerComponent::Connect(UInventoryComponent* InventoryComponent)

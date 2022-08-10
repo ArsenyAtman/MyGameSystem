@@ -4,6 +4,8 @@
 #include "StackableItem.h"
 
 #include "Net/UnrealNetwork.h"
+#include "ItemPlace.h"
+#include "Kismet/GameplayStatics.h"
 
 void AStackableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -20,8 +22,7 @@ bool AStackableItem::AddItem_Implementation(AItem* Item)
     }
 
     AStackableItem* StackableItem = Cast<AStackableItem>(Item);
-    int32 CountOfItemsBeforeMerge = StackableItem->GetCountInStack();
-    if (IsValid(StackableItem) && StackableItem->StaticClass() == this->StaticClass())
+    if (IsValid(StackableItem) && StackableItem->GetClass() == this->GetClass())
     {
         int32 CountOfItemsLeft = MergeWithItem(StackableItem);
         if (CountOfItemsLeft == 0)
@@ -59,7 +60,10 @@ void AStackableItem::MergedWithItem(int32 CountOfTakenItems)
 
     if(CountInStack <= 0)
     {
-        this->RemoveFromPlace();
+        if (IsValid(this->GetPossessingPlace()))
+        {
+            this->GetPossessingPlace()->RemoveItem(this);
+        }
         this->Destroy();
     }
 }
@@ -99,9 +103,9 @@ AStackableItem* AStackableItem::Split(int32 CountToTake)
 
     SetCountInStack(GetCountInStack() - CountToTake);
 
-    AStackableItem* NewItem = GetWorld()->SpawnActorDeferred<AStackableItem>(this->StaticClass(), FTransform::Identity, this->GetOwner(), nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+    AStackableItem* NewItem = Cast<AStackableItem>(UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), this->GetClass(), FTransform::Identity, ESpawnActorCollisionHandlingMethod::AlwaysSpawn, this->GetOwner()));
     NewItem->InitializeCountInStack(CountToTake);
-    NewItem->FinishSpawning(FTransform::Identity);
+    UGameplayStatics::FinishSpawningActor(NewItem, FTransform::Identity);
     return NewItem;
 }
 

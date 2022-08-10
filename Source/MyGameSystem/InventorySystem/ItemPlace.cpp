@@ -43,10 +43,9 @@ bool UItemPlace::AddItem_Implementation(AItem* Item)
 
     for (AItem* ItemInPlace : GetItems())
     {
-        AComplexItem* ComplexItemInPlace = Cast<AComplexItem>(ItemInPlace);
-        if (IsValid(ComplexItemInPlace))
+        if (ItemInPlace->Implements<UStorageInterface>())
         {
-            if (IStorageInterface::Execute_AddItem(ComplexItemInPlace, Item))
+            if (IStorageInterface::Execute_AddItem(ItemInPlace, Item))
             {
                 return true;
             }
@@ -62,7 +61,7 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
 
     for (AItem* Item : Items)
     {
-        if (IsValid(Item) && Item->StaticClass()->IsChildOf(ItemClass))
+        if (IsValid(Item) && Item->GetClass()->IsChildOf(ItemClass))
         {
             FoundItems.Add(Item);
         }
@@ -136,6 +135,10 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
 
     FBox2D PlaceBox = this->GetBox();
     FBox2D NewItemBox = NewItem->GetBoxForPlace(NewItemPosition, this);
+    if(NewItemBox.Min == NewItemBox.Max)
+    {
+        return false;
+    }
     
     // Correction for comparsions
     FVector2D Correction = FVector2D(0.1, 0.1);
@@ -215,8 +218,10 @@ void UItemPlace::OnRep_Items(const TArray<AItem*>& PrevItems)
 
 void UItemPlace::BroadcastChange_Items(const TArray<AItem*>& PrevItems)
 {
-    TArray<AItem*> AddedItems = UArrayFunctionLibrary::FindMissing(Items, PrevItems);
-	TArray<AItem*> RemovedItems = UArrayFunctionLibrary::FindMissing(PrevItems, Items);
+    const TArray<AItem*>& CurrentItems = Items;
+
+    TArray<AItem*> AddedItems = CurrentItems.FilterByPredicate([PrevItems](AItem* const& Item){ return PrevItems.Find(Item) == INDEX_NONE; });
+	TArray<AItem*> RemovedItems = PrevItems.FilterByPredicate([CurrentItems](AItem* const& Item){ return CurrentItems.Find(Item) == INDEX_NONE; });
 
 	for(AItem* Item : AddedItems)
 	{

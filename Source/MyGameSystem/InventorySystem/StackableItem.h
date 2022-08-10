@@ -51,6 +51,10 @@ protected:
 	UFUNCTION(BlueprintSetter)
 	void SetCountInStack(int32 NewCountInStack);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void CountInStackChanged(int32 CurrentCountInStack, int32 PrevCountInStack);
+	virtual void CountInStackChanged_Implementation(int32 CurrentCountInStack, int32 PrevCountInStack) { return; }
+
 private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetCountInStack, BlueprintSetter = SetCountInStack, ReplicatedUsing = OnRep_CountInStack)

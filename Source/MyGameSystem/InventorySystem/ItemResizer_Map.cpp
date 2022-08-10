@@ -8,9 +8,9 @@
 
 FVector2D UItemResizer_Map::GetInventorySize_Implementation(const AItem* OwningItem, const UItemPlace* PossessingPlace) const
 {
-    if(Sizes.Contains(PossessingPlace->StaticClass()))
+    if(IsValid(PossessingPlace) && Sizes.Contains(PossessingPlace->GetClass()))
     {
-        return Sizes[PossessingPlace->StaticClass()];
+        return Sizes[PossessingPlace->GetClass()];
     }
 
     return FVector2D::ZeroVector;

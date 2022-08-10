@@ -50,7 +50,7 @@ void UInventoryManagerComponent::ChangeItemPossession_Implementation(AItem* Item
 
 void UInventoryManagerComponent::PickupItem_Implementation(AItem* Item)
 {
-	if (GetOwner()->Implements<UActorWithInventoryInterface>())
+	if (IsValid(Item) && Item->GetRelatedInventory() == nullptr && GetOwner()->Implements<UActorWithInventoryInterface>())
     {
         UInventoryComponent* MainInventory = IActorWithInventoryInterface::Execute_GetInventoryComponent(GetOwner());
 		IStorageInterface::Execute_AddItem(MainInventory, Item);
@@ -59,7 +59,7 @@ void UInventoryManagerComponent::PickupItem_Implementation(AItem* Item)
 
 void UInventoryManagerComponent::DropItem_Implementation(AItem* Item)
 {
-	if (GetOwner()->Implements<UActorWithInventoryInterface>())
+	if (IsValid(Item) && IsValid(Item->GetRelatedInventory()) && GetOwner()->Implements<UActorWithInventoryInterface>())
     {
         UInventoryComponent* MainInventory = IActorWithInventoryInterface::Execute_GetInventoryComponent(GetOwner());
 		MainInventory->DropItem(Item);
@@ -122,19 +122,4 @@ void UInventoryManagerComponent::OnRep_Connections(const TArray<UInventoryCompon
 	{
 		OnInventoryDisconnected.Broadcast(this, Connection);
 	}
-}
-
-bool UInventoryManagerComponent::ChangeItemPossession_Validate(AItem* Item, FItemPossessionInfo NewPossessionInfo)
-{
-	return IsValid(Item);
-}
-
-bool UInventoryManagerComponent::PickupItem_Validate(AItem* Item)
-{
-	return IsValid(Item) && Item->GetRelatedInventory() == nullptr;
-}
-	
-bool UInventoryManagerComponent::DropItem_Validate(AItem* Item)
-{
-	return IsValid(Item) && IsValid(Item->GetRelatedInventory());
 }

@@ -25,13 +25,13 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ChangeItemPossession(AItem* Item, FItemPossessionInfo NewPossessionInfo);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void PickupItem(AItem* Item);
 
-	UFUNCTION(BlueprintCallable, Server, Reliable, WithValidation)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void DropItem(AItem* Item);
 
 	UFUNCTION(BlueprintCallable)
@@ -63,9 +63,5 @@ private:
 
 	UFUNCTION()
 	void OnRep_Connections(const TArray<UInventoryComponent*>& PrevConnections);
-
-	bool ChangeItemPossession_Validate(AItem* Item, FItemPossessionInfo NewPossessionInfo);
-	bool PickupItem_Validate(AItem* Item);
-	bool DropItem_Validate(AItem* Item);
 		
 };

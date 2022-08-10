@@ -10,6 +10,7 @@
 
 
 class AItem;
+class AComplexItem;
 class AStackableItem;
 class UInventoryComponent;
 
@@ -35,6 +36,8 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void DropItem(AItem* Item);
 
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void AddItemToComplexItem(AItem* Item, AComplexItem* ComplexItem);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void MergeStackableItems(AStackableItem* ReceivingItem, AStackableItem* IncomingItem);

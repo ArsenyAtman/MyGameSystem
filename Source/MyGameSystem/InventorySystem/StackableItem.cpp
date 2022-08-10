@@ -114,6 +114,7 @@ void AStackableItem::SetCountInStack(int32 NewCountInStack)
 
     int32 PrevCountInStack = GetCountInStack();
     CountInStack = NewCountInStack;
+    CountInStackChanged(GetCountInStack(), PrevCountInStack);
     Broadcast_CountInStackChanged(PrevCountInStack);
 }
 
@@ -124,5 +125,6 @@ void AStackableItem::OnRep_CountInStack(int32 PrevCountInStack)
 
 void AStackableItem::Broadcast_CountInStackChanged(int32 PrevCountInStack)
 {
+    CountInStackChanged(GetCountInStack(), PrevCountInStack);
     OnCountInStackChanged.Broadcast(this, GetCountInStack(), PrevCountInStack);
 }

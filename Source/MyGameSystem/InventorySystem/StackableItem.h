@@ -24,6 +24,7 @@ public:
 
 	virtual bool AddItem_Implementation(AItem* Item) override;
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const override { return TArray<AItem*>(); }
+	virtual bool CheckItemPossession_Implementation(AItem* Item) const;
 
 	UFUNCTION(BlueprintCallable)
 	void InitializeCountInStack(int32 InitCountInStack);

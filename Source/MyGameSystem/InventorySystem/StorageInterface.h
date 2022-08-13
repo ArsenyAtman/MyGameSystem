@@ -31,4 +31,8 @@ public:
 	TArray<AItem*> FindItemsByClass(TSubclassOf<AItem> ItemClass) const;
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const = 0;
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool CheckItemPossession(AItem* Item) const;
+	virtual bool CheckItemPossession_Implementation(AItem* Item) const = 0;
+
 };

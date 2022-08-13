@@ -25,6 +25,7 @@ public:
 
 	virtual bool AddItem_Implementation(AItem* Item);
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
+	virtual bool CheckItemPossession_Implementation(AItem* Item) const;
 
 	virtual TArray<UItemPlace*> GetPlaces_Implementation() const;
 

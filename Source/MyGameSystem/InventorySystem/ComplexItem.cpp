@@ -21,6 +21,14 @@ void AComplexItem::SetIsInstanced_Implementation(bool bNewIsInstanced)
 
 bool AComplexItem::AddItem_Implementation(AItem* Item)
 {
+    if (Item->Implements<UStorageInterface>())
+    {
+        if (IStorageInterface::Execute_CheckItemPossession(Item, this))
+        {
+            return false;
+        }
+    }
+
     TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
     for (UItemPlace* Place : Places)
     {
@@ -49,6 +57,29 @@ TArray<AItem*> AComplexItem::FindItemsByClass_Implementation(TSubclassOf<AItem> 
     FoundItems.Remove(nullptr);
 
     return FoundItems;
+}
+
+bool AComplexItem::CheckItemPossession_Implementation(AItem* Item) const
+{
+    if (IsValid(Item))
+    {
+        if (Item == this)
+        {
+            return true;
+        }
+
+        TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
+        for (UItemPlace* Place : Places)
+        {
+            bool bBelongs = IStorageInterface::Execute_CheckItemPossession(Place, Item);
+            if (bBelongs)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 TArray<UItemPlace*> AComplexItem::GetPlaces_Implementation() const

@@ -35,6 +35,7 @@ public:
 
 	virtual bool AddItem_Implementation(AItem* Item);
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
+	virtual bool CheckItemPossession_Implementation(AItem* Item) const;
 
 	virtual void SetIsInstanced_Implementation(bool bNewIsInstanced) override;
 
@@ -47,7 +48,7 @@ public:
 	UObject* GetPossessor() const;
 
 	UFUNCTION(BlueprintCallable)
-	bool PlaceItem(AItem* Item, FVector2D Position);
+	bool PlaceItem(AItem* NewItem, FVector2D NewItemPosition);
 
 	UFUNCTION(BlueprintCallable)
 	bool RemoveItem(AItem* Item);

@@ -198,8 +198,9 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
             }
         }
 
-        Items.Add(NewItem);
+        // The order matters!!!
         NewItem->RemoveFromCurrentPlace();
+        Items.Add(NewItem);
         NewItem->ChangePossession(FItemPossessionInfo(this, NewItemPosition));
 
         IInstanceInterface::Execute_SetIsInstanced(NewItem, bIsInstancing);

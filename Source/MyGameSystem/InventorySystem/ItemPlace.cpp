@@ -270,11 +270,13 @@ void UItemPlace::BroadcastChange_Items(const TArray<AItem*>& PrevItems)
 
 	for(AItem* Item : AddedItems)
 	{
+        ItemPlaced(NewItem);
 		Broadcast_ItemPlaced(Item);
 	}
 
 	for(AItem* Item : RemovedItems)
 	{
+        ItemRemoved(Item);
 		Broadcast_ItemRemoved(Item);
 	}
 }

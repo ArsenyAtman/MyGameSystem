@@ -6,7 +6,9 @@
 #include "ItemLocator.h"
 #include "ItemLocator_Grid.generated.h"
 
-
+/**
+ * ItemLocator for grid places.
+ */
 UCLASS()
 class MYGAMESYSTEM_API UItemLocator_Grid : public UItemLocator
 {
@@ -14,12 +16,18 @@ class MYGAMESYSTEM_API UItemLocator_Grid : public UItemLocator
 
 public:
 
-	virtual FTransform GetItemRelativeTransform_Implementation(UItemPlace* OwningPlace, AItem* Item) override;
+	virtual FTransform GetItemRelativeTransform_Implementation(UItemPlace* OwningPlace, AItem* Item) const override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	/**
+	 * The step of the grid.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemLocator_Grid")
 	float GridStepSize = 5.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	/**
+	 * Relative rotation for items.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ItemLocator_Grid")
 	FRotator ItemsRelativeRotation;
 	
 };

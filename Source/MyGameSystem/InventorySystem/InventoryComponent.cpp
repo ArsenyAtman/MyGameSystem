@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "InventoryComponent.h"
 
 #include "Item.h"
@@ -8,11 +7,8 @@
 #include "ActorWithInventoryInterface.h"
 #include "Net/UnrealNetwork.h"
 
-// Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
 	SetIsReplicatedByDefault(true);
@@ -92,13 +88,14 @@ void UInventoryComponent::DropItem(AItem* Item)
         Item->SetActorTransform(DropTransform);
         Item->GetPossessingPlace()->RemoveItem(Item);
         IInstanceInterface::Execute_SetIsInstanced(Item, true);
-        ItemDropped(Item);
+
         Notify_ItemDropped(Item);
     }
 }
 
 void UInventoryComponent::Notify_ItemDropped_Implementation(AItem* Item)
 {
+    ItemDropped();
     Broadcast_ItemDropped(Item);
 }
 

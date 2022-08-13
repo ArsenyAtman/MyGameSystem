@@ -14,15 +14,18 @@ class UComplexStorageInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for storages with subplaces.
  */
 class MYGAMESYSTEM_API IComplexStorageInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Get places of this storage.
+	 * @return Places of this storage.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ComplexStorageInterface")
 	TArray<UItemPlace*> GetPlaces() const;
 	virtual TArray<UItemPlace*> GetPlaces_Implementation() const = 0;

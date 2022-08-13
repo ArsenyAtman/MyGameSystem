@@ -30,6 +30,14 @@ bool UItemPlace::AddItem_Implementation(AItem* Item)
         return false;
     }
 
+    if (Item->Implements<UStorageInterface>())
+    {
+        if (IStorageInterface::Execute_CheckItemPossession(Item, Cast<AItem>(this->GetPossessor())))
+        {
+            return false;
+        }
+    }
+
     for (int32 X = 0; X < PlaceSize.X; ++X)
     {
         for (int32 Y = 0; Y < PlaceSize.Y; ++Y)
@@ -76,6 +84,32 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
     FoundItems.Remove(nullptr);
 
     return FoundItems;
+}
+
+bool UItemPlace::CheckItemPossession_Implementation(AItem* Item) const
+{
+    if (IsValid(Item))
+    {
+        for (AItem* ItemInPlace : Items)
+        {
+            bool bBelongs = false;
+            if (ItemInPlace->Implements<UStorageInterface>())
+            {
+                bBelongs = IStorageInterface::Execute_CheckItemPossession(ItemInPlace, Item);
+            }
+            else
+            {
+                bBelongs = ItemInPlace == Item;
+            }
+
+            if (bBelongs)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 void UItemPlace::SetIsInstanced_Implementation(bool bNewIsInstanced)
@@ -131,6 +165,14 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
     if(GetOwner()->HasAuthority() == false)
     {
         return false;
+    }
+
+    if (NewItem->Implements<UStorageInterface>())
+    {
+        if (IStorageInterface::Execute_CheckItemPossession(NewItem, Cast<AItem>(this->GetPossessor())))
+        {
+            return false;
+        }
     }
 
     FBox2D PlaceBox = this->GetBox();

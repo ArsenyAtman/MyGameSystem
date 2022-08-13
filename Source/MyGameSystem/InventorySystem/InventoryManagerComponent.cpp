@@ -70,7 +70,7 @@ void UInventoryManagerComponent::DropItem_Implementation(AItem* Item)
 
 void UInventoryManagerComponent::AddItemToComplexItem_Implementation(AItem* Item, AComplexItem* ComplexItem)
 {
-	if (IsValid(Item) && IsValid(ComplexItem))
+	if (Item != ComplexItem && IsValid(Item) && IsValid(ComplexItem))
 	{
 		IStorageInterface::Execute_AddItem(ComplexItem, Item);
 	}
@@ -78,7 +78,7 @@ void UInventoryManagerComponent::AddItemToComplexItem_Implementation(AItem* Item
 
 void UInventoryManagerComponent::MergeStackableItems_Implementation(AStackableItem* ReceivingItem, AStackableItem* IncomingItem)
 {
-	if (IsValid(ReceivingItem) && IsValid(IncomingItem))
+	if (ReceivingItem != IncomingItem && IsValid(ReceivingItem) && IsValid(IncomingItem))
 	{
 		IStorageInterface::Execute_AddItem(ReceivingItem, IncomingItem);
 	}
@@ -104,7 +104,7 @@ void UInventoryManagerComponent::SplitStackableItem_Implementation(AStackableIte
 
 void UInventoryManagerComponent::SplitAndMergeStackableItem_Implementation(AStackableItem* ReceivingItem, AStackableItem* ItemToSplit, int32 CountToTake)
 {
-	if (IsValid(ReceivingItem) && IsValid(ItemToSplit) && CountToTake > 0)
+	if (ReceivingItem != ItemToSplit && IsValid(ReceivingItem) && IsValid(ItemToSplit) && CountToTake > 0)
 	{
 		AStackableItem* NewItem = ItemToSplit->Split(CountToTake);
 		if (IsValid(NewItem) == false)

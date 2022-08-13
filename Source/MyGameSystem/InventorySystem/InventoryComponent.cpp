@@ -50,6 +50,24 @@ TArray<AItem*> UInventoryComponent::FindItemsByClass_Implementation(TSubclassOf<
     return FoundItems;
 }
 
+bool UInventoryComponent::CheckItemPossession_Implementation(AItem* Item) const
+{
+    if (IsValid(Item))
+    {
+        TArray<UItemPlace*> Places = IComplexStorageInterface::Execute_GetPlaces(this);
+        for (UItemPlace* Place : Places)
+        {
+            bool bBelongs = IStorageInterface::Execute_CheckItemPossession(Place, Item);
+            if (bBelongs)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 TArray<UItemPlace*> UInventoryComponent::GetPlaces_Implementation() const
 {
     TArray<UItemPlace*> FoundPlaces;

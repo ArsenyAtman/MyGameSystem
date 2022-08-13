@@ -21,17 +21,33 @@ bool AStackableItem::AddItem_Implementation(AItem* Item)
         return false;
     }
 
-    AStackableItem* StackableItem = Cast<AStackableItem>(Item);
-    if (IsValid(StackableItem) && StackableItem->GetClass() == this->GetClass())
+    if (Item->Implements<UStorageInterface>())
     {
-        int32 CountOfItemsLeft = MergeWithItem(StackableItem);
-        if (CountOfItemsLeft == 0)
+        if (IStorageInterface::Execute_CheckItemPossession(Item, this))
         {
-            return true;
+            return false;
+        }
+    }
+
+    if (IsValid(Item))
+    {
+        AStackableItem* StackableItem = Cast<AStackableItem>(Item);
+        if (IsValid(StackableItem) && StackableItem->GetClass() == this->GetClass())
+        {
+            int32 CountOfItemsLeft = MergeWithItem(StackableItem);
+            if (CountOfItemsLeft == 0)
+            {
+                return true;
+            }
         }
     }
 
     return false;
+}
+
+bool AStackableItem::CheckItemPossession_Implementation(AItem* Item) const
+{
+    return Item == this;
 }
 
 void AStackableItem::InitializeCountInStack(int32 InitCountInStack)
@@ -71,6 +87,11 @@ void AStackableItem::MergedWithItem(int32 CountOfTakenItems)
 int32 AStackableItem::MergeWithItem(AStackableItem* Item)
 {
     if(HasAuthority() == false)
+    {
+        return false;
+    }
+
+    if (IStorageInterface::Execute_CheckItemPossession(Item, this))
     {
         return false;
     }

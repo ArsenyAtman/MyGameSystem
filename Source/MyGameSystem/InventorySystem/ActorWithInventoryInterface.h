@@ -6,7 +6,6 @@
 #include "UObject/Interface.h"
 #include "ActorWithInventoryInterface.generated.h"
 
-
 class UInventoryComponent;
 
 // This class does not need to be modified.
@@ -17,24 +16,35 @@ class UActorWithInventoryInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for actors with inventories.
  */
 class MYGAMESYSTEM_API IActorWithInventoryInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Get the inventory of this actor.
+	 * @return Inventory.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithInventoryInterface")
-	UInventoryComponent* GetInventoryComponent();
-	virtual UInventoryComponent* GetInventoryComponent_Implementation() = 0;
+	UInventoryComponent* GetInventoryComponent() const;
+	virtual UInventoryComponent* GetInventoryComponent_Implementation() const = 0;
 
+	/**
+	 * Get the inventory manager of this actor.
+	 * @return Inventory manager.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithInventoryInterface")
-	UInventoryManagerComponent* GetInventoryManagerComponent();
-	virtual UInventoryManagerComponent* GetInventoryManagerComponent_Implementation() = 0;
+	UInventoryManagerComponent* GetInventoryManagerComponent() const;
+	virtual UInventoryManagerComponent* GetInventoryManagerComponent_Implementation() const = 0;
 
+	/**
+	 * Get the drop transform for the inventory of this actor.
+	 * @return Drop transform.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorWithInventoryInterface")
-	FTransform GetDropTransform();
-	virtual FTransform GetDropTransform_Implementation() = 0;
+	FTransform GetDropTransform() const;
+	virtual FTransform GetDropTransform_Implementation() const = 0;
 };

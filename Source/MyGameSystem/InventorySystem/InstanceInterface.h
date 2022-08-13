@@ -14,15 +14,18 @@ class UInstanceInterface : public UInterface
 };
 
 /**
- * 
+ * Interface for instancing.
  */
 class MYGAMESYSTEM_API IInstanceInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
+	/**
+	 * Instance or uninstance the object.
+	 * @param bNewIsInstanced - Is instanced or not.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InstancedInterface")
 	void SetIsInstanced(bool bNewIsInstanced);
 	virtual void SetIsInstanced_Implementation(bool bNewIsInstanced) = 0;

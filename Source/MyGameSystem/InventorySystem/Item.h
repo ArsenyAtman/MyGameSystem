@@ -9,12 +9,14 @@
 
 #include "Item.generated.h"
 
-
 class AItem;
 class UItemPlace;
 class UInventoryComponent;
 class UItemResizer;
 
+/**
+ * Information about an item posession.
+ */
 USTRUCT(BlueprintType, Blueprintable)
 struct MYGAMESYSTEM_API FItemPossessionInfo
 {
@@ -22,9 +24,15 @@ struct MYGAMESYSTEM_API FItemPossessionInfo
 
 public:
 
+	/**
+	 * A place that owns the item.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UItemPlace* PossessingPlace;
 
+	/**
+	 * Location of the item.
+	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FVector2D InventoryLocation;
 
@@ -35,7 +43,14 @@ public:
 	}
 };
 
+/**
+ * Delegate for handling posession changes.
+ */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FItemPossessionChangeDelegate, AItem*, Item, FItemPossessionInfo, NewPossessionInfo, FItemPossessionInfo, PrevPossessionInfo);
+
+/**
+ * Delegate for handling condition changes.
+ */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemConditionChangeDelegate, AItem*, Item);
 
 UCLASS(BlueprintType, Blueprintable)
@@ -45,56 +60,104 @@ class MYGAMESYSTEM_API AItem : public AActor, public IInstanceInterface, public 
 
 public:
 
+	// Constructor.
 	AItem();
 
+	// Replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	// Instance interface.
 	virtual void SetIsInstanced_Implementation(bool bNewIsInstanced) override;
 
+	// Sized interface.
 	virtual FVector2D GetInventoryLocation_Implementation() const override { return ItemPossession.InventoryLocation; }
 	virtual FVector2D GetInventorySize_Implementation() const override;
 	virtual FVector2D GetInventorySizeForPlace_Implementation(UItemPlace* Place) const override;
 
-	UFUNCTION(BlueprintPure)
+	/**
+	 * Get the related inventory to this item.
+	 * @return The related inventory component.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Item|Condition")
 	UInventoryComponent* GetRelatedInventory() const;
 
-	UFUNCTION(BlueprintGetter)
+	/**
+	 * Whether or not this item is currently instanced.
+	 * @return Is instanced.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "Item|Condition")
 	bool GetIsInstanced() const { return bIsInstanced; }
 
-	UFUNCTION(BlueprintPure)
+	/**
+	 * Get the possession info of this item.
+	 * @return Possession info.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "Item|Possession")
+	FItemPossessionInfo GetItemPosession() const { return ItemPossession; }
+
+	/**
+	 * Get the possessing place of this item.
+	 * @return Possessing place.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Item|Possession")
 	UItemPlace* GetPossessingPlace() const { return ItemPossession.PossessingPlace; }
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Remove this item from its owning place.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Item|Control")
 	void RemoveFromCurrentPlace();
 
-	UFUNCTION(BlueprintCallable)
+	/**
+	 * Change the possession of this item.
+	 * @warning Use this function only if you know what you are doing!
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Item|Internal")
 	void ChangePossession(FItemPossessionInfo NewPossessionInfo);
 
-	UPROPERTY(BlueprintAssignable)
+	/**
+	 * Called after the posession changes.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Item|Delegates")
 	FItemPossessionChangeDelegate OnPossessionChanged;
 
-	UPROPERTY(BlueprintAssignable)
-	FItemConditionChangeDelegate OnResized;
-
-	UPROPERTY(BlueprintAssignable)
+	/**
+	 * Called after the IsInstanced changes.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "Item|Delegates")
 	FItemConditionChangeDelegate OnInstancedChanged;
 
 protected:
 
-	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly)
+	/**
+	 * Item size controller.
+	 */
+	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly, meta = (BlueprintProtected), Category = "Item|Size")
 	UItemResizer* ItemResizer;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	/**
+	 * Called after the posession changes.
+	 * @param NewPossessionInfo - New possession info.
+	 * @param PrevPosessionInfo - Previous posession info.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected), Category = "Item|Control")
 	void PossessionChanged(FItemPossessionInfo NewPosessionInfo, FItemPossessionInfo PrevPossessionInfo);
 	virtual void PossessionChanged_Implementation(FItemPossessionInfo NewPosessionInfo, FItemPossessionInfo PrevPossessionInfo) { return; }
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	/**
+	 * Called after the IsInstanced changes.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected),Category = "Item|Control")
 	void IsInstancedChanged();
 	virtual void IsInstancedChanged_Implementation() { return; }
 
 private:
 
-	UPROPERTY(ReplicatedUsing = OnRep_ItemPossession)
+	/**
+	 * Information about the item posession.
+	 */
+	UPROPERTY(BlueprintGetter = GetItemPosession, ReplicatedUsing = OnRep_ItemPossession, meta = (AllowPrivateAccess), Category = "Item|Posession")
 	FItemPossessionInfo ItemPossession;
 
 	UFUNCTION()
@@ -102,7 +165,10 @@ private:
 
 	void Broadcast_PossessionChanged(FItemPossessionInfo PrevPossession);
 
-	UPROPERTY(BlueprintGetter = GetIsInstanced, ReplicatedUsing = OnRep_IsInstanced)
+	/**
+	 * Is this item instanced now (visible in the world and can interact with it).
+	 */
+	UPROPERTY(BlueprintGetter = GetIsInstanced, ReplicatedUsing = OnRep_IsInstanced, meta = (AllowPrivateAccess), Category = "Item|Condition")
 	bool bIsInstanced = true;
 
 	UFUNCTION()

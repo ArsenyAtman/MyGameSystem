@@ -6,10 +6,12 @@
 #include "UObject/NoExportTypes.h"
 #include "ItemLocator.generated.h"
 
-
 class AItem;
 class UItemPlace;
 
+/**
+ * Controller of items location in places.
+ */
 UCLASS(BlueprintType, Blueprintable, DefaultToInstanced, EditInlineNew)
 class MYGAMESYSTEM_API UItemLocator : public UObject
 {
@@ -17,7 +19,13 @@ class MYGAMESYSTEM_API UItemLocator : public UObject
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	FTransform GetItemRelativeTransform(UItemPlace* OwningPlace, AItem* Item);
-	virtual FTransform GetItemRelativeTransform_Implementation(UItemPlace* OwningPlace, AItem* Item) { return FTransform::Identity; }
+	/**
+	 * Get transform for an item in the world.
+	 * @param OwningPlace - The place that owns the item.
+	 * @param Item - The attached item to the place.
+	 * @return Local transform for the item.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ItemLocator")
+	FTransform GetItemRelativeTransform(UItemPlace* OwningPlace, AItem* Item) const;
+	virtual FTransform GetItemRelativeTransform_Implementation(UItemPlace* OwningPlace, AItem* Item) const { return FTransform::Identity; }
 };

@@ -95,7 +95,7 @@ void UInventoryComponent::DropItem(AItem* Item)
 
 void UInventoryComponent::Notify_ItemDropped_Implementation(AItem* Item)
 {
-    ItemDropped();
+    ItemDropped(Item);
     Broadcast_ItemDropped(Item);
 }
 

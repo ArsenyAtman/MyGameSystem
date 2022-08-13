@@ -23,15 +23,15 @@ struct MYGAMESYSTEM_API FItemPossessionInfo
 public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FVector2D InventoryLocation;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UItemPlace* PossessingPlace;
 
-	FItemPossessionInfo(FVector2D Location = FVector2D::ZeroVector, UItemPlace* Place = nullptr)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector2D InventoryLocation;
+
+	FItemPossessionInfo(UItemPlace* Place = nullptr, FVector2D Location = FVector2D::ZeroVector)
 	{
-		InventoryLocation = Location;
 		PossessingPlace = Place;
+		InventoryLocation = Location;
 	}
 };
 
@@ -65,10 +65,10 @@ public:
 	UItemPlace* GetPossessingPlace() const { return ItemPossession.PossessingPlace; }
 
 	UFUNCTION(BlueprintCallable)
-	void PlaceInPlace(UItemPlace* NewPlace, FVector2D NewLocation);
+	void RemoveFromCurrentPlace();
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveFromPlace();
+	void ChangePossession(FItemPossessionInfo NewPossessionInfo);
 
 	UPROPERTY(BlueprintAssignable)
 	FItemPossessionChangeDelegate OnPossessionChanged;
@@ -84,16 +84,9 @@ protected:
 	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly)
 	UItemResizer* ItemResizer;
 
-	UFUNCTION(BlueprintCallable)
-	void SetPossession(FItemPossessionInfo NewPossessionInfo);
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Placed(UItemPlace* ItemPlace);
-	virtual void Placed_Implementation(UItemPlace* ItemPlace) { return; }
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Removed(UItemPlace* ItemPlace);
-	virtual void Removed_Implementation(UItemPlace* ItemPlace) { return; }
+	void PossessionChanged(FItemPossessionInfo NewPosessionInfo, FItemPossessionInfo PrevPossessionInfo);
+	virtual void PossessionChanged_Implementation(FItemPossessionInfo NewPosessionInfo, FItemPossessionInfo PrevPossessionInfo) { return; }
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void IsInstancedChanged();
@@ -101,7 +94,7 @@ protected:
 
 private:
 
-	UPROPERTY(BlueprintSetter = SetPossession, ReplicatedUsing = OnRep_ItemPossession)
+	UPROPERTY(ReplicatedUsing = OnRep_ItemPossession)
 	FItemPossessionInfo ItemPossession;
 
 	UFUNCTION()

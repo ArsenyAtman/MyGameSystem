@@ -140,7 +140,7 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
         return false;
     }
     
-    // Correction for comparsions
+    // Correction for comparsions (IsInside and Intersect)
     FVector2D Correction = FVector2D(0.1, 0.1);
     NewItemBox.Min += Correction;
     NewItemBox.Max -= Correction;
@@ -156,8 +156,9 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
             }
         }
 
-        NewItem->PlaceInPlace(this, NewItemPosition);
         Items.Add(NewItem);
+        NewItem->RemoveFromCurrentPlace();
+        NewItem->ChangePossession(FItemPossessionInfo(this, NewItemPosition));
 
         IInstanceInterface::Execute_SetIsInstanced(NewItem, bIsInstancing);
 
@@ -180,9 +181,11 @@ bool UItemPlace::RemoveItem(AItem* Item)
     if (Items.Find(Item) != INDEX_NONE)
     {
         Items.Remove(Item);
-        Item->RemoveFromPlace();
+        Item->ChangePossession(FItemPossessionInfo());
+
         ItemRemoved(Item);
         Broadcast_ItemRemoved(Item);
+
         return true;
     }
 

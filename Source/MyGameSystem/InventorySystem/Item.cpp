@@ -94,34 +94,15 @@ UInventoryComponent* AItem::GetRelatedInventory() const
     return nullptr;
 }
 
-void AItem::PlaceInPlace(UItemPlace* NewPlace, FVector2D NewLocation)
+void AItem::RemoveFromCurrentPlace()
 {
-    if(HasAuthority() == false)
-    {
-        return;
-    }
-
-    if (IsValid(GetPossessingPlace()))
+    if (HasAuthority() && IsValid(GetPossessingPlace()))
     {
         GetPossessingPlace()->RemoveItem(this);
     }
-    SetPossession(FItemPossessionInfo(NewLocation, NewPlace));
-    Placed(NewPlace);
 }
 
-void AItem::RemoveFromPlace()
-{
-    if(HasAuthority() == false)
-    {
-        return;
-    }
-
-    UItemPlace* PrevPlace = GetPossessingPlace();
-    SetPossession(FItemPossessionInfo(FVector2D::ZeroVector, nullptr));
-    Removed(PrevPlace);
-}
-
-void AItem::SetPossession(FItemPossessionInfo NewPossessionInfo)
+void AItem::ChangePossession(FItemPossessionInfo NewPossessionInfo)
 {
     if(HasAuthority() == false)
     {
@@ -130,11 +111,14 @@ void AItem::SetPossession(FItemPossessionInfo NewPossessionInfo)
 
     FItemPossessionInfo PrevPossessionInfo = ItemPossession;
     ItemPossession = NewPossessionInfo;
+
+    PossessionChanged(ItemPossession, PrevPossessionInfo);
     Broadcast_PossessionChanged(PrevPossessionInfo);
 }
 
 void AItem::OnRep_ItemPossession(FItemPossessionInfo PrevPossession)
 {
+    PossessionChanged(ItemPossession, PrevPossession);
     Broadcast_PossessionChanged(PrevPossession);
 }
 

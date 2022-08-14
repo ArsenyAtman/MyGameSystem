@@ -4,8 +4,6 @@
 #include "Effect.h"
 #include "Stat.h"
 #include "Net/UnrealNetwork.h"
-#include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
-
 
 // Sets default values for this component's properties
 UStatsComponent::UStatsComponent()
@@ -155,8 +153,9 @@ void UStatsComponent::OnRep_Effects(const TArray<UEffect*>& PreReplicationEffect
 
 void UStatsComponent::BroadcastChange_Effects(const TArray<UEffect*>& PrevEffects)
 {
-	TArray<UEffect*> AddedEffects = UArrayFunctionLibrary::FindMissing(Effects, PrevEffects);
-	TArray<UEffect*> RemovedEffects = UArrayFunctionLibrary::FindMissing(PrevEffects, Effects);
+	const TArray<UEffect*>& CurrentEffects = Effects;
+	TArray<UEffect*> AddedEffects = CurrentEffects.FilterByPredicate([PrevEffects](UEffect* const& Effect){ return PrevEffects.Find(Effect) == INDEX_NONE; });
+	TArray<UEffect*> RemovedEffects = PrevEffects.FilterByPredicate([CurrentEffects](UEffect* const& Effect){ return CurrentEffects.Find(Effect) == INDEX_NONE; });
 
 	for(UEffect* Effect : AddedEffects)
 	{
@@ -186,8 +185,9 @@ void UStatsComponent::OnRep_Stats(const TArray<UStat*>& PreReplicationStats)
 
 void UStatsComponent::BroadcastChange_Stats(const TArray<UStat*>& PrevStats)
 {
-	TArray<UStat*> AddedStats = UArrayFunctionLibrary::FindMissing(Stats, PrevStats);
-	TArray<UStat*> RemovedStats = UArrayFunctionLibrary::FindMissing(PrevStats, Stats);
+	const TArray<UStat*>& CurrentStats = Stats;
+	TArray<UStat*> AddedStats = CurrentStats.FilterByPredicate([PrevStats](UStat* const& Stat){ return PrevStats.Find(Stat) == INDEX_NONE; });
+	TArray<UStat*> RemovedStats = PrevStats.FilterByPredicate([CurrentStats](UStat* const& Stat){ return CurrentStats.Find(Stat) == INDEX_NONE; });
 
 	for(UStat* Stat : AddedStats)
 	{

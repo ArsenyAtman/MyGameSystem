@@ -1,13 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Stat.h"
 #include "Effect.h"
 #include "StatDeltaApplier.h"
 #include "StatsComponent.h"
 #include "Effect.h"
 #include "Net/UnrealNetwork.h"
-#include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
 
 void UStat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -143,8 +141,9 @@ void UStat::OnRep_Effects(const TArray<UEffect*>& PreReplicationEffects)
 
 void UStat::Broadcast_Effects(const TArray<UEffect*>& PrevEffects)
 {
-	TArray<UEffect*> AddedEffects = UArrayFunctionLibrary::FindMissing(Effects, PrevEffects);
-	TArray<UEffect*> RemovedEffects = UArrayFunctionLibrary::FindMissing(PrevEffects, Effects);
+	const TArray<UEffect*>& CurrentEffects = Effects;
+	TArray<UEffect*> AddedEffects = CurrentEffects.FilterByPredicate([PrevEffects](UEffect* const& Effect){ return PrevEffects.Find(Effect) == INDEX_NONE; });
+	TArray<UEffect*> RemovedEffects = PrevEffects.FilterByPredicate([CurrentEffects](UEffect* const& Effect){ return CurrentEffects.Find(Effect) == INDEX_NONE; });
 
 	for(UEffect* Effect : AddedEffects)
 	{

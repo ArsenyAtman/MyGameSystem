@@ -9,7 +9,6 @@
 #include "InventoryComponent.h"
 #include "ActorWithInventoryInterface.h"
 #include "Net/UnrealNetwork.h"
-#include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
 
 UInventoryManagerComponent::UInventoryManagerComponent()
 {

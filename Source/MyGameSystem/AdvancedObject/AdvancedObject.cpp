@@ -37,7 +37,7 @@ void UAdvancedObject::ChangeOuter(UObject* NewOuter)
 
 UObject* UAdvancedObject::GetDefaultObject()
 {
-    return StaticClass()->GetDefaultObject();
+    return GetClass()->GetDefaultObject();
 }
 
 void UAdvancedObject::MulticastBeginDestroy_Implementation()

@@ -8,7 +8,6 @@
 #include "ActorWithInventoryInterface.h"
 #include "Math\Box2D.h"
 #include "ItemLocator.h"
-#include "MyGameSystem/ArrayFunctionLibrary/ArrayFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 UItemPlace::UItemPlace()

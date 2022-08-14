@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "AdvancedObjectPlugin",
+	"Description": "Advanced object plugin.",
+	"Category": "Networking",
+	"CreatedBy": "Arseny Atman",
+	"CreatedByURL": "https://github.com/ArsenyAtman",
+	"DocsURL": "https://github.com/ArsenyAtman/ReplicableUObject",
+	"MarketplaceURL": "",
+	"SupportURL": "https://github.com/ArsenyAtman/ReplicableUObject/issues",
+	"CanContainContent": false,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "AdvancedObjectPlugin",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

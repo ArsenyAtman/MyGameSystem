@@ -22,7 +22,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestsUpdateDelegate);
  * ActorComponent that handles quests of it's actor.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable, BlueprintType )
-class MYGAMESYSTEM_API UQuestComponent : public UReplicatingActorComponent
+class MYGAMESYSTEMPLUGIN_API UQuestComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 

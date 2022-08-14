@@ -15,7 +15,7 @@ DECLARE_DELEGATE(FAxisActionFunctionDelegate);
  * InpuHandler that handles axis events as action events (handle gamepad axis as buttons).
  */
 UCLASS()
-class MYGAMESYSTEM_API UAxisActionInputHandler : public UAxisInputHandler
+class MYGAMESYSTEMPLUGIN_API UAxisActionInputHandler : public UAxisInputHandler
 {
 	GENERATED_BODY()
 

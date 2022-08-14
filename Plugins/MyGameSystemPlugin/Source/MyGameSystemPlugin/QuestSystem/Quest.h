@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQuestConditionDelegate, class UQues
  * UAdvancedObject that handles stages and describes a quest behavior.
  */
 UCLASS(Blueprintable, BlueprintType)
-class MYGAMESYSTEM_API UQuest : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UQuest : public UAdvancedObject
 {
 	GENERATED_BODY()
 

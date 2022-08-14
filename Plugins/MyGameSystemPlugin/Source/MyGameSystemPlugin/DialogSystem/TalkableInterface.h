@@ -16,7 +16,7 @@ class UTalkableInterface : public UInterface
 /**
  * Interface for actors with a DialogComponent.
  */
-class MYGAMESYSTEM_API ITalkableInterface
+class MYGAMESYSTEMPLUGIN_API ITalkableInterface
 {
 	GENERATED_BODY()
 

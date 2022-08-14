@@ -10,7 +10,7 @@
  * Base class for AnimNotidies of the DialogSystem.
  */
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_DialogCue : public UAnimNotify
+class MYGAMESYSTEMPLUGIN_API UAnimNotify_DialogCue : public UAnimNotify
 {
 	GENERATED_BODY()
 

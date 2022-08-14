@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FActorActionConditionDelegate, class
  * Some action that is limited in time. May have some logic and line up in combinations.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UActorAction : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UActorAction : public UAdvancedObject
 {
 	GENERATED_BODY()
 

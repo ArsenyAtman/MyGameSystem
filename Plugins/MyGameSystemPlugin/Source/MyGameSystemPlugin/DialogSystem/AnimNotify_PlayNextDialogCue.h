@@ -10,7 +10,7 @@
  * Starts the next dialog cue immediately.
  */
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_PlayNextDialogCue : public UAnimNotify_DialogCue
+class MYGAMESYSTEMPLUGIN_API UAnimNotify_PlayNextDialogCue : public UAnimNotify_DialogCue
 {
 	GENERATED_BODY()
 

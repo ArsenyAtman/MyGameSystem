@@ -16,7 +16,7 @@ class UConditionDrivenActorInterface : public UInterface
 /**
  * Interface for actors with a condition component.
  */
-class MYGAMESYSTEM_API IConditionDrivenActorInterface
+class MYGAMESYSTEMPLUGIN_API IConditionDrivenActorInterface
 {
 	GENERATED_BODY()
 

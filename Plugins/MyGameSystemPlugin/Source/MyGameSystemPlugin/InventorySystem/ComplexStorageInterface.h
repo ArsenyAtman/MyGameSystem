@@ -16,7 +16,7 @@ class UComplexStorageInterface : public UInterface
 /**
  * Interface for storages with subplaces.
  */
-class MYGAMESYSTEM_API IComplexStorageInterface
+class MYGAMESYSTEMPLUGIN_API IComplexStorageInterface
 {
 	GENERATED_BODY()
 

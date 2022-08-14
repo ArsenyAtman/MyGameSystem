@@ -16,7 +16,7 @@ class UInstanceInterface : public UInterface
 /**
  * Interface for instancing.
  */
-class MYGAMESYSTEM_API IInstanceInterface
+class MYGAMESYSTEMPLUGIN_API IInstanceInterface
 {
 	GENERATED_BODY()
 

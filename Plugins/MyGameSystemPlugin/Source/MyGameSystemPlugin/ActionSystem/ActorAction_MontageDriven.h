@@ -10,7 +10,7 @@
  * Action class with the ability to play an AnimMontage on the controlled actor.
  */
 UCLASS()
-class MYGAMESYSTEM_API UActorAction_MontageDriven : public UActorAction
+class MYGAMESYSTEMPLUGIN_API UActorAction_MontageDriven : public UActorAction
 {
 	GENERATED_BODY()
 

@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FObjectiveConditionDelegate, class U
  * UAdvancedObject for a quest objective representation.
  */
 UCLASS(Blueprintable, BlueprintType)
-class MYGAMESYSTEM_API UObjective : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UObjective : public UAdvancedObject
 {
 	GENERATED_BODY()
 

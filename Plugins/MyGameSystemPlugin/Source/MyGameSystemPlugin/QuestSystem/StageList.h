@@ -10,7 +10,7 @@
  * Stage with necessary objectives.
  */
 UCLASS()
-class MYGAMESYSTEM_API UStageList : public UStage
+class MYGAMESYSTEMPLUGIN_API UStageList : public UStage
 {
 	GENERATED_BODY()
 

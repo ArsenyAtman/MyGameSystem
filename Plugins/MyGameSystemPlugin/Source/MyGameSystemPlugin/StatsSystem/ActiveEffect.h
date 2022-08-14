@@ -10,7 +10,7 @@
  * Effect that applies it's delta to related stats.
  */
 UCLASS()
-class MYGAMESYSTEM_API UActiveEffect : public UStatEffect
+class MYGAMESYSTEMPLUGIN_API UActiveEffect : public UStatEffect
 {
 	GENERATED_BODY()
 

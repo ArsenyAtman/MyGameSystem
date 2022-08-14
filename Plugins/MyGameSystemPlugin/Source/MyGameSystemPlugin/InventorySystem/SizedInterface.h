@@ -21,7 +21,7 @@ class USizedInterface : public UInterface
 /**
  * Interface for sizeable objects in the inventory system.
  */
-class MYGAMESYSTEM_API ISizedInterface
+class MYGAMESYSTEMPLUGIN_API ISizedInterface
 {
 	GENERATED_BODY()
 

@@ -18,7 +18,7 @@ class UActorWithInventoryInterface : public UInterface
 /**
  * Interface for actors with inventories.
  */
-class MYGAMESYSTEM_API IActorWithInventoryInterface
+class MYGAMESYSTEMPLUGIN_API IActorWithInventoryInterface
 {
 	GENERATED_BODY()
 

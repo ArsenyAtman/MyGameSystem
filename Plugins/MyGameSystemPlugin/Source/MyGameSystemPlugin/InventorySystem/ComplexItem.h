@@ -14,7 +14,7 @@ class UItemPlace;
  * Item with subplaces.
  */
 UCLASS()
-class MYGAMESYSTEM_API AComplexItem : public AItem, public IStorageInterface, public IComplexStorageInterface
+class MYGAMESYSTEMPLUGIN_API AComplexItem : public AItem, public IStorageInterface, public IComplexStorageInterface
 {
 	GENERATED_BODY()
 

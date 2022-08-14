@@ -19,7 +19,7 @@ class UStorageInterface : public UInterface
 /**
  * Interface for a storage with items.
  */
-class MYGAMESYSTEM_API IStorageInterface
+class MYGAMESYSTEMPLUGIN_API IStorageInterface
 {
 	GENERATED_BODY()
 

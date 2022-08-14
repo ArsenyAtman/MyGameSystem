@@ -11,7 +11,7 @@
  * Actor to refer actors for quests from a level.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API AQuestActorsReferencer : public AActor
+class MYGAMESYSTEMPLUGIN_API AQuestActorsReferencer : public AActor
 {
 	GENERATED_BODY()
 	

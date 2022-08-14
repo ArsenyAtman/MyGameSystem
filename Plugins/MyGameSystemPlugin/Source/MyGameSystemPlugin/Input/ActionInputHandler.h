@@ -15,7 +15,7 @@ DECLARE_DELEGATE(FActionFunctionDelegate);
  * InputHandlers for the action input type.
  */
 UCLASS()
-class MYGAMESYSTEM_API UActionInputHandler : public UInputHandler
+class MYGAMESYSTEMPLUGIN_API UActionInputHandler : public UInputHandler
 {
 	GENERATED_BODY()
 

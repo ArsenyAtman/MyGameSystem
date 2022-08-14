@@ -16,7 +16,7 @@ class UMontagePlayableActorInterface : public UInterface
 /**
  * Interface for actors with a montage player component.
  */
-class MYGAMESYSTEM_API IMontagePlayableActorInterface
+class MYGAMESYSTEMPLUGIN_API IMontagePlayableActorInterface
 {
 	GENERATED_BODY()
 

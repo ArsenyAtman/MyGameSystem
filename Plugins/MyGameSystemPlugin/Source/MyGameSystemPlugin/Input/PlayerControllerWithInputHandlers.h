@@ -10,7 +10,7 @@
  * Advanced player controller with an array of user input handlers.
  */
 UCLASS()
-class MYGAMESYSTEM_API APlayerControllerWithInputHandlers : public APlayerController
+class MYGAMESYSTEMPLUGIN_API APlayerControllerWithInputHandlers : public APlayerController
 {
 	GENERATED_BODY()
 

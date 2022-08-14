@@ -10,7 +10,7 @@
  * Base class for elements (cues, selections, etc.) of a dialog.
  */
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class MYGAMESYSTEM_API UDialogUnit : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UDialogUnit : public UAdvancedObject
 {
 	GENERATED_BODY()
 

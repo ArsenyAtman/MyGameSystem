@@ -10,7 +10,7 @@
  * Notify the current action about the combo window end.
  */
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_ActorActionComboWindowEnd : public UAnimNotify_ActorAction
+class MYGAMESYSTEMPLUGIN_API UAnimNotify_ActorActionComboWindowEnd : public UAnimNotify_ActorAction
 {
 	GENERATED_BODY()
 

@@ -21,7 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatComponentStatDelegate, class US
  * ActorComponent that handles effects and stats.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UStatsComponent : public UReplicatingActorComponent
+class MYGAMESYSTEMPLUGIN_API UStatsComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 

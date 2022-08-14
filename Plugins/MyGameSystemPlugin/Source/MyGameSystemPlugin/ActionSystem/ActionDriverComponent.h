@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FActionChangeDelegate);
  * ActorComponent that handles actor actions.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UActionDriverComponent : public UReplicatingActorComponent
+class MYGAMESYSTEMPLUGIN_API UActionDriverComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 

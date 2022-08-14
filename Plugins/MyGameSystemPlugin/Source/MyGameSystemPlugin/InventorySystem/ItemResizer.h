@@ -13,7 +13,7 @@ class UItemPlace;
  * Controller of size for items.
  */
 UCLASS(DefaultToInstanced, EditInlineNew, BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UItemResizer : public UObject
+class MYGAMESYSTEMPLUGIN_API UItemResizer : public UObject
 {
 	GENERATED_BODY()
 

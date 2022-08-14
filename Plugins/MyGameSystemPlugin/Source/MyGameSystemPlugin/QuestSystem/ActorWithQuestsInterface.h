@@ -16,7 +16,7 @@ class UActorWithQuestsInterface : public UInterface
 /**
  * An actor with QuestComponent.
  */
-class MYGAMESYSTEM_API IActorWithQuestsInterface
+class MYGAMESYSTEMPLUGIN_API IActorWithQuestsInterface
 {
 	GENERATED_BODY()
 

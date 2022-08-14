@@ -20,7 +20,7 @@ class UInventoryComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInventoryManagerConnectionDelegate, UInventoryManagerComponent*, InventoryManager, UInventoryComponent*, InventoryComponent);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MYGAMESYSTEM_API UInventoryManagerComponent : public UActorComponent
+class MYGAMESYSTEMPLUGIN_API UInventoryManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

@@ -10,7 +10,7 @@
  * Base class for the all AnimNotifies that control ActorActions.
  */
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_ActorAction : public UAnimNotify
+class MYGAMESYSTEMPLUGIN_API UAnimNotify_ActorAction : public UAnimNotify
 {
 	GENERATED_BODY()
 

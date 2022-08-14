@@ -8,7 +8,7 @@
  * DialogSelection that automatically selects a predefined option after the timer expires.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogSelection_WithTimer : public UDialogSelection
+class MYGAMESYSTEMPLUGIN_API UDialogSelection_WithTimer : public UDialogSelection
 {
 	GENERATED_BODY()
 

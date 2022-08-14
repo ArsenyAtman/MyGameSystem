@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStageConditionDelegate, class UStag
  * Object for objectives handling.
  */
 UCLASS(Blueprintable, BlueprintType, Abstract)
-class MYGAMESYSTEM_API UStage : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UStage : public UAdvancedObject
 {
 	GENERATED_BODY()
 

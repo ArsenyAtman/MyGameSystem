@@ -16,7 +16,7 @@ class UActionDrivenActorInterface : public UInterface
 /**
  * Interface for an actor with ActionDriverComponent.
  */
-class MYGAMESYSTEM_API IActionDrivenActorInterface
+class MYGAMESYSTEMPLUGIN_API IActionDrivenActorInterface
 {
 	GENERATED_BODY()
 

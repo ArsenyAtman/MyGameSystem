@@ -19,7 +19,7 @@ enum class ERelatedStatsSearchType : uint8
  * @see UStat class.
  */
 UCLASS()
-class MYGAMESYSTEM_API UStatEffect : public UEffect
+class MYGAMESYSTEMPLUGIN_API UStatEffect : public UEffect
 {
 	GENERATED_BODY()
 

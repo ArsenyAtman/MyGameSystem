@@ -10,7 +10,7 @@
  * ItemLocator for grid places.
  */
 UCLASS()
-class MYGAMESYSTEM_API UItemLocator_Grid : public UItemLocator
+class MYGAMESYSTEMPLUGIN_API UItemLocator_Grid : public UItemLocator
 {
 	GENERATED_BODY()
 

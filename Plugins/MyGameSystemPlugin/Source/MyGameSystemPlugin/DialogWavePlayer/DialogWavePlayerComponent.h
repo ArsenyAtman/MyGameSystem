@@ -10,7 +10,7 @@
  * A component that plays DialogueWaves over the network.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UDialogWavePlayerComponent : public UActorComponent
+class MYGAMESYSTEMPLUGIN_API UDialogWavePlayerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

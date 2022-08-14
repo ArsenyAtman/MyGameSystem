@@ -11,7 +11,7 @@
  * Object that controls modification the incoming delta.
  */
 UCLASS(BlueprintType, Blueprintable, DefaultToInstanced, EditInlineNew)
-class MYGAMESYSTEM_API UStatDeltaApplier : public UObject
+class MYGAMESYSTEMPLUGIN_API UStatDeltaApplier : public UObject
 {
 	GENERATED_BODY()
 

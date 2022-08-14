@@ -10,7 +10,7 @@
  * Notify the current action about the action event end.
  */
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_ActorActionEventEnd : public UAnimNotify_ActorAction
+class MYGAMESYSTEMPLUGIN_API UAnimNotify_ActorActionEventEnd : public UAnimNotify_ActorAction
 {
 	GENERATED_BODY()
 

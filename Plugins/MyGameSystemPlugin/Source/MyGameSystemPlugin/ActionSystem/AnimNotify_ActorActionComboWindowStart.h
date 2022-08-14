@@ -10,7 +10,7 @@
  * Notify the current action about the combo window start.
  */
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_ActorActionComboWindowStart : public UAnimNotify_ActorAction
+class MYGAMESYSTEMPLUGIN_API UAnimNotify_ActorActionComboWindowStart : public UAnimNotify_ActorAction
 {
 	GENERATED_BODY()
 

@@ -16,7 +16,7 @@ class UDialogWavePlayableActorInterface : public UInterface
 /**
  * Interface for an actor that can play dialog waves.
  */
-class MYGAMESYSTEM_API IDialogWavePlayableActorInterface
+class MYGAMESYSTEMPLUGIN_API IDialogWavePlayableActorInterface
 {
 	GENERATED_BODY()
 

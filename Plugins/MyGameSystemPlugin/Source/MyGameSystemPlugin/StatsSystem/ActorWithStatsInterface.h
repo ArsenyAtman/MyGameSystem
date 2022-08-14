@@ -16,7 +16,7 @@ class UActorWithStatsInterface : public UInterface
 /**
  * Interface for actors with StatsComponent.
  */
-class MYGAMESYSTEM_API IActorWithStatsInterface
+class MYGAMESYSTEMPLUGIN_API IActorWithStatsInterface
 {
 	GENERATED_BODY()
 

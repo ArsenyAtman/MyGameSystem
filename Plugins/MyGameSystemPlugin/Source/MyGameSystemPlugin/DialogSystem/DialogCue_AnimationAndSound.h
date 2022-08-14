@@ -10,7 +10,7 @@
  * DialogCue with animations and an audio.
  */
 UCLASS()
-class MYGAMESYSTEM_API UDialogCue_AnimationAndSound : public UDialogCue
+class MYGAMESYSTEMPLUGIN_API UDialogCue_AnimationAndSound : public UDialogCue
 {
 	GENERATED_BODY()
 

@@ -15,7 +15,7 @@ DECLARE_DELEGATE_OneParam(FAxisFunctionDelegate, float);
  * InputHandler for the axis input type.
  */
 UCLASS()
-class MYGAMESYSTEM_API UAxisInputHandler : public UInputHandler
+class MYGAMESYSTEMPLUGIN_API UAxisInputHandler : public UInputHandler
 {
 	GENERATED_BODY()
 

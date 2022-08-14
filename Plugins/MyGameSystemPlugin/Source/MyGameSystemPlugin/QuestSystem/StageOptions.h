@@ -25,7 +25,7 @@ struct FOption
  * Stage with options.
  */
 UCLASS()
-class MYGAMESYSTEM_API UStageOptions : public UStage
+class MYGAMESYSTEMPLUGIN_API UStageOptions : public UStage
 {
 	GENERATED_BODY()
 

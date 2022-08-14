@@ -10,7 +10,7 @@
  * DialogSelection that automatically selects the first available option.
  */
 UCLASS()
-class MYGAMESYSTEM_API UDialogAutoSelection : public UDialogSelection
+class MYGAMESYSTEMPLUGIN_API UDialogAutoSelection : public UDialogSelection
 {
 	GENERATED_BODY()
 

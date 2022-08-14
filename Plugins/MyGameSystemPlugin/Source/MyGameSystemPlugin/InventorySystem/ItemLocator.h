@@ -13,7 +13,7 @@ class UItemPlace;
  * Controller of items location in places.
  */
 UCLASS(BlueprintType, Blueprintable, DefaultToInstanced, EditInlineNew)
-class MYGAMESYSTEM_API UItemLocator : public UObject
+class MYGAMESYSTEMPLUGIN_API UItemLocator : public UObject
 {
 	GENERATED_BODY()
 

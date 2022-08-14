@@ -16,7 +16,7 @@ class UInteractingActorInterface : public UInterface
 /**
  * Interface for actors that can interact.
  */
-class MYGAMESYSTEM_API IInteractingActorInterface
+class MYGAMESYSTEMPLUGIN_API IInteractingActorInterface
 {
 	GENERATED_BODY()
 

@@ -16,7 +16,7 @@ class UMarkableActorInterface : public UInterface
 /**
  * An interface for actors that can be marked as an objective.
  */
-class MYGAMESYSTEM_API IMarkableActorInterface
+class MYGAMESYSTEMPLUGIN_API IMarkableActorInterface
 {
 	GENERATED_BODY()
 

@@ -13,7 +13,7 @@ class UItemPlace;
  * ItemResizer that store sizes for places in a map.
  */
 UCLASS()
-class MYGAMESYSTEM_API UItemResizer_Map : public UItemResizer
+class MYGAMESYSTEMPLUGIN_API UItemResizer_Map : public UItemResizer
 {
 	GENERATED_BODY()
 

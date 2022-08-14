@@ -10,7 +10,7 @@
  * Starts an audio of the current dialog cue.
  */
 UCLASS()
-class MYGAMESYSTEM_API UAnimNotify_PlayAudioOfDialogCue : public UAnimNotify_DialogCue
+class MYGAMESYSTEMPLUGIN_API UAnimNotify_PlayAudioOfDialogCue : public UAnimNotify_DialogCue
 {
 	GENERATED_BODY()
 

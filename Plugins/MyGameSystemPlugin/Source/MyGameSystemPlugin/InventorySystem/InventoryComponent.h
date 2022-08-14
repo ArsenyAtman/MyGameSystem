@@ -20,7 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemDroppedDelegate, UInventoryCom
  * Inventory component for an actor.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UInventoryComponent : public UActorComponent, public IStorageInterface, public IComplexStorageInterface
+class MYGAMESYSTEMPLUGIN_API UInventoryComponent : public UActorComponent, public IStorageInterface, public IComplexStorageInterface
 {
 	GENERATED_BODY()
 

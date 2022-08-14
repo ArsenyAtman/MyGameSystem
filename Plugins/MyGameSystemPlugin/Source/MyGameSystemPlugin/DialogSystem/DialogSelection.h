@@ -10,7 +10,7 @@
  * DialogUnit to controll the flow of a dialog.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogSelection : public UDialogUnit
+class MYGAMESYSTEMPLUGIN_API UDialogSelection : public UDialogUnit
 {
 	GENERATED_BODY()
 

@@ -10,7 +10,7 @@
  * Effect that modifies the incoming delta of stats.
  */
 UCLASS()
-class MYGAMESYSTEM_API UPassiveEffect : public UStatEffect
+class MYGAMESYSTEMPLUGIN_API UPassiveEffect : public UStatEffect
 {
 	GENERATED_BODY()
 

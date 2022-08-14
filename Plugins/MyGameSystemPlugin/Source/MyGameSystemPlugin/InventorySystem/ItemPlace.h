@@ -24,7 +24,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemPlaceConditionDelegate, UItemP
  * Storage for items.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UItemPlace : public USceneComponent, public IStorageInterface, public IInstanceInterface, public ISizedInterface
+class MYGAMESYSTEMPLUGIN_API UItemPlace : public USceneComponent, public IStorageInterface, public IInstanceInterface, public ISizedInterface
 {
 	GENERATED_BODY()
 

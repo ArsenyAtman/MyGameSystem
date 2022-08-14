@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogComponentConditionChangeDeleg
  * ActorComponent that handles dialogs.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UDialogComponent : public UReplicatingActorComponent
+class MYGAMESYSTEMPLUGIN_API UDialogComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 

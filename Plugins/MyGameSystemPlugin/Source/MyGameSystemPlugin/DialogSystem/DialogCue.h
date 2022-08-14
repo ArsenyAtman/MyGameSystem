@@ -10,7 +10,7 @@
  * DialogUnit that represents some dialog cue.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialogCue : public UDialogUnit
+class MYGAMESYSTEMPLUGIN_API UDialogCue : public UDialogUnit
 {
 	GENERATED_BODY()
 

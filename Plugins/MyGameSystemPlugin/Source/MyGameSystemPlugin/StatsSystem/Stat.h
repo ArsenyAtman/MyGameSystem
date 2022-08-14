@@ -21,7 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStatValueChangeDelegate, class USt
  * Object that handles values of some stat an impact of effects.
  */
 UCLASS(BlueprintType, Blueprintable, EditInlineNew)
-class MYGAMESYSTEM_API UStat : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UStat : public UAdvancedObject
 {
 	GENERATED_BODY()
 

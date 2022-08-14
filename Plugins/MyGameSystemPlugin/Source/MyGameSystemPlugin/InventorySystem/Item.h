@@ -18,7 +18,7 @@ class UItemResizer;
  * Information about an item posession.
  */
 USTRUCT(BlueprintType, Blueprintable)
-struct MYGAMESYSTEM_API FItemPossessionInfo
+struct MYGAMESYSTEMPLUGIN_API FItemPossessionInfo
 {
 	GENERATED_BODY()
 
@@ -54,7 +54,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FItemPossessionChangeDelegate, AI
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemConditionChangeDelegate, AItem*, Item);
 
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API AItem : public AActor, public IInstanceInterface, public ISizedInterface
+class MYGAMESYSTEMPLUGIN_API AItem : public AActor, public IInstanceInterface, public ISizedInterface
 {
 	GENERATED_BODY()
 

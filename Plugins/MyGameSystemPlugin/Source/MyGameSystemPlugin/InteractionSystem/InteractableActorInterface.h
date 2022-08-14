@@ -16,7 +16,7 @@ class UInteractableActorInterface : public UInterface
 /**
  * Interface for interactive objects.
  */
-class MYGAMESYSTEM_API IInteractableActorInterface
+class MYGAMESYSTEMPLUGIN_API IInteractableActorInterface
 {
 	GENERATED_BODY()
 

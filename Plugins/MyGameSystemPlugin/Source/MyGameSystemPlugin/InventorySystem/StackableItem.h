@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FCountInStackChangeDelegate, ASta
  * An item that can stacks.
  */
 UCLASS()
-class MYGAMESYSTEM_API AStackableItem : public AItem, public IStorageInterface
+class MYGAMESYSTEMPLUGIN_API AStackableItem : public AItem, public IStorageInterface
 {
 	GENERATED_BODY()
 

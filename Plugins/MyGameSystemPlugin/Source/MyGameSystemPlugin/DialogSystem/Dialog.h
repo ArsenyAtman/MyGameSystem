@@ -20,7 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogConditionDelegate, class UDia
  * Object, that handles dialog units.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UDialog : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UDialog : public UAdvancedObject
 {
 	GENERATED_BODY()
 

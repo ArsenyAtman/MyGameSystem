@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEffectConditionChangeDelegate, clas
  * @see UStatsComponent class.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UEffect : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UEffect : public UAdvancedObject
 {
 	GENERATED_BODY()
 

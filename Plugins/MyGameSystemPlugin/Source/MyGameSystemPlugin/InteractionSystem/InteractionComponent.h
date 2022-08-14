@@ -20,7 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInteractionUnavailableDelegate);
  * ActorComponent for interactions handling.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UInteractionComponent : public UActorComponent
+class MYGAMESYSTEMPLUGIN_API UInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

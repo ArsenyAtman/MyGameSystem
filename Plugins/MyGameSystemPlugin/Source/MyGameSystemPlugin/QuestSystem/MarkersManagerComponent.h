@@ -10,7 +10,7 @@
  * ActorComponent that manages markers for quests.
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UMarkersManagerComponent : public UActorComponent
+class MYGAMESYSTEMPLUGIN_API UMarkersManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 	

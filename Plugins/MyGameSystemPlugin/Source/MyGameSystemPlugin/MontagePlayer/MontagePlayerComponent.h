@@ -10,7 +10,7 @@
  * An actor component for playing animation montages over the network.
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UMontagePlayerComponent : public UActorComponent
+class MYGAMESYSTEMPLUGIN_API UMontagePlayerComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

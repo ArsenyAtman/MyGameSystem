@@ -10,7 +10,7 @@
  * A base class for user input handlers with a spam-protection.
  */
 UCLASS(DefaultToInstanced, EditInlineNew, BlueprintType, Blueprintable, Abstract)
-class MYGAMESYSTEM_API UInputHandler : public UObject
+class MYGAMESYSTEMPLUGIN_API UInputHandler : public UObject
 {
 	GENERATED_BODY()
 

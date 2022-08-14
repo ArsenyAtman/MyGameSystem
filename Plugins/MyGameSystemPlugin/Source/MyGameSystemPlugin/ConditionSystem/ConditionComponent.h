@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FConditionComponentDelegate);
  * @see Condition
  */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), BlueprintType, Blueprintable )
-class MYGAMESYSTEM_API UConditionComponent : public UReplicatingActorComponent
+class MYGAMESYSTEMPLUGIN_API UConditionComponent : public UReplicatingActorComponent
 {
 	GENERATED_BODY()
 

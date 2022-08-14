@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConditionStateDelegate, class UCond
  * @see ConditionComponent
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEM_API UCondition : public UAdvancedObject
+class MYGAMESYSTEMPLUGIN_API UCondition : public UAdvancedObject
 {
 	GENERATED_BODY()
 

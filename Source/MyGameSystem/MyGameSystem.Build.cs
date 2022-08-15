@@ -8,7 +8,7 @@ public class MyGameSystem : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AdvancedObjectPlugin", "MyGameSystemPlugin" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

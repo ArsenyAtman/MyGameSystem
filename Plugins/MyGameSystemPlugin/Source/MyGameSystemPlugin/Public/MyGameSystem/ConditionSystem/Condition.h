@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
+#include "AdvancedObject/AdvancedObject.h"
 #include "Condition.generated.h"
 
 /**

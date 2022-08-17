@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyGameSystem/AdvancedObject/ReplicatingActorComponent.h"
+#include "AdvancedObject/ReplicatingActorComponent.h"
 #include "QuestSystemTypes.h"
 #include "Quest.h"
 #include "QuestComponent.generated.h"

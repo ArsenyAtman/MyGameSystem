@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyGameSystem/AdvancedObject/ReplicatingActorComponent.h"
+#include "AdvancedObject/ReplicatingActorComponent.h"
 #include "ActionDriverComponent.generated.h"
 
 /**

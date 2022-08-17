@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
+#include "AdvancedObject/AdvancedObject.h"
 #include "Dialog.generated.h"
 
 /**

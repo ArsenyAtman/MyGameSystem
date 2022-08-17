@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyGameSystem/AdvancedObject/AdvancedObject.h"
+#include "AdvancedObject/AdvancedObject.h"
 #include "StatsSystemTypes.h"
 #include "Effect.generated.h"
 

@@ -68,7 +68,7 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
 
     for (AItem* Item : Items)
     {
-        if (IsValid(Item) && Item->GetClass()->IsChildOf(ItemClass))
+        if (IsValid(Item) && Item->IsA(ItemClass))
         {
             FoundItems.Add(Item);
         }

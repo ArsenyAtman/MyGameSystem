@@ -144,7 +144,6 @@ protected:
 
 	/**
 	 * Called after the activation.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control", meta = (BlueprintProtected))
 	void OnStageActivated();
@@ -152,7 +151,6 @@ protected:
 
 	/**
 	 * Called after the completion.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control", meta = (BlueprintProtected))
 	void OnStageCompleted();
@@ -160,7 +158,6 @@ protected:
 
 	/**
 	 * Called after the failure.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stage|Control", meta = (BlueprintProtected))
 	void OnStageFailed();

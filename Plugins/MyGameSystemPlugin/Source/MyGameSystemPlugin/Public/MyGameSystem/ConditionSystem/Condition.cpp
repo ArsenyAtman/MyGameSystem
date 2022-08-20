@@ -8,8 +8,6 @@ void UCondition::StartCondition()
 {
 	if(HasAuthority())
 	{
-		ConditionStarted();
-
 		Notify_ConditionStart();
 	}
 }
@@ -34,6 +32,7 @@ UConditionComponent* UCondition::GetConditionComponent() const
 
 void UCondition::EndPlay_Implementation()
 {
+	ConditionEnded();
 	Broadcast_ConditionEnd();
 
 	Super::EndPlay_Implementation();
@@ -46,14 +45,13 @@ void UCondition::ChangeCondition(UCondition* NextCondition)
 		if (IsValid(GetConditionComponent()) && IsValid(NextCondition))
 		{
 			GetConditionComponent()->ConditionChange(NextCondition);
-
-			ConditionEnded();
 		}
 	}
 }
 
 void UCondition::Notify_ConditionStart_Implementation()
 {
+	ConditionStarted();
 	Broadcast_ConditionStart();
 }
 

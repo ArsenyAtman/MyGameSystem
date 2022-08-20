@@ -20,7 +20,6 @@ void UEffect::Activate()
 		{
 			GetRelatedStatsComponent()->AddEffect(this);
 
-			OnActivated();
 			Notify_OnActivated();
 		}
 	}
@@ -32,7 +31,7 @@ void UEffect::Deactivate()
 	{
 		if (IsValid(GetRelatedStatsComponent()))
 		{
-			OnDeactivating();
+			Notify_OnDeactivating();
 
 			GetRelatedStatsComponent()->RemoveEffect(this);
 		}
@@ -61,16 +60,16 @@ AActor* UEffect::GetRelatedActor() const
 	return nullptr;
 }
 
-void UEffect::EndPlay_Implementation()
-{
-	Broadcast_OnDeactivated();
-
-	Super::EndPlay_Implementation();
-}
-
 void UEffect::Notify_OnActivated_Implementation()
 {
+	OnActivated();
 	Broadcast_OnActivated();
+}
+
+void UEffect::Notify_OnDeactivating_Implementation()
+{
+	OnDeactivating();
+	Broadcast_OnDeactivating();
 }
 
 void UEffect::Broadcast_OnActivated()
@@ -78,7 +77,7 @@ void UEffect::Broadcast_OnActivated()
 	OnEffectActivated.Broadcast(this);
 }
 
-void UEffect::Broadcast_OnDeactivated()
+void UEffect::Broadcast_OnDeactivating()
 {
-	OnEffectDeactivated.Broadcast(this);
+	OnEffectDeactivating.Broadcast(this);
 }

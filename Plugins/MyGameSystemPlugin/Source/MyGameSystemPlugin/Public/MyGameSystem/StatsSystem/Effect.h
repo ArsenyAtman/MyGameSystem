@@ -64,16 +64,12 @@ public:
 	 * Called after the deactivation.
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "Effect|Delegates")
-	FEffectConditionChangeDelegate OnEffectDeactivated;
+	FEffectConditionChangeDelegate OnEffectDeactivating;
 
 protected:
 
-	// Called after the destruction of this effect (deactivation).
-	virtual void EndPlay_Implementation() override;
-
 	/**
 	 * Called after the activation.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Effect|Control", meta = (BlueprintProtected))
 	void OnActivated();
@@ -81,7 +77,6 @@ protected:
 
 	/**
 	 * Called before the destruction.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Effect|Control", meta = (BlueprintProtected))
 	void OnDeactivating();
@@ -96,10 +91,13 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Notify_OnActivated();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Notify_OnDeactivating();
+
 	// Call OnActivated delegate.
 	void Broadcast_OnActivated();
 
 	// Call OnDeactivated delegate.
-	void Broadcast_OnDeactivated();
+	void Broadcast_OnDeactivating();
 	
 };

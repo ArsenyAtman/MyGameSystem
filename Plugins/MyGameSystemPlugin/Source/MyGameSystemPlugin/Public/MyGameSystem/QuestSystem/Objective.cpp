@@ -26,7 +26,6 @@ void UObjective::Activate_Implementation()
 		ReferencesForQuest = FindReferencesForQuest();
 		MarkersManager = CreateMarkersManager();
 		SetCondition(ETaskCondition::InProcess);
-		OnObjectiveActivated();
 	}
 }
 
@@ -38,7 +37,6 @@ void UObjective::Abort_Implementation()
 		{
 			EndObjective();
 			SetCondition(ETaskCondition::Aborted);
-			OnObjectiveAborted();
 		}
 	}
 }
@@ -108,7 +106,6 @@ void UObjective::Complete_Implementation()
 		{
 			EndObjective();
 			SetCondition(ETaskCondition::Completed);
-			OnObjectiveCompleted();
 			GetOwningStage()->ObjectiveCompleted(this);
 		}
 	}
@@ -122,7 +119,6 @@ void UObjective::Fail_Implementation()
 		{
 			EndObjective();
 			SetCondition(ETaskCondition::Failed);
-			OnObjectiveFailed();
 			GetOwningStage()->ObjectiveFailed(this);
 		}
 	}
@@ -174,18 +170,22 @@ void UObjective::BroadcastChange_Condition()
 	switch(GetCondition())
 	{
 		case ETaskCondition::InProcess:
+			OnObjectiveActivated();
 			OnActivated.Broadcast(this);
 			break;
 
 		case ETaskCondition::Completed:
+			OnObjectiveCompleted();
 			OnCompleted.Broadcast(this);
 			break;
 
 		case ETaskCondition::Failed:
+			OnObjectiveFailed();
 			OnFailed.Broadcast(this);
 			break;
 
 		case ETaskCondition::Aborted:
+			OnObjectiveAborted();
 			OnAborted.Broadcast(this);
 			break;
 	}

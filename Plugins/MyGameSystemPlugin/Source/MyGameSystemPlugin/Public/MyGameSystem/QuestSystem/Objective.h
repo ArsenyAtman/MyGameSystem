@@ -155,7 +155,6 @@ protected:
 
 	/**
 	 * Called after the activation.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveActivated();
@@ -163,7 +162,6 @@ protected:
 
 	/**
 	 * Called after the abortion.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveAborted();
@@ -171,7 +169,6 @@ protected:
 
 	/**
 	 * Called after the completion.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveCompleted();
@@ -179,7 +176,6 @@ protected:
 
 	/**
 	 * Called after the failure.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|Control", meta = (BlueprintProtected))
 	void OnObjectiveFailed();

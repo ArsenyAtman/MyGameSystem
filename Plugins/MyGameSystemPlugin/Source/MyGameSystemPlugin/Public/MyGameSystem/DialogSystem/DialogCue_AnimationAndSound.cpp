@@ -18,23 +18,29 @@ void UDialogCue_AnimationAndSound::OnCueBeginned_Implementation()
 {
 	Super::OnCueBeginned_Implementation();
 
-	bIsAudioPlayed = false;
-	bIsAnimationPlayed = false;
-	PlayAnimation();
+	if (HasAuthority())
+	{
+		bIsAudioPlayed = false;
+		bIsAnimationPlayed = false;
+		PlayAnimation();
+	}
 }
 
 void UDialogCue_AnimationAndSound::OnCueEnded_Implementation()
 {
-	if (IsValid(PlayingAudioComponent))
+	if (HasAuthority())
 	{
-		PlayingAudioComponent->OnAudioFinished.RemoveDynamic(this, &UDialogCue_AnimationAndSound::AudioPlayed);
-		PlayingAudioComponent = nullptr;
-	}
+		if (IsValid(PlayingAudioComponent))
+		{
+			PlayingAudioComponent->OnAudioFinished.RemoveDynamic(this, &UDialogCue_AnimationAndSound::AudioPlayed);
+			PlayingAudioComponent = nullptr;
+		}
 
-	if (IsValid(PlayingAnimInstance))
-	{
-		PlayingAnimInstance->OnMontageEnded.RemoveDynamic(this, &UDialogCue_AnimationAndSound::AnimationPlayed);
-		PlayingAnimInstance = nullptr;
+		if (IsValid(PlayingAnimInstance))
+		{
+			PlayingAnimInstance->OnMontageEnded.RemoveDynamic(this, &UDialogCue_AnimationAndSound::AnimationPlayed);
+			PlayingAnimInstance = nullptr;
+		}
 	}
 
 	Super::OnCueEnded_Implementation();

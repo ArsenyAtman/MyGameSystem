@@ -5,20 +5,10 @@
 #include "ActionDriverComponent.h"
 #include "Net/UnrealNetwork.h"
 
-void UActorAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UActorAction, bEventStarted);
-	DOREPLIFETIME(UActorAction, bComboWindowStarted);
-}
-
 void UActorAction::StartAction()
 {
 	if(HasAuthority())
 	{
-		OnActionStarted();
-
 		Notify_ActionStart();
 	}
 }
@@ -37,8 +27,6 @@ void UActorAction::EndAction()
 			GetActionDriverComponent()->ActionCompleted(this);
 		}
 
-		OnActionEnded();
-
 		Notify_ActionEnd();
 	}
 }
@@ -47,8 +35,7 @@ void UActorAction::StartActionEvent()
 {
 	if(HasAuthority())
 	{
-		bEventStarted = true;
-		OnEventStarted();
+		Notify_ActionEventStart();
 	}
 }
 
@@ -56,8 +43,7 @@ void UActorAction::EndActionEvent()
 {
 	if(HasAuthority())
 	{
-		bEventStarted = false;
-		OnEventEnded();
+		Notify_ActionEventEnd();
 	}
 }
 
@@ -65,8 +51,7 @@ void UActorAction::StartComboWindow()
 {
 	if(HasAuthority())
 	{
-		bComboWindowStarted = true;
-		OnComboWindowStarted();
+		Notify_ComboWindowStart();
 	}
 }
 
@@ -74,19 +59,44 @@ void UActorAction::EndComboWindow()
 {
 	if(HasAuthority())
 	{
-		bComboWindowStarted = false;
-		OnComboWindowEnded();
+		Notify_ComboWindowEnd();
 	}
 }
 
 void UActorAction::Notify_ActionStart_Implementation()
 {
+	OnActionStarted();
 	Broadcast_ActionStart();
 }
 
 void UActorAction::Notify_ActionEnd_Implementation()
 {
+	OnActionEnded();
 	Broadcast_ActionEnd();
+}
+
+void UActorAction::Notify_ActionEventStart_Implementation()
+{
+	bEventStarted = true;
+	OnEventStarted();
+}
+
+void UActorAction::Notify_ActionEventEnd_Implementation()
+{
+	bEventStarted = false;
+	OnEventEnded();
+}
+
+void UActorAction::Notify_ComboWindowStart_Implementation()
+{
+	bComboWindowStarted = true;
+	OnComboWindowStarted();
+}
+
+void UActorAction::Notify_ComboWindowEnd_Implementation()
+{
+	bComboWindowStarted = false;
+	OnComboWindowEnded();
 }
 
 void UActorAction::Broadcast_ActionStart()

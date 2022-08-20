@@ -51,10 +51,6 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Internal", meta = (BlueprintProtected))
 	void EndCue();
 
-protected:
-
-	// ...
-
 private:
 
 	/**

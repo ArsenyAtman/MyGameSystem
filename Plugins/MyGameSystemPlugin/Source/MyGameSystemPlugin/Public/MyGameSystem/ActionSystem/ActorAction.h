@@ -23,9 +23,6 @@ class MYGAMESYSTEMPLUGIN_API UActorAction : public UAdvancedObject
 
 public:
 
-	// Setup the replicaion.
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	/**
 	 * Start this action.
 	 * @warning Use this function only if you know what you are doing!
@@ -121,7 +118,6 @@ protected:
 
 	/**
 	 * Called once after the action start.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnActionStarted();
@@ -129,7 +125,6 @@ protected:
 
 	/**
 	 * Called once before the action end.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnActionEnded();
@@ -137,7 +132,6 @@ protected:
 
 	/**
 	 * Called when the action event starts.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnEventStarted();
@@ -145,7 +139,6 @@ protected:
 
 	/**
 	 * Called when the action event ends.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnEventEnded();
@@ -153,7 +146,6 @@ protected:
 
 	/**
 	 * Called when the combo window starts.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnComboWindowStarted();
@@ -161,7 +153,6 @@ protected:
 
 	/**
 	 * Called when the combo window ends.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "ActorAction|ActionControl", meta = (BlueprintProtected))
 	void OnComboWindowEnded();
@@ -177,6 +168,22 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Notify_ActionEnd();
 
+	// Notify all machines about the action event start.
+	UFUNCTION(NetMulticast, Reliable)
+	void Notify_ActionEventStart();
+
+	// Notify all machines about the action event end.
+	UFUNCTION(NetMulticast, Reliable)
+	void Notify_ActionEventEnd();
+
+	// Notify all machines about the combo window start.
+	UFUNCTION(NetMulticast, Reliable)
+	void Notify_ComboWindowStart();
+
+	// Notify all machines about the combo window end.
+	UFUNCTION(NetMulticast, Reliable)
+	void Notify_ComboWindowEnd();
+
 	// Broadcast delegates.
 	void Broadcast_ActionStart();
 	void Broadcast_ActionEnd();
@@ -184,12 +191,12 @@ private:
 	/**
 	 * Whether the action event started.
 	 */
-	UPROPERTY(BlueprintGetter = GetEventStarted, Replicated)
+	UPROPERTY(BlueprintGetter = GetEventStarted)
 	bool bEventStarted = false;
 
 	/**
 	 * Whether the action combo window started.
 	 */
-	UPROPERTY(BlueprintGetter = GetComboWindowStarted, Replicated)
+	UPROPERTY(BlueprintGetter = GetComboWindowStarted)
 	bool bComboWindowStarted = false;
 };

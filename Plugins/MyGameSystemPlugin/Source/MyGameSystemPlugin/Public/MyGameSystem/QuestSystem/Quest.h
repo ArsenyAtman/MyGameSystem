@@ -143,7 +143,6 @@ protected:
 
 	/**
 	 * Called after the activation.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control", meta = (BlueprintProtected))
 	void OnQuestActivated();
@@ -151,7 +150,6 @@ protected:
 
 	/**
 	 * Called after the completion.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control", meta = (BlueprintProtected))
 	void OnQuestCompleted();
@@ -159,7 +157,6 @@ protected:
 
 	/**
 	 * Called after the failure.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Quest|Control", meta = (BlueprintProtected))
 	void OnQuestFailed();

@@ -90,30 +90,18 @@ void UStat::Changed_StatValues(FStatValues PrevValues)
 
 	if(PrevValues != CurrentValues)
 	{
-		if(HasAuthority())
-		{
-			ValuesChanged(PrevValues);
-		}
-
+		ValuesChanged(PrevValues);
 		Broadcast_OnValuesChanged(PrevValues);
 
 		if(CurrentValues.Value == CurrentValues.Min && (PrevValues.Value != CurrentValues.Value || PrevValues.Min != CurrentValues.Min))
 		{
-			if(HasAuthority())
-			{
-				MinReached(PrevValues);
-			}
-
+			MinReached(PrevValues);
 			Broadcast_OnMinReached(PrevValues);
 		}
 
 		if(CurrentValues.Value == CurrentValues.Max && (PrevValues.Value != CurrentValues.Value || PrevValues.Max != CurrentValues.Max))
 		{
-			if(HasAuthority())
-			{
-				MaxReached(PrevValues);
-			}
-			
+			MaxReached(PrevValues);
 			Broadcast_OnMaxReached(PrevValues);
 		}
 	}

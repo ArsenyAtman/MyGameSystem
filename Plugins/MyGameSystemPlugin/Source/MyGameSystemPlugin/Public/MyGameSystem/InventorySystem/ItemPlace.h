@@ -96,6 +96,13 @@ public:
 	bool GetIsInstancing() { return bIsInstancing; }
 
 	/**
+	 * Get is this place instanced now (visible in the world).
+	 * @return Is instanced.
+	 */
+	UFUNCTION(BlueprintGetter, Category = "ItemPlace|Items")
+	bool GetIsInstanced() { return bIsInstanced; }
+
+	/**
 	 * Set is this place instancing its subitems.
 	 * @param bNewIsInstancing - Is instancing.
 	 */
@@ -143,6 +150,13 @@ protected:
 	void ItemRemoved(AItem* Item);
 	virtual void ItemRemoved_Implementation(AItem* Item) { return; }
 
+	/**
+	 * Can this place instance its items.
+	 * @return Can instance.
+	 */
+	UFUNCTION(BlueprintPure, meta = (BlueprintProtected), Category = "ItemPLace|Instancing")
+	bool CanInstance() const { return bIsInstancing && bIsInstanced; }
+
 private:
 
 	/**
@@ -160,8 +174,14 @@ private:
 	/**
 	 * Is this place instancing its subitems.
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsInstancing, BlueprintSetter = SetIsInstancing, meta = (AllowPrivateAccess = true), Category = "ItemPlace|Items")
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetIsInstancing, BlueprintSetter = SetIsInstancing, meta = (AllowPrivateAccess = true), Category = "ItemPlace|Instancing")
 	bool bIsInstancing = true;
+
+	/**
+	 * Is this place instanced now (visible in the world).
+	 */
+	UPROPERTY(BlueprintGetter = GetIsInstanced, Category = "Item|Instancing")
+	bool bIsInstanced = true;
 
 	UFUNCTION()
 	void OnRep_Items(const TArray<AItem*>& PrevItems);

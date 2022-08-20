@@ -70,7 +70,6 @@ protected:
 
 	/**
 	 * Called once after the start of this condition.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Condition|Control", meta = (BlueprintProtected))
 	void ConditionStarted();
@@ -78,7 +77,6 @@ protected:
 
 	/**
 	 * Called once before the end of this condition.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Condition|Control", meta = (BlueprintProtected))
 	void ConditionEnded();

@@ -68,7 +68,7 @@ TArray<AItem*> UItemPlace::FindItemsByClass_Implementation(TSubclassOf<AItem> It
 
     for (AItem* Item : Items)
     {
-        if (IsValid(Item) && Item->GetClass()->IsChildOf(ItemClass))
+        if (IsValid(Item) && Item->IsA(ItemClass))
         {
             FoundItems.Add(Item);
         }
@@ -113,14 +113,12 @@ bool UItemPlace::CheckItemPossession_Implementation(AItem* Item) const
 
 void UItemPlace::SetIsInstanced_Implementation(bool bNewIsInstanced)
 {
-    if (bIsInstancing)
+    bIsInstanced = bNewIsInstanced;
+    for (AItem* Item : Items)
     {
-        for (AItem* Item : Items)
+        if (IsValid(Item))
         {
-            if (IsValid(Item))
-            {
-                IInstanceInterface::Execute_SetIsInstanced(Item, bNewIsInstanced);
-            }
+            IInstanceInterface::Execute_SetIsInstanced(Item, CanInstance());
         }
     }
 }
@@ -202,7 +200,7 @@ bool UItemPlace::PlaceItem(AItem* NewItem, FVector2D NewItemPosition)
         Items.Add(NewItem);
         NewItem->ChangePossession(FItemPossessionInfo(this, NewItemPosition));
 
-        IInstanceInterface::Execute_SetIsInstanced(NewItem, bIsInstancing);
+        IInstanceInterface::Execute_SetIsInstanced(NewItem, CanInstance());
 
         ItemPlaced(NewItem);
         Broadcast_ItemPlaced(NewItem);
@@ -243,7 +241,7 @@ void UItemPlace::SetIsInstancing(bool bNewIsInstancing)
 
     bIsInstancing = bNewIsInstancing;
 
-    IInstanceInterface::Execute_SetIsInstanced(this, bIsInstancing);
+    IInstanceInterface::Execute_SetIsInstanced(this, CanInstance());
 }
 
 FTransform UItemPlace::GetRelativeTransformForItem(AItem* Item)

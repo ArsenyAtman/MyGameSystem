@@ -105,7 +105,7 @@ TArray<UEffect*> UStatsComponent::GetEffectsOfClass(TSubclassOf<UEffect> EffectC
 	{
 		for (UEffect* Effect : GetEffects())
 		{
-			if (Effect->GetClass()->IsChildOf(EffectClass))
+			if (Effect->IsA(EffectClass))
 			{
 				FoundEffects.Add(Effect);
 			}
@@ -123,7 +123,7 @@ TArray<UStat*> UStatsComponent::GetStatsOfClass(TSubclassOf<UStat> StatClass) co
 	{
 		for (UStat* Stat : GetStats())
 		{
-			if (Stat->GetClass()->IsChildOf(StatClass))
+			if (Stat->IsA(StatClass))
 			{
 				FoundStats.Add(Stat);
 			}

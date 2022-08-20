@@ -25,8 +25,6 @@ void UQuest::Activate_Implementation()
 			ChangeActiveStage(InitialStageClass);
 			SetCondition(ETaskCondition::InProcess);
 		}
-
-		OnQuestActivated();
 	}
 }
 
@@ -99,7 +97,6 @@ void UQuest::Complete_Implementation()
 		{
 			SetIsBeingTracked(false);
 			SetCondition(ETaskCondition::Completed);
-			OnQuestCompleted();
 			GetOwningQuestComponent()->QuestCompleted(this);
 			if (IsValid(NextQuestIfCompleted))
 			{
@@ -117,7 +114,6 @@ void UQuest::Fail_Implementation()
 		{
 			SetIsBeingTracked(false);
 			SetCondition(ETaskCondition::Failed);
-			OnQuestFailed();
 			GetOwningQuestComponent()->QuestFailed(this);
 			if (IsValid(NextQuestIfFailed))
 			{
@@ -197,14 +193,17 @@ void UQuest::BroadcastChange_Condition()
 	switch(GetCondition())
 	{
 		case ETaskCondition::InProcess:
+			OnQuestActivated();
 			OnActivated.Broadcast(this);
 			break;
 
 		case ETaskCondition::Completed:
+			OnQuestCompleted();
 			OnCompleted.Broadcast(this);
 			break;
 
 		case ETaskCondition::Failed:
+			OnQuestFailed();
 			OnFailed.Broadcast(this);
 			break;
 	}

@@ -126,7 +126,6 @@ protected:
 	/**
 	 * Called after the values changed.
 	 * @param PrevValues - The previous values.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stat|Control", meta = (BlueprintProtected))
 	void ValuesChanged(FStatValues PrevValues);
@@ -135,7 +134,6 @@ protected:
 	/**
 	 * Called when the current value equals to the min value.
 	 * @param PrevValues - The previous values.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stat|Control", meta = (BlueprintProtected))
 	void MinReached(FStatValues PrevValues);
@@ -144,7 +142,6 @@ protected:
 	/**
 	 * Called when the current value equals to the max value.
 	 * @param PrevValues - The previous values.
-	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Stat|Control", meta = (BlueprintProtected))
 	void MaxReached(FStatValues PrevValues);

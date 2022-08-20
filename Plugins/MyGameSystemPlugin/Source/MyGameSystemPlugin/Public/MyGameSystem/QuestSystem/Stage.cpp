@@ -20,7 +20,6 @@ void UStage::Activate_Implementation()
 	{
 		ActivateObjectives();
 		SetCondition(ETaskCondition::InProcess);
-		OnStageActivated();
 	}
 }
 
@@ -93,7 +92,6 @@ void UStage::Complete_Implementation(TSubclassOf<UStage> NextStage)
 		{
 			AbortAllObjectives();
 			SetCondition(ETaskCondition::Completed);
-			OnStageCompleted();
 			GetOwningQuest()->StagePassed(this, NextStage);
 		}
 	}
@@ -107,7 +105,6 @@ void UStage::Fail_Implementation(TSubclassOf<UStage> NextStage)
 		{
 			AbortAllObjectives();
 			SetCondition(ETaskCondition::Failed);
-			OnStageFailed();
 			GetOwningQuest()->StagePassed(this, NextStage);
 		}
 	}
@@ -184,14 +181,17 @@ void UStage::BroadcastChange_Condition()
 	switch(GetCondition())
 	{
 		case ETaskCondition::InProcess:
+			OnStageActivated();
 			OnActivated.Broadcast(this);
 			break;
 
 		case ETaskCondition::Completed:
+			OnStageCompleted();
 			OnCompleted.Broadcast(this);
 			break;
 
 		case ETaskCondition::Failed:
+			OnStageFailed();
 			OnFailed.Broadcast(this);
 			break;
 	}

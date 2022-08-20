@@ -7,14 +7,14 @@ This project is a set of different systems, that can be handy in game developmen
 The main goal of this projet is to develop simple and universal systems for creating different games. All systems must be universal, reusable, convenient for the end-user, and support the Unreal Engine networking system. 
  
 Below is a list of all systems, that are ready at the moment (20 Aug 2022): 
-- Action system 
-- Condition system 
-- Dialog system 
-- Interaction system 
-- Quest system 
-- Stats system 
+- Action system
+- Condition system
+- Dialog system
+- Interaction system
+- Quest system
+- Stats system
 - Advanced object
-- Inventory system 
+- Inventory system
  
 Systems, that are in a process of development/reworking: 
 - Save-load system 

@@ -8,58 +8,64 @@
 
 void UActorAction_MontageDriven::OnActionStarted_Implementation()
 {
-	// If the controlled actor is valid and has a montage player...
-	AActor* ControlledActor = GetControlledActor();
-	if (IsValid(ControlledActor) && ControlledActor->Implements<UMontagePlayableActorInterface>())
+	if (HasAuthority())
 	{
-		UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(ControlledActor);
-		if (IsValid(MontagePlayer))
+		// If the controlled actor is valid and has a montage player...
+		AActor* ControlledActor = GetControlledActor();
+		if (IsValid(ControlledActor) && ControlledActor->Implements<UMontagePlayableActorInterface>())
 		{
-			// And if the animation montage to play is valid...
-			PlayingAnimMontage = GetAnimationMontageToPlay();
-			if (IsValid(PlayingAnimMontage))
+			UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(ControlledActor);
+			if (IsValid(MontagePlayer))
 			{
-				// than play this animation on the montage player
-				PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(PlayingAnimMontage);
-				// and bind the AnimationPlayed function.
-				PlayingAnimInstance->OnMontageEnded.AddDynamic(this, &UActorAction_MontageDriven::AnimationPlayed);
+				// And if the animation montage to play is valid...
+				PlayingAnimMontage = GetAnimationMontageToPlay();
+				if (IsValid(PlayingAnimMontage))
+				{
+					// than play this animation on the montage player
+					PlayingAnimInstance = MontagePlayer->PlayAnimationMontageReplicated(PlayingAnimMontage);
+					// and bind the AnimationPlayed function.
+					PlayingAnimInstance->OnMontageEnded.AddDynamic(this, &UActorAction_MontageDriven::AnimationPlayed);
 
-				return;
+					return;
+				}
 			}
 		}
-	}
 
-	// Else end this action.
-	EndAction();
+		// Else end this action.
+		EndAction();
+	}
 }
 
 void UActorAction_MontageDriven::OnActionEnded_Implementation()
 {
-	// If the anim instance is valid...
-	if (IsValid(PlayingAnimInstance))
+	if (HasAuthority())
 	{
-		// than unbind the AnimationPlayed function.
-		PlayingAnimInstance->OnMontageEnded.RemoveDynamic(this, &UActorAction_MontageDriven::AnimationPlayed);
-
-		// If the playing montage and montage player are valid...
-		if (IsValid(PlayingAnimMontage))
+		// If the anim instance is valid...
+		if (IsValid(PlayingAnimInstance))
 		{
-			AActor* ControlledActor = GetControlledActor();
-			if (IsValid(ControlledActor) && ControlledActor->Implements<UMontagePlayableActorInterface>())
+			// than unbind the AnimationPlayed function.
+			PlayingAnimInstance->OnMontageEnded.RemoveDynamic(this, &UActorAction_MontageDriven::AnimationPlayed);
+
+			// If the playing montage and montage player are valid...
+			if (IsValid(PlayingAnimMontage))
 			{
-				UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(ControlledActor);
-				if (IsValid(MontagePlayer))
+				AActor* ControlledActor = GetControlledActor();
+				if (IsValid(ControlledActor) && ControlledActor->Implements<UMontagePlayableActorInterface>())
 				{
-					// than stop the animation.
-					MontagePlayer->StopAnimationMontage(PlayingAnimMontage);
+					UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(ControlledActor);
+					if (IsValid(MontagePlayer))
+					{
+						// than stop the animation.
+						MontagePlayer->StopAnimationMontage(PlayingAnimMontage);
+					}
 				}
 			}
 		}
-	}
 
-	// Clean up the pointers.
-	PlayingAnimMontage = nullptr;
-	PlayingAnimInstance = nullptr;
+		// Clean up the pointers.
+		PlayingAnimMontage = nullptr;
+		PlayingAnimInstance = nullptr;
+	}
 }
 
 void UActorAction_MontageDriven::AnimationPlayed(UAnimMontage* AnimMontage, bool bInterrupted)

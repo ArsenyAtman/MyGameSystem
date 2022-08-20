@@ -131,24 +131,22 @@ AStackableItem* AStackableItem::Split(int32 CountToTake)
 
 void AStackableItem::SetCountInStack(int32 NewCountInStack)
 {
-    if(HasAuthority() == false)
+    if(HasAuthority())
     {
-        return;
+        int32 PrevCountInStack = GetCountInStack();
+        CountInStack = NewCountInStack;
+        CountInStackChanged(GetCountInStack(), PrevCountInStack);
+        Broadcast_CountInStackChanged(PrevCountInStack);
     }
-
-    int32 PrevCountInStack = GetCountInStack();
-    CountInStack = NewCountInStack;
-    CountInStackChanged(GetCountInStack(), PrevCountInStack);
-    Broadcast_CountInStackChanged(PrevCountInStack);
 }
 
 void AStackableItem::OnRep_CountInStack(int32 PrevCountInStack)
 {
+    CountInStackChanged(GetCountInStack(), PrevCountInStack);
     Broadcast_CountInStackChanged(PrevCountInStack);
 }
 
 void AStackableItem::Broadcast_CountInStackChanged(int32 PrevCountInStack)
 {
-    CountInStackChanged(GetCountInStack(), PrevCountInStack);
     OnCountInStackChanged.Broadcast(this, GetCountInStack(), PrevCountInStack);
 }

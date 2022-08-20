@@ -10,7 +10,7 @@
 	"DocsURL": "https://github.com/ArsenyAtman/ReplicableUObject",
 	"MarketplaceURL": "",
 	"SupportURL": "https://github.com/ArsenyAtman/ReplicableUObject/issues",
-	"CanContainContent": false,
+	"CanContainContent": true,
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,

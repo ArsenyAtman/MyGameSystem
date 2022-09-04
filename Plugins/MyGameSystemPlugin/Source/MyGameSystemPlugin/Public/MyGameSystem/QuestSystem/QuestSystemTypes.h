@@ -16,23 +16,3 @@ enum class ETaskCondition : uint8
 	Failed		UMETA(DisplayName = "Failed"),
 	Aborted		UMETA(DisplayName = "Aborted")
 };
-
-/**
- * Structure for related actors of an objective.
- */
-USTRUCT(BlueprintType, Blueprintable)
-struct FReferencesForQuest
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<class AActor*> RelatedActors;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<class AActor*> ActorsToMark;
-
-	FReferencesForQuest()
-	{
-		// ...
-	}
-};

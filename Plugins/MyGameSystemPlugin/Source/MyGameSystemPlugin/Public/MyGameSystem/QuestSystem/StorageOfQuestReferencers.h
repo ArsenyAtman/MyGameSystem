@@ -4,21 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "QuestSystemTypes.h"
-#include "QuestActorsReferencer.generated.h"
+#include "StorageOfQuestReferencers.generated.h"
 
-/**
- * Actor to refer actors for quests from a level.
- */
+class UObjective;
+class UQuestReferencer;
+
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEMPLUGIN_API AQuestActorsReferencer : public AActor
+class MYGAMESYSTEMPLUGIN_API AStorageOfQuestReferencers : public AActor
 {
 	GENERATED_BODY()
 	
 public:
 
 	// Sets default values for this actor's properties
-	AQuestActorsReferencer();
+	AStorageOfQuestReferencers();
 
 	/**
 	 * Get actors of an objective from a level.
@@ -26,7 +25,7 @@ public:
 	 * @return Referenced actors.
 	 */
 	UFUNCTION(BlueprintPure, Category = "QuestActorsReferencer")
-	FReferencesForQuest GetReferencesForQuest(TSubclassOf<class UObjective> ObjectiveClass) const;
+	UQuestReferencer* GetReferencesForQuest(TSubclassOf<UObjective> ObjectiveClass) const;
 
 protected:
 
@@ -35,8 +34,9 @@ protected:
 private:
 
 	/**
-	 * Map for binding actors and quests.
+	 * Map for binding references and quests.
 	 */
-	UPROPERTY(EditAnywhere)
-	TMap<TSubclassOf<class UObjective>, FReferencesForQuest> ReferencesForQuests;
+	UPROPERTY(EditAnywhere, Instanced)
+	TMap<TSubclassOf<class UObjective>, UQuestReferencer*> ReferencesForQuests;
+
 };

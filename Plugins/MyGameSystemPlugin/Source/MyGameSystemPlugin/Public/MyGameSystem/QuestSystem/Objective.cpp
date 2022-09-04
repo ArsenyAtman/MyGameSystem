@@ -8,7 +8,8 @@
 #include "QuestComponent.h"
 #include "MarkersManagerComponent.h"
 #include "ActorWithQuestsInterface.h"
-#include "QuestActorsReferencer.h"
+#include "StorageOfQuestReferencers.h"
+#include "QuestReferencer.h"
 #include "Net/UnrealNetwork.h"
 
 void UObjective::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -47,7 +48,7 @@ void UObjective::Mark()
 	{
 		if(IsValid(MarkersManager))
 		{
-			MarkersManager->MarkActors(FilterActorsForMarking(ReferencesForQuest.ActorsToMark));
+			MarkersManager->MarkActors(GetActorsForMarking());
 		}
 	}
 }
@@ -72,9 +73,9 @@ void UObjective::Update_Implementation()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
+		Notify_OnUpdated();
 		Unmark();
 		Mark();
-		Notify_OnUpdated();
 	}
 }
 
@@ -124,21 +125,21 @@ void UObjective::Fail_Implementation()
 	}
 }
 
-FReferencesForQuest UObjective::FindReferencesForQuest() const
+UQuestReferencer* UObjective::FindReferencesForQuest() const
 {
 	TArray<AActor*> FoundReferencers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AQuestActorsReferencer::StaticClass(), FoundReferencers);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStorageOfQuestReferencers::StaticClass(), FoundReferencers);
 
 	for (AActor* ReferencerActor : FoundReferencers)
 	{
-		AQuestActorsReferencer* Referencer = Cast<AQuestActorsReferencer>(ReferencerActor);
-		if (IsValid(Referencer))
+		AStorageOfQuestReferencers* StorageOfReferencers = Cast<AStorageOfQuestReferencers>(ReferencerActor);
+		if (IsValid(StorageOfReferencers))
 		{
-			return Referencer->GetReferencesForQuest(this->GetClass());
+			return StorageOfReferencers->GetReferencesForQuest(this->GetClass());
 		}
 	}
 
-	return FReferencesForQuest();
+	return nullptr;
 }
 
 UMarkersManagerComponent* UObjective::CreateMarkersManager() const

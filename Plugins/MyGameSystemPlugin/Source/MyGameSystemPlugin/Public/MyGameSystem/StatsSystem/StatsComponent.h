@@ -17,6 +17,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatComponentEffectDelegate, class 
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStatComponentStatDelegate, class UStat*, Stat);
 
+// TODO: Create a base class named EffectsComponent.
+
 /**
  * ActorComponent that handles effects and stats.
  */
@@ -31,6 +33,8 @@ public:
 
 	// Override for replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	// TODO: Resolve naming of activation/deactivation methods.
 
 	/**
 	 * Apply a new effect.
@@ -149,6 +153,8 @@ protected:
 	// ...
 
 private:
+
+	// TODO: Access stats via TMap.
 
 	/**
 	 * Stats of this component.

@@ -60,6 +60,8 @@ protected:
 
 private:
 
+	// TODO: Remove duplicating stats.
+
 	// Add related stats to the provided array.
 	void AddRelatedStatByName(TArray<class UStat*>& RelatedStats, FName Name) const;
 	void AddRelatedStatsByClass(TArray<class UStat*>& RelatedStats, TSubclassOf<class UStat> Class) const;

@@ -7,6 +7,8 @@
 #include "QuestSystemTypes.h"
 #include "Objective.generated.h"
 
+class UQuestReferencer;
+
 /**
  * Delegate for handling changes of an objective.
  */
@@ -182,20 +184,19 @@ protected:
 	virtual void OnObjectiveFailed_Implementation() { return; }
 
 	/**
-	 * Filter actors for marking as objectives.
-	 * @param ActorsToMark - Source list of actors to filter.
-	 * @return Filtered list of actors.
+	 * Get actors for marking as objectives.
+	 * @return List of actors to mark.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Objective|RelatedActors", meta = (BlueprintProtected))
-	TArray<class AActor*> FilterActorsForMarking(const TArray<class AActor*>& ActorsToMark) const;
-	virtual TArray<class AActor*> FilterActorsForMarking_Implementation(const TArray<class AActor*>& ActorsToMark) const { return ActorsToMark; }
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "Objective|RelatedActors", meta = (BlueprintProtected))
+	TArray<class AActor*> GetActorsForMarking() const;
+	virtual TArray<class AActor*> GetActorsForMarking_Implementation() const { return TArray<class AActor*>(); }
 
 	/**
 	 * Get related actors for this objective.
 	 * @return References for this objective.
 	 */
 	UFUNCTION(BlueprintGetter, Category = "Objective|RelatedActors", meta = (BlueprintProtected))
-	FReferencesForQuest GetReferencesForQuest() const { return ReferencesForQuest; }
+	UQuestReferencer* GetReferencesForQuest() const { return ReferencesForQuest; }
 
 private:
 
@@ -206,7 +207,7 @@ private:
 	bool bIsOptional = false;
 
 	// Get all related actors to this objective.
-	FReferencesForQuest FindReferencesForQuest() const;
+	UQuestReferencer* FindReferencesForQuest() const;
 
 	// Instance a markers manager.
 	class UMarkersManagerComponent* CreateMarkersManager() const;
@@ -231,7 +232,7 @@ private:
 	 * Related actors to this objective.
 	 */
 	UPROPERTY(BlueprintGetter = GetReferencesForQuest, Replicated)
-	FReferencesForQuest ReferencesForQuest;
+	UQuestReferencer* ReferencesForQuest;
 
 	// MarkersManager object.
 	UPROPERTY()

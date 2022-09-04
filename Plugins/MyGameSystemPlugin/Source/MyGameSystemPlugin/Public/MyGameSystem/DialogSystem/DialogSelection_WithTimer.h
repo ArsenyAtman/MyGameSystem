@@ -21,6 +21,8 @@ public:
     UFUNCTION(BlueprintGetter, Category = "DialogSelection_WithTimer|Timer")
     float GetInitialTime() const {return InitialTime;}
 
+    // TODO: Get time elapsed.
+
 protected:
 
     // Override for the timer setup.

@@ -45,6 +45,8 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "DialogComponent|Control")
 	void SelectNextDialogUnit(TSubclassOf<class UDialogUnit> NextDialogUnit);
 
+	// TODO: Skip current dialog cue.
+
 	/**
 	 * Notify about a dialog start, that involves this component.
 	 * @param NewDialog - The dialog that has started.
@@ -149,5 +151,7 @@ private:
 	// Notes for dialogs.
 	UPROPERTY(BlueprintGetter = GetNotes, Category = "DialogComponent|Notes")
 	TArray<FString> Notepad;
+
+	// TODO: Store fired cues.
 	
 };

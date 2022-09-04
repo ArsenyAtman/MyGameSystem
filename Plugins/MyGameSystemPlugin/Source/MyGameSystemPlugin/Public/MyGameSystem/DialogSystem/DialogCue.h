@@ -26,6 +26,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
 
+	// TODO: Skip this dialog cue.
+
+	// TODO: bWasFired.
+
 protected:
 
 	/**

@@ -26,15 +26,13 @@ public:
 	// Override for replication.
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-// TODO: Resolve naming of activation/deactivation methods.
-
 	/**
 	 * Apply a new effect.
 	 * @param Effect - The new effect.
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EffectsComponent|Control")
-	void ApplyEffect(class UEffect* Effect);
+	void AddEffect(class UEffect* Effect);
 
 	/**
 	 * Abort(stop/remove) an applied effect.
@@ -42,7 +40,7 @@ public:
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EffectsComponent|Control")
-	void AbortEffect(class UEffect* Effect);
+	void RemoveEffect(class UEffect* Effect);
 
 	/**
 	 * Add an activated effect.
@@ -50,7 +48,7 @@ public:
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EffectsComponent|Internal")
-	void AddEffect(class UEffect* Effect);
+	void EffectAdded(class UEffect* Effect);
 
 	/**
 	 * Remove a deactivated effect.
@@ -58,7 +56,7 @@ public:
 	 * @warning Use this function only if you know what you are doing!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EffectsComponent|Internal")
-	void RemoveEffect(class UEffect* Effect);
+	void EffectRemoved(class UEffect* Effect);
 
 	/**
 	 * Get all applied effects to this component.

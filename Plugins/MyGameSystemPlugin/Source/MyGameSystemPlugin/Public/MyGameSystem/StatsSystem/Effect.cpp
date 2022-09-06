@@ -18,7 +18,7 @@ void UEffect::Activate()
 	{
 		if (IsValid(GetRelatedEffectsComponent()))
 		{
-			GetRelatedEffectsComponent()->AddEffect(this);
+			GetRelatedEffectsComponent()->EffectAdded(this);
 
 			Notify_OnActivated();
 		}
@@ -33,7 +33,7 @@ void UEffect::Deactivate()
 		{
 			Notify_OnDeactivating();
 
-			GetRelatedEffectsComponent()->RemoveEffect(this);
+			GetRelatedEffectsComponent()->EffectRemoved(this);
 		}
 
 		this->Destroy();

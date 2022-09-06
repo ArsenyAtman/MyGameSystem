@@ -20,7 +20,7 @@ void UEffectsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(UEffectsComponent, Effects);
 }
 
-void UEffectsComponent::ApplyEffect(UEffect* Effect)
+void UEffectsComponent::AddEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
@@ -32,7 +32,7 @@ void UEffectsComponent::ApplyEffect(UEffect* Effect)
 	}
 }
 
-void UEffectsComponent::AbortEffect(UEffect* Effect)
+void UEffectsComponent::RemoveEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
@@ -43,7 +43,7 @@ void UEffectsComponent::AbortEffect(UEffect* Effect)
 	}
 }
 
-void UEffectsComponent::AddEffect(UEffect* Effect)
+void UEffectsComponent::EffectAdded(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
@@ -55,7 +55,7 @@ void UEffectsComponent::AddEffect(UEffect* Effect)
 	}
 }
 
-void UEffectsComponent::RemoveEffect(UEffect* Effect)
+void UEffectsComponent::EffectRemoved(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{

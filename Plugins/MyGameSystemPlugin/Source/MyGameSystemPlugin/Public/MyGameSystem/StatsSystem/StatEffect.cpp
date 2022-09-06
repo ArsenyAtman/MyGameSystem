@@ -31,6 +31,11 @@ TArray<UStat*> UStatEffect::GetRelatedStats() const
 	return RelatedStats;
 }
 
+UStatsComponent* UStatEffect::GetRelatedStatsComponent() const
+{
+	return Cast<UStatsComponent>(GetRelatedEffectsComponent());
+}
+
 void UStatEffect::OnActivated_Implementation()
 {
 	Super::OnActivated_Implementation();
@@ -59,14 +64,20 @@ void UStatEffect::OnDeactivating_Implementation()
 
 void UStatEffect::AddRelatedStatByName(TArray<UStat*>& RelatedStats, FName Name) const
 {
-	UStat* FoundStat = GetRelatedStatsComponent()->GetStatByName(Name);
-	if(IsValid(FoundStat))
+	if (IsValid(GetRelatedStatsComponent()))
 	{
-		RelatedStats.Add(FoundStat);
+		UStat* FoundStat = GetRelatedStatsComponent()->GetStatByName(Name);
+		if(IsValid(FoundStat))
+		{
+			RelatedStats.Add(FoundStat);
+		}
 	}
 }
 
 void UStatEffect::AddRelatedStatsByClass(TArray<UStat*>& RelatedStats, TSubclassOf<UStat> Class) const
 {
-	RelatedStats.Append(GetRelatedStatsComponent()->GetStatsOfClass(Class));
+	if (IsValid(GetRelatedStatsComponent()))
+	{
+		RelatedStats.Append(GetRelatedStatsComponent()->GetStatsOfClass(Class));
+	}
 }

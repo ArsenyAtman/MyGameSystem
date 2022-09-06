@@ -31,6 +31,13 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "StatEffect|RelatedStats")
 	TArray<class UStat*> GetRelatedStats() const;
+
+	/**
+	 * Gets the StatsComponent related to this effect.
+	 * @return Related stats component.
+	 */
+	UFUNCTION(BlueprintPure, Category = "StatEffect|RelatedStatsComponent")
+	class UStatsComponent* GetRelatedStatsComponent() const;
 	
 protected:
 

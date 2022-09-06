@@ -20,8 +20,9 @@ TArray<UStat*> UStatEffect::GetRelatedStats() const
 			break;
 
 		case ERelatedStatsSearchType::SearchByNameAndByClass:
-			AddRelatedStatByName(RelatedStats, ForStatOfName);
+			// Order matters!!!
 			AddRelatedStatsByClass(RelatedStats, ForStatsOfClass);
+			AddRelatedStatByName(RelatedStats, ForStatOfName);
 			break;
 
 		default:
@@ -69,7 +70,7 @@ void UStatEffect::AddRelatedStatByName(TArray<UStat*>& RelatedStats, FName Name)
 		UStat* FoundStat = GetRelatedStatsComponent()->GetStatByName(Name);
 		if(IsValid(FoundStat))
 		{
-			RelatedStats.Add(FoundStat);
+			RelatedStats.AddUnique(FoundStat);
 		}
 	}
 }

@@ -17,9 +17,13 @@ bool UStatsComponent::AddStat(UStat* NewStat)
 	if(IsValid(NewStat))
 	{
 		NewStat->ChangeOuter(this);
-		Stats.Add(NewStat);
-		Broadcast_OnStatAdded(NewStat);
-		return true;
+		int32 Result = Stats.AddUnique(NewStat);
+		if (Result != INDEX_NONE)
+		{
+			Broadcast_OnStatAdded(NewStat);
+			
+			return true;
+		}
 	}
 
 	return false;
@@ -27,10 +31,11 @@ bool UStatsComponent::AddStat(UStat* NewStat)
 
 bool UStatsComponent::RemoveStat(UStat* Stat)
 {
-	if(Stats.Find(Stat) != INDEX_NONE)
+	int32 Result = Stats.Remove(Stat);
+	if (Result > 0)
 	{
-		Stats.Remove(Stat);
 		Broadcast_OnStatRemoved(Stat);
+
 		return true;
 	}
 

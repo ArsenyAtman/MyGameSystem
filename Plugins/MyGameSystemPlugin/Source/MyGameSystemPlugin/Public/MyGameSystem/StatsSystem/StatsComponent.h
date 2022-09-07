@@ -84,8 +84,6 @@ protected:
 
 private:
 
-	// TODO: Access stats via TMap.
-
 	/**
 	 * Stats of this component.
 	 */

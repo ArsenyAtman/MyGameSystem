@@ -32,7 +32,7 @@ public:
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EffectsComponent|Control")
-	void AddEffect(class UEffect* Effect);
+	bool AddEffect(class UEffect* Effect);
 
 	/**
 	 * Abort(stop/remove) an applied effect.
@@ -40,7 +40,7 @@ public:
 	 * @warning Server-only!
 	 */
 	UFUNCTION(BlueprintCallable, Category = "EffectsComponent|Control")
-	void RemoveEffect(class UEffect* Effect);
+	bool RemoveEffect(class UEffect* Effect);
 
 	/**
 	 * Add an activated effect.

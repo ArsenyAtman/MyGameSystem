@@ -6,14 +6,6 @@
 #include "Effect.h"
 #include "StatEffect.generated.h"
 
-UENUM(BlueprintType)
-enum class ERelatedStatsSearchType : uint8
-{
-	SearchByNameOnly			UMETA(DisplayName = "SearchByNameOnly"),
-	SearchByClassOnly			UMETA(DisplayName = "SearchByClassOnly"),
-	SearchByNameAndByClass		UMETA(DisplayName = "SearchByNameAndByClass")
-};
-
 /**
  * Effect that applies to a Stat.
  * @see UStat class.
@@ -29,8 +21,8 @@ public:
 	 * Getter for related stats of this effect.
 	 * @return Related stats.
 	 */
-	UFUNCTION(BlueprintPure, Category = "StatEffect|RelatedStats")
-	TArray<class UStat*> GetRelatedStats() const;
+	UFUNCTION(BlueprintGetter, Category = "StatEffect|RelatedStats")
+	TArray<class UStat*> GetRelatedStats() const { return RelatedStats; }
 
 	/**
 	 * Gets the StatsComponent related to this effect.
@@ -48,29 +40,25 @@ protected:
 	virtual void OnDeactivating_Implementation() override;
 
 	/**
-	 * Define the search method for related stats.
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StatEffect|RelatedStats", meta = (ExposeOnSpawn = true, BlueprintProtected))
-	ERelatedStatsSearchType RelatedStatsSearchType = ERelatedStatsSearchType::SearchByNameAndByClass;
-
-	/**
 	 * Class of stats affected by this effect.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StatEffect|RelatedStats", meta = (ExposeOnSpawn = true, BlueprintProtected))
 	TSubclassOf<class UStat> ForStatsOfClass;
 
-	/**
-	 * Name of a stat affected by this effect.
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StatEffect|RelatedStats", meta = (ExposeOnSpawn = true, BlueprintProtected))
-	FName ForStatOfName;
-
 private:
 
-	// TODO: Remove duplicating stats.
+	/**
+	 * Related stats to this effect.
+	 */
+	UPROPERTY(BlueprintGetter = GetRelatedStats)
+	TArray<UStat*> RelatedStats;
 
-	// Add related stats to the provided array.
-	void AddRelatedStatByName(TArray<class UStat*>& RelatedStats, FName Name) const;
-	void AddRelatedStatsByClass(TArray<class UStat*>& RelatedStats, TSubclassOf<class UStat> Class) const;
+	// Called when a stat added to the owning stats component.
+	UFUNCTION()
+	void OnStatAdded(class UStat* Stat);
+
+	// Called when a stat removed from the owning stats component.
+	UFUNCTION()
+	void OnStatRemoved(class UStat* Stat);
 
 };

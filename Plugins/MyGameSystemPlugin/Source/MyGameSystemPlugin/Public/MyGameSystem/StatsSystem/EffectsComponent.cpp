@@ -20,27 +20,35 @@ void UEffectsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(UEffectsComponent, Effects);
 }
 
-void UEffectsComponent::AddEffect(UEffect* Effect)
+bool UEffectsComponent::AddEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(Effect))
+		if (IsValid(Effect) && Effects.Find(Effect) == INDEX_NONE)
 		{
 			Effect->ChangeOuter(this);
 			Effect->Activate();
+
+			return true;
 		}
 	}
+
+	return false;
 }
 
-void UEffectsComponent::RemoveEffect(UEffect* Effect)
+bool UEffectsComponent::RemoveEffect(UEffect* Effect)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
 		if (IsValid(Effect) && Effect->GetRelatedEffectsComponent() == this)
 		{
 			Effect->Deactivate();
+			
+			return true;
 		}
 	}
+
+	return false;
 }
 
 void UEffectsComponent::EffectAdded(UEffect* Effect)

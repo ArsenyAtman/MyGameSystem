@@ -16,9 +16,9 @@ void UEffect::Activate()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(GetRelatedStatsComponent()))
+		if (IsValid(GetRelatedEffectsComponent()))
 		{
-			GetRelatedStatsComponent()->AddEffect(this);
+			GetRelatedEffectsComponent()->EffectAdded(this);
 
 			Notify_OnActivated();
 		}
@@ -29,22 +29,22 @@ void UEffect::Deactivate()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(GetRelatedStatsComponent()))
+		if (IsValid(GetRelatedEffectsComponent()))
 		{
 			Notify_OnDeactivating();
 
-			GetRelatedStatsComponent()->RemoveEffect(this);
+			GetRelatedEffectsComponent()->EffectRemoved(this);
 		}
 
 		this->Destroy();
 	}
 }
 
-UStatsComponent* UEffect::GetRelatedStatsComponent() const
+UEffectsComponent* UEffect::GetRelatedEffectsComponent() const
 {
 	if (IsValid(GetOuter()))
 	{
-		return Cast<UStatsComponent>(GetOuter());
+		return Cast<UEffectsComponent>(GetOuter());
 	}
 	
 	return nullptr;
@@ -52,9 +52,9 @@ UStatsComponent* UEffect::GetRelatedStatsComponent() const
 
 AActor* UEffect::GetRelatedActor() const
 {
-	if (IsValid(GetRelatedStatsComponent()))
+	if (IsValid(GetRelatedEffectsComponent()))
 	{
-		return GetRelatedStatsComponent()->GetOwner();
+		return GetRelatedEffectsComponent()->GetOwner();
 	}
 	
 	return nullptr;

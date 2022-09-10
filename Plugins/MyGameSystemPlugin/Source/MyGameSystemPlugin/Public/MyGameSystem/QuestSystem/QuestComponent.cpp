@@ -54,7 +54,7 @@ void UQuestComponent::AddQuestObject(UQuest* Quest)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (IsValid(Quest))
+		if (IsValid(Quest) && GetAllQuests().Find(Quest) == INDEX_NONE)
 		{
 			ActiveQuests.Add(Quest);
 			Quest->Activate();

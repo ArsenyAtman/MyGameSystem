@@ -30,6 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue_AnimationAndSound|Internal")
 	void StartAnimation();
 
+	// Skip this cue override.
+	virtual void Skip_Implementation() override;
+
 protected:
 
 	virtual void OnCueBeginned_Implementation() override;

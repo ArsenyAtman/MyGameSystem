@@ -45,7 +45,12 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "DialogComponent|Control")
 	void SelectNextDialogUnit(TSubclassOf<class UDialogUnit> NextDialogUnit);
 
-	// TODO: Skip current dialog cue.
+	/**
+	 * Skip the current dialog cue.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "DialogComponent|Control")
+	void SkipCurrentDialogCue();
 
 	/**
 	 * Notify about a dialog start, that involves this component.

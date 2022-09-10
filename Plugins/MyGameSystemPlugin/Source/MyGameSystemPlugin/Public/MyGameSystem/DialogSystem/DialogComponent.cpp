@@ -56,6 +56,18 @@ void UDialogComponent::SelectNextDialogUnit_Implementation(TSubclassOf<UDialogUn
 	}
 }
 
+void UDialogComponent::SkipCurrentDialogCue_Implementation()
+{
+	if (GetOwnerRole() == ENetRole::ROLE_Authority && IsValid(GetCurrentDialog()))
+	{
+		UDialogCue* CurrentDialogCue = Cast<UDialogCue>(GetCurrentDialog()->GetCurrentDialogUnit());
+		if(IsValid(CurrentDialogCue))
+		{
+			CurrentDialogCue->Skip();
+		}
+	}
+}
+
 void UDialogComponent::DialogStarted(UDialog* NewDialog)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)

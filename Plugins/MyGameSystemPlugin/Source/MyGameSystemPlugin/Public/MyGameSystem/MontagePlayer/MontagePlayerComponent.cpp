@@ -61,7 +61,7 @@ void UMontagePlayerComponent::PlayAnimationMontageOnClients_Implementation(UAnim
 	}
 }
 
-void UMontagePlayerComponent::StopAnimationMontage_Implementation(class UAnimMontage* Montage)
+void UMontagePlayerComponent::StopAnimationMontageReplicated_Implementation(class UAnimMontage* Montage)
 {
 	// If the Montage is valid ...
 	if (IsValid(Montage))

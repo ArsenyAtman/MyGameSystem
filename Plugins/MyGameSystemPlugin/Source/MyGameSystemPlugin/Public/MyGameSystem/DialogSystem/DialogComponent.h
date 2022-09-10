@@ -10,7 +10,7 @@
 /**
  * Delegate for handling changes of a dialog.
  */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogComponentConditionChangeDelegate, class UDialog*, Dialog);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDialogComponentCurrentDialogChangeDelegate, class UDialog*, NewDialog, class UDialog*, PrevDialog);
 
 /**
  * ActorComponent that handles dialogs.
@@ -71,18 +71,12 @@ public:
 	class UDialog* GetCurrentDialog() const { return CurrentDialog; }
 
 	/**
-	 * Get the dialog class to start with.
-	 * @return The dialog class to start with.
+	 * Set a new dialog to handle.
+	 * @param NewDialog - The new dialog.
+	 * @warning Use this function only if you know what you are doing!
 	 */
-	UFUNCTION(BlueprintGetter, Category = "DialogComponent|Dialog")
-	TSubclassOf<UDialog> GetDialogClass() const { return DialogClass; }
-
-	/**
-	 * Set a new dialog class to start with and handle.
-	 * @param NewDialogClass - The new dialog class to start with.
-	 */
-	UFUNCTION(BlueprintSetter, Category = "DialogComponent|Dialog")
-	void SetDialogClass(TSubclassOf<UDialog> NewDialogClass) { DialogClass = NewDialogClass; }
+	UFUNCTION(BlueprintCallable, Category = "DialogComponent|Dialog")
+	bool SetCurrentDialog(class UDialog* NewDialog);
 
 	/**
 	 * Add a note to the notepad of this dialog component.
@@ -106,39 +100,17 @@ public:
 	TArray<FString> GetNotes() const { return Notepad; }
 
 	/**
-	 * Called after the current dialog has started.
+	 * Called after the current dialog has changed.
 	 */
 	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
-	FDialogComponentConditionChangeDelegate OnDialogStarted;
-
-	/**
-	 * Called after the current dialog has ended.
-	 */
-	UPROPERTY(BlueprintAssignable, Category = "DialogComponent|Delegates")
-	FDialogComponentConditionChangeDelegate OnDialogEnded;
-
-protected:
-
-	/**
-	 * Set a new dialog to handle.
-	 * @param NewDialog - The new dialog.
-	 * @warning Use this function only if you know what you are doing!
-	 */
-	UFUNCTION(BlueprintSetter, Category = "DialogComponent|Internal", meta = (BlueprintProtected))
-	void SetCurrentDialog(class UDialog* NewDialog);
+	FDialogComponentCurrentDialogChangeDelegate OnDialogChanged;
 
 private:
 
 	/**
-	 * The dialog class to start and process.
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetDialogClass, BlueprintSetter = SetDialogClass, Category = "DialogComponent|Dialog", meta = (AllowPrivateAccess = true))
-	TSubclassOf<UDialog> DialogClass;
-
-	/**
 	 * The current dilaog to process.
 	 */
-	UPROPERTY(BlueprintGetter = GetCurrentDialog, BlueprintSetter = SetCurrentDialog, ReplicatedUsing = OnRep_CurrentDialog);
+	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintGetter = GetCurrentDialog, ReplicatedUsing = OnRep_CurrentDialog);
 	class UDialog* CurrentDialog;
 
 	// OnRep event of CurrentDialog.
@@ -151,7 +123,5 @@ private:
 	// Notes for dialogs.
 	UPROPERTY(BlueprintGetter = GetNotes, Category = "DialogComponent|Notes")
 	TArray<FString> Notepad;
-
-	// TODO: Store fired cues.
 	
 };

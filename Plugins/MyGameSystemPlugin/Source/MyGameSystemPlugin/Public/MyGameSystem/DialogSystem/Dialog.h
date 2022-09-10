@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogConditionDelegate, class UDia
 /**
  * Object, that handles dialog units.
  */
-UCLASS(BlueprintType, Blueprintable)
+UCLASS(BlueprintType, Blueprintable, EditInlineNew, DefaultToInstanced)
 class MYGAMESYSTEMPLUGIN_API UDialog : public UAdvancedObject
 {
 	GENERATED_BODY()
@@ -83,8 +83,20 @@ public:
 	UFUNCTION(BlueprintGetter, Category = "Dialog|Interlocutors")
 	class AActor* GetDialogInitiator() const { return DialogInitiator; }
 
+	/**
+	 * Get the owning dialog component.
+	 * @return The owning dialog component.
+	 */
 	UFUNCTION(BlueprintPure, Category = "Dialog|OwningDialogComponent")
 	class UDialogComponent* GetOwningDialogComponent() const;
+
+	/**
+	 * Check was this cue fired.
+	 * @param DialogCueClass - A dialog cue class to check.
+	 * @return Was this cue fired.
+	 */
+	UFUNCTION(BlueprintPure, Category = "DialogComponent|Dialog")
+	bool WasCueFired(TSubclassOf<class UDialogCue> DialogCueClass) const;
 
 	/**
 	 * Called after the current dialog unit has changed.
@@ -106,8 +118,6 @@ public:
 
 protected:
 
-	virtual void EndPlay_Implementation() override;
-
 	/**
 	 * Involve the listed interlocutors (without the master actor, bcz he already knows about the dialog) in this dialog.
 	 * @param DialogInterlocutorsWithoutMaster - All interlocutors without the master (but it isn't critical).
@@ -128,6 +138,7 @@ protected:
 	 * Set a new active dialog unit.
 	 * @param NewDialogUnit - The new current dialog unit.
 	 * @warning Use this function only if you know what you are doing!
+	 * @warning If NewDialogUnit equals nullptr then the dialog is over!
 	 */
 	UFUNCTION(BlueprintSetter, Category = "Dialog|CurrentDialogUnit", meta = (BlueprintProtected))
 	void SetCurrentDialogUnit(class UDialogUnit* NewDialogUnit);
@@ -139,6 +150,9 @@ protected:
 	TSubclassOf<UDialogUnit> InitialDialogUnit;
 
 private:
+
+	// Fired cues.
+	TArray<TSubclassOf<class UDialogCue>> FiredCues;
 
 	/**
 	 * The additional persons that are participating in this dialog.
@@ -166,18 +180,9 @@ private:
 
 	// OnRep event of CurrentDialogUnit.
 	UFUNCTION()
-	void OnRep_CurrentDialogUnit();
+	void OnRep_CurrentDialogUnit(class UDialogUnit* PrevDialogUnit);
 
 	// Broadcast the related delegate to the change event.
-	void Broadcast_DialogConditionChanged();
-
-	// Broadcast the related delegate to the start event.
-	void Broadcast_DialogStart();
-
-	// Broadcast the related delegate to the end event.
-	void Broadcast_DialogEnd();
-
-	// Flag for the start delegate.
-	bool bOnStartedFired = false;
+	void DialogConditionChanged(class UDialogUnit* PrevDialogUnit);
 	
 };

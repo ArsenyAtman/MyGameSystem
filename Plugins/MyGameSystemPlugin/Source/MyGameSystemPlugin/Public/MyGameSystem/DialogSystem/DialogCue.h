@@ -28,7 +28,12 @@ public:
 
 	// TODO: Skip this dialog cue.
 
-	// TODO: bWasFired.
+	/**
+	 * Was this cue fired.
+	 * @return Was fired.
+	 */
+	UFUNCTION(BlueprintPure, Category = "DialogCue|DialogFlow")
+	bool WasFired() const;
 
 protected:
 

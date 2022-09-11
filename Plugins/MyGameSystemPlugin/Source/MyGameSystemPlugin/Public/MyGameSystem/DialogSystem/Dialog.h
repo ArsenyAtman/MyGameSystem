@@ -184,5 +184,25 @@ private:
 
 	// Broadcast the related delegate to the change event.
 	void DialogConditionChanged(class UDialogUnit* PrevDialogUnit);
+
+	/**
+	 * Set whether this dialog has been started.
+	 * @param bNewStarted - Was this dialog started.
+	 */
+	UFUNCTION(BlueprintSetter)
+	void SetStarted(bool bNewStarted);
+
+	/**
+	 * Whether this dialog has been started.
+	 */
+	UPROPERTY(BlueprintSetter = SetStarted, ReplicatedUsing = OnRep_Started)
+	bool bStarted = false;
+
+	// OnRep event of bStarted.
+	UFUNCTION()
+	void OnRep_Started();
+
+	// Broadcast the start/end delegate.
+	void Broadcast_Started();
 	
 };

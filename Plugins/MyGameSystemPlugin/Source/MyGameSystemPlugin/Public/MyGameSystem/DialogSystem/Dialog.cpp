@@ -13,6 +13,7 @@ void UDialog::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UDialog, CurrentDialogUnit);
+	DOREPLIFETIME(UDialog, bStarted);
 }
 
 void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& OtherInterlocutors)
@@ -26,6 +27,8 @@ void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& Ot
 		TArray<AActor*> InterlocutorsWithoutMaster = GetAdditionalInterlocutors();
 		InterlocutorsWithoutMaster.Add(DialogInitiator);
 		BeginDialogForInterlocutors(InterlocutorsWithoutMaster);
+
+		SetStarted(true);
 
 		SetCurrentDialogUnit(NewObject<UDialogUnit>(this, InitialDialogUnit));
 		if (IsValid(GetCurrentDialogUnit()))
@@ -54,6 +57,8 @@ void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUni
 			TArray<AActor*> InterlocutorsWithoutMaster = GetAdditionalInterlocutors();
 			InterlocutorsWithoutMaster.Add(DialogInitiator);
 			EndDialogForInterlocutors(InterlocutorsWithoutMaster);
+
+			SetStarted(false);
 		}
 	}
 }
@@ -123,11 +128,6 @@ void UDialog::OnRep_CurrentDialogUnit(UDialogUnit* PrevDialogUnit)
 
 void UDialog::DialogConditionChanged(UDialogUnit* PrevDialogUnit)
 {
-	if (!IsValid(PrevDialogUnit))
-	{
-		OnDialogStarted.Broadcast(this);
-	}
-	
 	UDialogCue* PrevDialogCue = Cast<UDialogCue>(PrevDialogUnit);
 	if (IsValid(PrevDialogCue))
 	{
@@ -135,8 +135,30 @@ void UDialog::DialogConditionChanged(UDialogUnit* PrevDialogUnit)
 	}
 
 	OnDialogUnitChanged.Broadcast(GetCurrentDialogUnit(), this);
+}
 
-	if (!IsValid(GetCurrentDialogUnit()))
+void UDialog::SetStarted(bool bNewStarted)
+{
+	if (bNewStarted != bStarted)
+	{
+		bStarted = bNewStarted;
+
+		Broadcast_Started();
+	}
+}
+
+void UDialog::OnRep_Started()
+{
+	Broadcast_Started();
+}
+
+void UDialog::Broadcast_Started()
+{
+	if(bStarted)
+	{
+		OnDialogStarted.Broadcast(this);
+	}
+	else
 	{
 		OnDialogEnded.Broadcast(this);
 	}

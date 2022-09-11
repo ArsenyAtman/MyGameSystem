@@ -56,6 +56,6 @@ public:
 	 * @param Montage - The animation to stop.
 	 */
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable, Category = "MontagePlayerComponent")
-	void StopAnimationMontage(class UAnimMontage* Montage);
+	void StopAnimationMontageReplicated(class UAnimMontage* Montage);
 		
 };

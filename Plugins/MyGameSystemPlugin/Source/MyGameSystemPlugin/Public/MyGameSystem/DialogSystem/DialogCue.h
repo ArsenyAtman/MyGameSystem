@@ -26,6 +26,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "DialogCue|Control")
 	void PlayNextDialogCue();
 
+	/**
+	 * Skip this dialog cue.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DialogCue|Control")
+	void Skip();
+	virtual void Skip_Implementation() { return; }
+
+	/**
+	 * Was this cue fired.
+	 * @return Was fired.
+	 */
+	UFUNCTION(BlueprintPure, Category = "DialogCue|DialogFlow")
+	bool WasFired() const;
+
 protected:
 
 	/**

@@ -3,6 +3,8 @@
 #include "Item.h"
 
 #include "InventoryComponent.h"
+#include "InventoryManagerComponent.h"
+#include "ActorWithInventoryInterface.h"
 #include "ComplexItem.h"
 #include "ItemPlace.h"
 #include "ItemResizer.h"
@@ -90,6 +92,21 @@ UInventoryComponent* AItem::GetRelatedInventory() const
         }
     }
 
+    return nullptr;
+}
+
+UInventoryManagerComponent* AItem::GetRelatedInventoryManager() const
+{
+    UInventoryComponent* InventoryComponent = GetRelatedInventory();
+    if (IsValid(InventoryComponent))
+    {
+        AActor* InventoryOwner = InventoryComponent->GetOwner();
+        if (IsValid(InventoryOwner) && InventoryOwner->Implements<UActorWithInventoryInterface>())
+        {
+            return IActorWithInventoryInterface::Execute_GetInventoryManagerComponent(InventoryOwner);
+        }
+    }
+    
     return nullptr;
 }
 

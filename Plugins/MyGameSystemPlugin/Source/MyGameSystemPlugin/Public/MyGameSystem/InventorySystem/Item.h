@@ -11,6 +11,7 @@
 
 class AItem;
 class UItemPlace;
+class UInventoryManagerComponent;
 class UInventoryComponent;
 class UItemResizer;
 
@@ -80,6 +81,13 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Item|Condition")
 	UInventoryComponent* GetRelatedInventory() const;
+
+	/**
+	 * Get the related inventory manager to this item.
+	 * @return The related inventory manager component.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Item|Condition")
+	UInventoryManagerComponent* GetRelatedInventoryManager() const;
 
 	/**
 	 * Whether or not this item is currently instanced.

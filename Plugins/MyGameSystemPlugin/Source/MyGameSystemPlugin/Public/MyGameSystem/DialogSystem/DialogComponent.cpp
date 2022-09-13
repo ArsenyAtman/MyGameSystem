@@ -33,14 +33,10 @@ void UDialogComponent::BeginDialogue(AActor* Initiator, const TArray<AActor*>& A
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (!IsValid(GetCurrentDialog()) && IsValid(DialogClass))
+		if (IsValid(GetCurrentDialog()))
 		{
-			SetCurrentDialog(NewObject<UDialog>(this, DialogClass));
-			if (IsValid(GetCurrentDialog()))
-			{
-				AActor* DialogMaster = this->GetOwner();
-				GetCurrentDialog()->Begin(DialogMaster, Initiator, AdditionalInterlocutors);
-			}
+			AActor* DialogMaster = this->GetOwner();
+			GetCurrentDialog()->Begin(DialogMaster, Initiator, AdditionalInterlocutors);
 		}
 	}
 }
@@ -60,11 +56,23 @@ void UDialogComponent::SelectNextDialogUnit_Implementation(TSubclassOf<UDialogUn
 	}
 }
 
+void UDialogComponent::SkipCurrentDialogCue_Implementation()
+{
+	if (GetOwnerRole() == ENetRole::ROLE_Authority && IsValid(GetCurrentDialog()))
+	{
+		UDialogCue* CurrentDialogCue = Cast<UDialogCue>(GetCurrentDialog()->GetCurrentDialogUnit());
+		if(IsValid(CurrentDialogCue))
+		{
+			CurrentDialogCue->Skip();
+		}
+	}
+}
+
 void UDialogComponent::DialogStarted(UDialog* NewDialog)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if (!IsValid(GetCurrentDialog()))
+		if (NewDialog->GetDialogMaster() != this->GetOwner())
 		{
 			SetCurrentDialog(NewDialog);
 		}
@@ -75,7 +83,7 @@ void UDialogComponent::DialogEnded(UDialog* Dialog)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		if(Dialog == GetCurrentDialog())
+		if(Dialog == GetCurrentDialog() && Dialog->GetDialogMaster() != this->GetOwner())
 		{
 			SetCurrentDialog(nullptr);
 		}
@@ -98,16 +106,21 @@ void UDialogComponent::RemoveNote(const FString& NoteToRemove)
 	}
 }
 
-void UDialogComponent::SetCurrentDialog(UDialog* NewDialog)
+bool UDialogComponent::SetCurrentDialog(UDialog* NewDialog)
 {
 	if (GetOwnerRole() == ENetRole::ROLE_Authority)
 	{
-		UDialog* PrevDialog = GetCurrentDialog();
+		if (!(IsValid(GetCurrentDialog()) && GetCurrentDialog()->GetDialogMaster() == this->GetOwner()))
+		{
+			UDialog* PrevDialog = GetCurrentDialog();
+			CurrentDialog = NewDialog;
+			Broadcast_CurrentDialog(PrevDialog);
 
-		CurrentDialog = NewDialog;
-
-		Broadcast_CurrentDialog(PrevDialog);
+			return true;
+		}
 	}
+
+	return false;
 }
 
 void UDialogComponent::OnRep_CurrentDialog(UDialog* PreReplicationCurrentDialog)
@@ -117,12 +130,5 @@ void UDialogComponent::OnRep_CurrentDialog(UDialog* PreReplicationCurrentDialog)
 
 void UDialogComponent::Broadcast_CurrentDialog(UDialog* PrevDialog)
 {
-	if (IsValid(GetCurrentDialog()))
-	{
-		OnDialogStarted.Broadcast(GetCurrentDialog());
-	}
-	else
-	{
-		OnDialogEnded.Broadcast(PrevDialog);
-	}
+	OnDialogChanged.Broadcast(GetCurrentDialog(), PrevDialog);
 }

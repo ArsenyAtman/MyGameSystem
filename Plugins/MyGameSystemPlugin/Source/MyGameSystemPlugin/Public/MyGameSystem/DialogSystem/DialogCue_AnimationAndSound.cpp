@@ -14,6 +14,43 @@
 #include "Dialog.h"
 #include "Animation/AnimInstance.h"
 
+void UDialogCue_AnimationAndSound::StartAudio()
+{
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		PlayAudio();
+	}
+}
+
+void UDialogCue_AnimationAndSound::StartAnimation()
+{
+	if(GetNetRole() == ENetRole::ROLE_Authority)
+	{
+		PlayAnimation();
+	}
+}
+
+void UDialogCue_AnimationAndSound::Skip_Implementation()
+{
+	AActor* CueOwner = GetOwnerOfVoice(GetOwningDialog()->GetAllInterlocutors(), Voice);
+	if (IsValid(CueOwner) && CueOwner->Implements<UDialogWavePlayableActorInterface>())
+	{
+		UDialogWavePlayerComponent* DialogPlayer = IDialogWavePlayableActorInterface::Execute_GetDialogWavePlayerComponent(CueOwner);
+		if (IsValid(DialogPlayer))
+		{
+			DialogPlayer->StopDialogWaveReplicated();
+		}
+
+		UMontagePlayerComponent* MontagePlayer = IMontagePlayableActorInterface::Execute_GetMontagePlayerComponent(CueOwner);
+		if (IsValid(MontagePlayer))
+		{
+			MontagePlayer->StopAnimationMontageReplicated(Animation);
+		}
+
+		Super::Skip_Implementation();
+	}
+}
+
 void UDialogCue_AnimationAndSound::OnCueBeginned_Implementation()
 {
 	Super::OnCueBeginned_Implementation();
@@ -44,22 +81,6 @@ void UDialogCue_AnimationAndSound::OnCueEnded_Implementation()
 	}
 
 	Super::OnCueEnded_Implementation();
-}
-
-void UDialogCue_AnimationAndSound::StartAudio()
-{
-	if(GetNetRole() == ENetRole::ROLE_Authority)
-	{
-		PlayAudio();
-	}
-}
-
-void UDialogCue_AnimationAndSound::StartAnimation()
-{
-	if(GetNetRole() == ENetRole::ROLE_Authority)
-	{
-		PlayAnimation();
-	}
 }
 
 void UDialogCue_AnimationAndSound::PlayAudio_Implementation()
@@ -140,7 +161,7 @@ void UDialogCue_AnimationAndSound::AnimationPlayed(UAnimMontage* AnimMontage, bo
 
 void UDialogCue_AnimationAndSound::CheckTransitionCondition()
 {
-	if (bIsAudioPlayed && bIsAnimationPlayed)
+	if ((bIsAudioPlayed || !IsValid(PlayingAudioComponent)) && (bIsAnimationPlayed || !IsValid(PlayingAnimInstance)))
 	{
 		PlayNextDialogCue();
 	}

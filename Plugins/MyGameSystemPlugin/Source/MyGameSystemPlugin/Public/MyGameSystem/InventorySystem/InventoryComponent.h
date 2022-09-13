@@ -10,11 +10,17 @@
 #include "InventoryComponent.generated.h"
 
 class AItem;
+class UItemPlace;
 
 /**
  * Delegate for handling dropping of items.
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemDroppedDelegate, UInventoryComponent*, Inventory, AItem*, Item);
+
+/**
+ * Delegate for handling places.
+ */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInventoryPlaceConditionDelegate, UInventoryComponent*, Inventory, UItemPlace*, ItemPlace);
 
 /**
  * Inventory component for an actor.
@@ -28,13 +34,34 @@ public:
 	// Constructor.
 	UInventoryComponent();
 
+	// Override for replication.
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	// Storage interface.
 	virtual bool AddItem_Implementation(AItem* Item);
 	virtual TArray<AItem*> FindItemsByClass_Implementation(TSubclassOf<AItem> ItemClass) const;
 	virtual bool CheckItemPossession_Implementation(AItem* Item) const;
 
 	// Complex storage interface.
-	virtual TArray<UItemPlace*> GetPlaces_Implementation() const;
+	virtual TArray<UItemPlace*> GetPlaces_Implementation() const { return ItemPlaces; }
+
+	/**
+	 * Connect an item place to this inventory.
+	 * @param ItemPlace - The item place to connect.
+	 * @return Successfully connected.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, Category = "InventoryComponent|Control")
+	bool AddPlace(UItemPlace* ItemPlace);
+
+	/**
+	 * Disconnect an item place from this inventory.
+	 * @param ItemPlace - The item place to disconnect.
+	 * @return Successfully removed.
+	 * @warning Server-only!
+	 */
+	UFUNCTION(BlueprintCallable, Category = "InventoryComponent|Control")
+	bool RemovePlace(UItemPlace* ItemPlace);
 
 	/**
 	 * Drop the item.
@@ -50,6 +77,18 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "InventoryComponent|Delegates")
 	FItemDroppedDelegate OnItemDropped;
 
+	/**
+	 * Called after an item place connection.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "InventoryComponent|Delegates")
+	FInventoryPlaceConditionDelegate OnPlaceAdded;
+
+	/**
+	 * Called after an item place disconnection.
+	 */
+	UPROPERTY(BlueprintAssignable, Category = "InventoryComponent|Delegates")
+	FInventoryPlaceConditionDelegate OnPlaceRemoved;
+
 protected:
 
 	/**
@@ -61,6 +100,17 @@ protected:
 	virtual void ItemDropped_Implementation(AItem* Item) { return; }
 
 private:
+
+	UPROPERTY(ReplicatedUsing = OnRep_Places)
+	TArray<UItemPlace*> ItemPlaces;
+
+	UFUNCTION()
+	void OnRep_Places(const TArray<UItemPlace*>& PrevItemPlaces);
+
+	void BroadcastChange_Places(const TArray<UItemPlace*>& PrevItemPlaces);
+
+	void Broadcast_OnItemPlaceAdded(UItemPlace* ItemPlace);
+	void Broadcast_OnItemPlaceRemoved(UItemPlace* ItemPlace);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Notify_ItemDropped(AItem* Item);

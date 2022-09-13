@@ -24,6 +24,11 @@ void UDialogCue::PlayNextDialogCue()
 	}
 }
 
+bool UDialogCue::WasFired() const
+{
+	return GetOwningDialog()->WasCueFired(this->GetClass());
+}
+
 void UDialogCue::EndCue()
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)

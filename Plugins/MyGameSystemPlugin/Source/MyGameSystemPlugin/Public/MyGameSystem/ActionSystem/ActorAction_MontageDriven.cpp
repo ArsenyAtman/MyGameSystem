@@ -56,7 +56,7 @@ void UActorAction_MontageDriven::OnActionEnded_Implementation()
 					if (IsValid(MontagePlayer))
 					{
 						// than stop the animation.
-						MontagePlayer->StopAnimationMontage(PlayingAnimMontage);
+						MontagePlayer->StopAnimationMontageReplicated(PlayingAnimMontage);
 					}
 				}
 			}

@@ -4,6 +4,7 @@
 #include "TalkableInterface.h"
 #include "DialogComponent.h"
 #include "DialogUnit.h"
+#include "DialogCue.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -12,6 +13,7 @@ void UDialog::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UDialog, CurrentDialogUnit);
+	DOREPLIFETIME(UDialog, bStarted);
 }
 
 void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& OtherInterlocutors)
@@ -26,6 +28,8 @@ void UDialog::Begin(AActor* Master, AActor* Initiator, const TArray<AActor*>& Ot
 		InterlocutorsWithoutMaster.Add(DialogInitiator);
 		BeginDialogForInterlocutors(InterlocutorsWithoutMaster);
 
+		SetStarted(true);
+
 		SetCurrentDialogUnit(NewObject<UDialogUnit>(this, InitialDialogUnit));
 		if (IsValid(GetCurrentDialogUnit()))
 		{
@@ -38,8 +42,6 @@ void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUni
 {
 	if (GetNetRole() == ENetRole::ROLE_Authority && GetCurrentDialogUnit() == DialogUnit)
 	{
-		UDialogUnit* PrevDialogUnit = GetCurrentDialogUnit();
-
 		if (IsValid(NextDialogUnitClass))
 		{
 			SetCurrentDialogUnit(NewObject<UDialogUnit>(this, NextDialogUnitClass));
@@ -51,9 +53,12 @@ void UDialog::OnDialogUnitPassed(UDialogUnit* DialogUnit, TSubclassOf<UDialogUni
 		else
 		{
 			SetCurrentDialogUnit(nullptr);
-			EndDialogForInterlocutors(GetAllInterlocutors());
 
-			this->Destroy();
+			TArray<AActor*> InterlocutorsWithoutMaster = GetAdditionalInterlocutors();
+			InterlocutorsWithoutMaster.Add(DialogInitiator);
+			EndDialogForInterlocutors(InterlocutorsWithoutMaster);
+
+			SetStarted(false);
 		}
 	}
 }
@@ -71,11 +76,9 @@ UDialogComponent* UDialog::GetOwningDialogComponent() const
 	return Cast<UDialogComponent>(GetOuter());
 }
 
-void UDialog::EndPlay_Implementation()
+bool UDialog::WasCueFired(TSubclassOf<class UDialogCue> DialogCueClass) const
 {
-	Broadcast_DialogEnd();
-
-	Super::EndPlay_Implementation();
+	return FiredCues.Find(DialogCueClass) != INDEX_NONE;
 }
 
 void UDialog::BeginDialogForInterlocutors(const TArray<AActor*>& DialogInterlocutorsWithoutMaster)
@@ -112,33 +115,51 @@ void UDialog::SetCurrentDialogUnit(UDialogUnit* NewDialogUnit)
 {
 	if(GetNetRole() == ENetRole::ROLE_Authority)
 	{
+		UDialogUnit* PrevDialogUnit = CurrentDialogUnit;
 		CurrentDialogUnit = NewDialogUnit;
-		Broadcast_DialogConditionChanged();
+		DialogConditionChanged(PrevDialogUnit);
 	}
 }
 
-void UDialog::OnRep_CurrentDialogUnit()
+void UDialog::OnRep_CurrentDialogUnit(UDialogUnit* PrevDialogUnit)
 {
-	Broadcast_DialogConditionChanged();
+	DialogConditionChanged(PrevDialogUnit);
 }
 
-void UDialog::Broadcast_DialogConditionChanged()
+void UDialog::DialogConditionChanged(UDialogUnit* PrevDialogUnit)
 {
-	if(!bOnStartedFired)
+	UDialogCue* PrevDialogCue = Cast<UDialogCue>(PrevDialogUnit);
+	if (IsValid(PrevDialogCue))
 	{
-		Broadcast_DialogStart();
-		bOnStartedFired = true;
+		FiredCues.AddUnique(PrevDialogCue->GetClass());
 	}
 
 	OnDialogUnitChanged.Broadcast(GetCurrentDialogUnit(), this);
 }
 
-void UDialog::Broadcast_DialogStart()
+void UDialog::SetStarted(bool bNewStarted)
 {
-	OnDialogStarted.Broadcast(this);
+	if (bNewStarted != bStarted)
+	{
+		bStarted = bNewStarted;
+
+		Broadcast_Started();
+	}
 }
 
-void UDialog::Broadcast_DialogEnd()
+void UDialog::OnRep_Started()
 {
-	OnDialogEnded.Broadcast(this);
+	Broadcast_Started();
+}
+
+void UDialog::Broadcast_Started()
+{
+	if(bStarted)
+	{
+		OnDialogStarted.Broadcast(this);
+	}
+	else
+	{
+		OnDialogEnded.Broadcast(this);
+	}
 }

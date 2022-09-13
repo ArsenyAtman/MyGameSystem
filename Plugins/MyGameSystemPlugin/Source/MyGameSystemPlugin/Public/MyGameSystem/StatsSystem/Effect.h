@@ -41,11 +41,11 @@ public:
 	void Deactivate();
 
 	/**
-	 * Gets the StatsComponent related to this effect.
-	 * @return Related stats component.
+	 * Gets the EffectsComponent related to this effect.
+	 * @return Related effects component.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Effect|RelatedStatsComponent")
-	class UStatsComponent* GetRelatedStatsComponent() const;
+	UFUNCTION(BlueprintPure, Category = "Effect|RelatedEffectsComponent")
+	class UEffectsComponent* GetRelatedEffectsComponent() const;
 
 	/**
 	 * Gets the actor related to this effect.
@@ -83,9 +83,6 @@ protected:
 	virtual void OnDeactivating_Implementation() { return; }
 
 private:
-
-	// Related stats component to this effect.
-	class UStatsComponent* RelatedStatsComponent;
 
 	// Notify all clients of the activation.
 	UFUNCTION(NetMulticast, Reliable)

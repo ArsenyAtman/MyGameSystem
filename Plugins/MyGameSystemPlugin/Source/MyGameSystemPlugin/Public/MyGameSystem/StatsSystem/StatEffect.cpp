@@ -5,35 +5,22 @@
 #include "StatsComponent.h"
 #include "Stat.h"
 
-TArray<UStat*> UStatEffect::GetRelatedStats() const
+UStatsComponent* UStatEffect::GetRelatedStatsComponent() const
 {
-	TArray<UStat*> RelatedStats;
-
-	switch(RelatedStatsSearchType)
-	{
-		case ERelatedStatsSearchType::SearchByNameOnly:
-			AddRelatedStatByName(RelatedStats, ForStatOfName);
-			break;
-		
-		case ERelatedStatsSearchType::SearchByClassOnly:
-			AddRelatedStatsByClass(RelatedStats, ForStatsOfClass);
-			break;
-
-		case ERelatedStatsSearchType::SearchByNameAndByClass:
-			AddRelatedStatByName(RelatedStats, ForStatOfName);
-			AddRelatedStatsByClass(RelatedStats, ForStatsOfClass);
-			break;
-
-		default:
-			break;
-	}
-
-	return RelatedStats;
+	return Cast<UStatsComponent>(GetRelatedEffectsComponent());
 }
 
 void UStatEffect::OnActivated_Implementation()
 {
 	Super::OnActivated_Implementation();
+
+	if (IsValid(GetRelatedStatsComponent()))
+	{
+		RelatedStats = GetRelatedStatsComponent()->GetStatsOfClass(ForStatsOfClass);
+
+		GetRelatedStatsComponent()->OnStatAdded.AddDynamic(this, &UStatEffect::OnStatAdded);
+		GetRelatedStatsComponent()->OnStatRemoved.AddDynamic(this, &UStatEffect::OnStatRemoved);
+	}
 
 	for (UStat* Stat : GetRelatedStats())
 	{
@@ -54,19 +41,21 @@ void UStatEffect::OnDeactivating_Implementation()
 		}
 	}
 
+	if (IsValid(GetRelatedStatsComponent()))
+	{
+		GetRelatedStatsComponent()->OnStatAdded.RemoveDynamic(this, &UStatEffect::OnStatAdded);
+		GetRelatedStatsComponent()->OnStatRemoved.RemoveDynamic(this, &UStatEffect::OnStatRemoved);
+	}
+
 	Super::OnDeactivating_Implementation();
 }
 
-void UStatEffect::AddRelatedStatByName(TArray<UStat*>& RelatedStats, FName Name) const
+void UStatEffect::OnStatAdded(class UStat* Stat)
 {
-	UStat* FoundStat = GetRelatedStatsComponent()->GetStatByName(Name);
-	if(IsValid(FoundStat))
-	{
-		RelatedStats.Add(FoundStat);
-	}
+	RelatedStats.Add(Stat);
 }
 
-void UStatEffect::AddRelatedStatsByClass(TArray<UStat*>& RelatedStats, TSubclassOf<UStat> Class) const
+void UStatEffect::OnStatRemoved(class UStat* Stat)
 {
-	RelatedStats.Append(GetRelatedStatsComponent()->GetStatsOfClass(Class));
+	RelatedStats.Remove(Stat);
 }

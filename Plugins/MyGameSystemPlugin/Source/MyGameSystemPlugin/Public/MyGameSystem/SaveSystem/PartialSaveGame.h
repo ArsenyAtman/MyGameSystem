@@ -43,7 +43,7 @@ protected:
 	void SaveObject(UObject* Object);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void SaveSubobjects(UObject* Object, FObjectRecord& ObjectRecord);
+	void SaveSubobjects(UObject* Object);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	TArray<uint8> SerializeObject(UObject* Object);

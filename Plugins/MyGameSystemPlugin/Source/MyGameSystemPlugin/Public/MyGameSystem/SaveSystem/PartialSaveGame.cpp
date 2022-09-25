@@ -42,9 +42,11 @@ void UPartialSaveGame::Load(const UObject* WorldContextObject)
     UWorld* World = WorldContextObject->GetWorld();
     if (IsValid(World))
     {
-        int64 ObjectIndex = 0;
-        for (const FObjectRecord& ObjectRecord : ObjectRecords)
+        int64 ObjectIndex = -1;
+        const int64 MaxObjectIndex = ObjectRecords.Num() - 1;
+        while (ObjectIndex < MaxObjectIndex)
         {
+            ++ObjectIndex;
             LoadObject(World, ObjectIndex);
         }
     }
@@ -67,27 +69,38 @@ void UPartialSaveGame::SaveObject(UObject* Object)
     {
         TArray<uint8> ObjectData = SerializeObject(Object);
         FObjectRecord ObjectRecord = FObjectRecord(Object, Object->GetName(), Object->GetClass(), Object->GetOuter(), ObjectData);
+        ObjectRecord.Type = EObjectType::Object;
 
-        if (AActor* Actor = Cast<AActor>(Object))
+        AActor* Actor = Cast<AActor>(Object);
+        if (IsValid(Actor))
         {
             ObjectRecord.Type = EObjectType::Actor;
             ObjectRecord.Transform = Actor->GetActorTransform();
+
+            TArray<UActorComponent*> Components;
+            Actor->GetComponents(Components, false);
+            ObjectRecord.CountOfComponents = Components.Num();
         }
-        else if (UActorComponent* ActorComponent = Cast<UActorComponent>(Object))
+        
+        UActorComponent* ActorComponent = Cast<UActorComponent>(Object);
+        if (IsValid(ActorComponent))
         {
             ObjectRecord.Type = EObjectType::ActorComponent;
+            ObjectRecord.OwnerID = reinterpret_cast<int64>(ActorComponent->GetOwner());
             
             USceneComponent* SceneComponent = Cast<USceneComponent>(ActorComponent);
             if (IsValid(SceneComponent))
             {
+                ObjectRecord.ParentID = reinterpret_cast<int64>(SceneComponent->GetAttachParent());
                 ObjectRecord.Transform = SceneComponent->GetComponentTransform();
+                ObjectRecord.CountOfComponents = SceneComponent->GetAttachChildren().Num();
             }
         }
 
         SavedObjects.Add(Object);
         ObjectRecords.Add(ObjectRecord);
         AddOuterForSaving(Object);
-        SaveSubobjects(Object, ObjectRecord);
+        SaveSubobjects(Object);
     }
     else
     {
@@ -95,8 +108,29 @@ void UPartialSaveGame::SaveObject(UObject* Object)
     }
 }
 
-void UPartialSaveGame::SaveSubobjects(UObject* Object, FObjectRecord& ObjectRecord)
+void UPartialSaveGame::SaveSubobjects(UObject* Object)
 {
+    AActor* Actor = Cast<AActor>(Object);
+    if (IsValid(Actor))
+    {
+        TArray<UActorComponent*> Components;
+        Actor->GetComponents(Components, false);
+        for (UActorComponent* Component : Components)
+        {
+            SaveObject(Component);
+        }
+    }
+
+    USceneComponent* SceneComponent = Cast<USceneComponent>(Object);
+    if (IsValid(SceneComponent))
+    {
+        TArray<USceneComponent*> Components = SceneComponent->GetAttachChildren();
+        for (USceneComponent* Component : Components)
+        {
+            SaveObject(Component);
+        }
+    }
+
     UClass* Class = Object->GetClass();
 	TFieldIterator<FObjectProperty> ObjectsIterator(Class);
 	TArray<FObjectProperty*> ObjectProperties = FindObjectPropertiesWithSaveGame(ObjectsIterator);
@@ -105,10 +139,6 @@ void UPartialSaveGame::SaveSubobjects(UObject* Object, FObjectRecord& ObjectReco
 		UObject* Subobject = ObjectProperty->GetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object));
         SaveObject(Subobject);
 	}
-
-    // TODO: Add arrays for saving
-
-    // TODO: Add components for saving
 }
 
 TArray<uint8> UPartialSaveGame::SerializeObject(UObject* Object)
@@ -131,23 +161,64 @@ UObject* UPartialSaveGame::LoadObject(UWorld* World, int64& ObjectIndex)
 
     UObject* Object = nullptr;
 
-    if (ObjectRecord.Type == EObjectType::Actor)
+    switch (ObjectRecord.Type)
     {
-        FActorSpawnParameters SpawnParams;
-        SpawnParams.Name = ObjectRecord.Name;
-        Object = World->SpawnActorDeferred<AActor>(ObjectRecord.Class, ObjectRecord.Transform, nullptr);
-        DeserializeObject(Object, ObjectRecord.Data);
-    }
-    else
-    {
-        Object = NewObject<UObject>(OutersForLoading[ObjectRecord.OuterID], ObjectRecord.Class, ObjectRecord.Name);
-        DeserializeObject(Object, ObjectRecord.Data);
+        case EObjectType::Actor:
+        {
+            FActorSpawnParameters SpawnParams;
+            SpawnParams.Name = ObjectRecord.Name;
+            // TODO: Find the outer.
+            AActor* Actor = World->SpawnActorDeferred<AActor>(ObjectRecord.Class, ObjectRecord.Transform, nullptr);
+            Actor->FinishSpawning(ObjectRecord.Transform);
+            
+            Object = Actor;
+        }
+        break;
+
+        case EObjectType::ActorComponent:
+        {
+            AActor* Owner = Cast<AActor>(OutersForLoading[ObjectRecord.OwnerID]);
+            TArray<UActorComponent*> Components;
+            Owner->GetComponents(Components, true);
+
+            Object = *Components.FindByPredicate([ObjectRecord](UActorComponent*& ActorComponent){ return (FName(ActorComponent->GetName()) == ObjectRecord.Name);});//Owner->GetDefaultSubobjectByName(ObjectRecord.Name);
+
+            if (!IsValid(Object))
+            {
+                UActorComponent* ActorComponent = NewObject<UActorComponent>(Owner, ObjectRecord.Class, ObjectRecord.Name);
+                if (IsValid(ActorComponent))
+                {
+                    Object = ActorComponent;
+
+                    USceneComponent* SceneComponent = Cast<USceneComponent>(Object);
+                    if (IsValid(SceneComponent))
+                    {
+                        USceneComponent* ParentComponent = Cast<USceneComponent>(OutersForLoading[ObjectRecord.ParentID]);
+                        SceneComponent->SetupAttachment(ParentComponent);
+                    }
+
+                    ActorComponent->RegisterComponent();
+                }
+            }
+        }
+        break;
+
+        case EObjectType::Object:
+        {
+            Object = NewObject<UObject>(OutersForLoading[ObjectRecord.OuterID], ObjectRecord.Class, ObjectRecord.Name);
+        }
+        break;
+        
+        default:
+        {
+            return nullptr;
+        }
+        break;
     }
 
-    if (IsValid(Object))
-    {
-        LoadedObjects.Add(ObjectRecord.SelfID, Object);
-    }
+    DeserializeObject(Object, ObjectRecord.Data);
+
+    LoadedObjects.Add(ObjectRecord.SelfID, Object);
 
     AddOuterForLoading(Object);
     LoadSubobjects(Object, ObjectIndex);
@@ -155,7 +226,13 @@ UObject* UPartialSaveGame::LoadObject(UWorld* World, int64& ObjectIndex)
     AActor* Actor = Cast<AActor>(Object);
     if (IsValid(Actor))
     {
-        Actor->FinishSpawning(ObjectRecord.Transform);
+        //Actor->FinishSpawning(ObjectRecord.Transform);
+    }
+
+    UActorComponent* ActorComponent = Cast<UActorComponent>(Object);
+    if (IsValid(ActorComponent))
+    {
+        //ActorComponent->RegisterComponent();
     }
 
     return Object;
@@ -163,6 +240,28 @@ UObject* UPartialSaveGame::LoadObject(UWorld* World, int64& ObjectIndex)
 
 void UPartialSaveGame::LoadSubobjects(UObject* Object, int64& ObjectIndex)
 {
+    FObjectRecord ObjectRecord = ObjectRecords[ObjectIndex];
+
+    AActor* Actor = Cast<AActor>(Object);
+    if (IsValid(Actor))
+    {
+        for (int64 CountOfLoadedComponents = 0; CountOfLoadedComponents < ObjectRecord.CountOfComponents; ++CountOfLoadedComponents)
+        {
+            ++ObjectIndex;
+            LoadObject(Object->GetWorld(), ObjectIndex);
+        }
+    }
+
+    USceneComponent* SceneComponent = Cast<USceneComponent>(Object);
+    if (IsValid(SceneComponent))
+    {
+        for (int64 CountOfLoadedComponents = 0; CountOfLoadedComponents < ObjectRecord.CountOfComponents; ++CountOfLoadedComponents)
+        {
+            ++ObjectIndex;
+            LoadObject(Object->GetWorld(), ObjectIndex);
+        }
+    }
+
     UClass* Class = Object->GetClass();
 	TFieldIterator<FObjectProperty> ObjectsIterator(Class);
 	TArray<FObjectProperty*> ObjectProperties = FindObjectPropertiesWithSaveGame(ObjectsIterator);
@@ -172,10 +271,6 @@ void UPartialSaveGame::LoadSubobjects(UObject* Object, int64& ObjectIndex)
         UObject* Subobject = LoadObject(Object->GetWorld(), ObjectIndex);
 		ObjectProperty->SetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object), Subobject);
 	}
-
-    // TODO: Add arrays for loading
-
-    // TODO: Add components for loading
 }
 
 void UPartialSaveGame::DeserializeObject(UObject* Object, const TArray<uint8>& Data)

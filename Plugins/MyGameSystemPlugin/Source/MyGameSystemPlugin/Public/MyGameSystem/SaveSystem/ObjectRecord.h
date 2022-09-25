@@ -8,6 +8,7 @@
 UENUM()
 enum class EObjectType : uint8
 {
+    None                UMETA(DisplayName = "None"),
     Object              UMETA(DisplayName = "Object"),
     Actor               UMETA(DisplayName = "Actor"),
     ActorComponent      UMETA(DisplayName = "ActorComponent")
@@ -39,10 +40,16 @@ public:
     EObjectType Type;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int64 CountOfComponents;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FTransform Transform;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int64 OwnerID;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int64 ParentID;
 
     FObjectRecord(
         UObject* Object = nullptr, 
@@ -50,9 +57,11 @@ public:
         UClass* ObjectClass = nullptr, 
         UObject* ObjectOuter = nullptr, 
         const TArray<uint8>& ObjectData = TArray<uint8>(),
-        EObjectType ObjectType = EObjectType::Object, 
+        EObjectType ObjectType = EObjectType::None, 
+        int64 ObjectCountOfComponents = 0, 
         const FTransform& ObjectTransform = FTransform(), 
-        UObject* ObjectOwner = nullptr
+        UObject* ObjectOwner = nullptr,
+        UObject* ObjectParent = nullptr
         )
     {
         SelfID = reinterpret_cast<int64>(Object);
@@ -61,7 +70,9 @@ public:
         OuterID = reinterpret_cast<int64>(ObjectOuter);
         Data = ObjectData;
         Type = ObjectType;
+        CountOfComponents = ObjectCountOfComponents;
         Transform = ObjectTransform;
         OwnerID = reinterpret_cast<int64>(ObjectOwner);
+        ParentID = reinterpret_cast<int64>(ObjectParent);
     }
 };

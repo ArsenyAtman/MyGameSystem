@@ -6,6 +6,21 @@
 #include "UObject/NoExportTypes.h"
 #include "Replicator.generated.h"
 
+template<typename PropertyType>
+struct FPropertyReplicationInfo
+{
+public:
+
+	PropertyType* Property;
+	void* Owner;
+
+	FPropertyReplicationInfo(PropertyType* PropertyForReplication = nullptr, void* PropertyOwner = nullptr)
+	{
+		Property = PropertyForReplication;
+		Owner = PropertyOwner;
+	}
+};
+
 /**
  * Parsing properties with ReplicableObjects of the owner and adding them to the ActorChannel.
  */
@@ -25,19 +40,21 @@ public:
 	 */
 	virtual void ReplicateSubobjectsOfOwner(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
 
-private:
+protected:
 
-	virtual void FindPropertiesForReplication(class UClass* Class);
+	virtual void FindPropertiesForReplication();
 
-	TArray<class FObjectProperty*> FindObjectPropertiesForReplication(TFieldIterator<class FObjectProperty> Iterator);
-	TArray<class FArrayProperty*> FindArrayPropertiesForReplication(TFieldIterator<class FArrayProperty> Iterator);
-	
-	TArray<class FObjectProperty*> ObjectProperties;
-	TArray<class FArrayProperty*> ArrayProperties;
+	template<typename PropertyType>
+	TArray<FPropertyReplicationInfo<PropertyType>> FindPropertiesOfObjectForReplication(bool bCheckOnReplication, void* Owner, UStruct* OwnerLayout);
 
-	void ReplicateObjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
-	void ReplicateArrays(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+	void ReplicateObjectProperty(const FPropertyReplicationInfo<FObjectProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+	void ReplicateArrayProperty(const FPropertyReplicationInfo<FArrayProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
 
 	void ReplicateObject(class UObject* Object, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+
+private:
+
+	TArray<FPropertyReplicationInfo<FObjectProperty>> ObjectPropertiesForReplication;
+	TArray<FPropertyReplicationInfo<FArrayProperty>> ArrayPropertiesForReplication;
 
 };

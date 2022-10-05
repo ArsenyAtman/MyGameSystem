@@ -11,89 +11,77 @@ void UReplicator::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	UClass* Class = GetOuter()->GetClass();
-	FindPropertiesForReplication(Class);
+	FindPropertiesForReplication();
 }
 
 void UReplicator::ReplicateSubobjectsOfOwner(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
 {
-	ReplicateObjects(Channel, Bunch, RepFlags, OutWroteSomething);
-	ReplicateArrays(Channel, Bunch, RepFlags, OutWroteSomething);
-}
-
-void UReplicator::FindPropertiesForReplication(UClass* Class)
-{
-	// Create an iterator for object properties of the class.
-	TFieldIterator<FObjectProperty> ObjectsIterator(Class);
-	// Find replicable properties.
-	ObjectProperties = FindObjectPropertiesForReplication(ObjectsIterator);
-
-	// Create an iterator for array properties of the class.
-	TFieldIterator<FArrayProperty> ArraysIterator(Class);
-	// Find replicable properties.
-	ArrayProperties = FindArrayPropertiesForReplication(ArraysIterator);
-}
-
-TArray<FObjectProperty*> UReplicator::FindObjectPropertiesForReplication(TFieldIterator<FObjectProperty> Iterator)
-{
-	TArray<FObjectProperty*> OutProperties;
-	for(; Iterator; ++Iterator)
+	for (const FPropertyReplicationInfo<FObjectProperty>& ObjectPropertyForReplication : ObjectPropertiesForReplication)
 	{
-		// Get the current object property.
-		FObjectProperty* ObjectProperty = *Iterator;
-
-		// If the property has the Replicated or RepNotify flags...
-		if((ObjectProperty->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (ObjectProperty->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify))
-		{
-			// than add it to the array.
-			OutProperties.Add(ObjectProperty);
-		}
+		ReplicateObjectProperty(ObjectPropertyForReplication, Channel, Bunch, RepFlags, OutWroteSomething);
 	}
 
-	return OutProperties;
-}
-	
-TArray<FArrayProperty*> UReplicator::FindArrayPropertiesForReplication(TFieldIterator<FArrayProperty> Iterator)
-{
-	TArray<FArrayProperty*> OutProperties;
-	for(; Iterator; ++Iterator)
+	for (const FPropertyReplicationInfo<FArrayProperty>& ArrayPropertyForReplication : ArrayPropertiesForReplication)
 	{
-		// Get the current array property.
-		FArrayProperty* ArrayProperty = *Iterator;
-
-		// If the property has the Replicated or RepNotify flags...
-		if((ArrayProperty->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (ArrayProperty->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify))
-		{
-			// than add it to the array.
-			OutProperties.Add(ArrayProperty);
-		}
+		ReplicateArrayProperty(ArrayPropertyForReplication, Channel, Bunch, RepFlags, OutWroteSomething);
 	}
-
-	return OutProperties;
 }
 
-void UReplicator::ReplicateObjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
+void UReplicator::FindPropertiesForReplication()
 {
-	for (FObjectProperty* ObjectProperty : ObjectProperties)
+	void* Owner = GetOuter();
+	UStruct* OwnerLayout = GetOuter()->GetClass();
+
+	ObjectPropertiesForReplication = FindPropertiesOfObjectForReplication<FObjectProperty>(true, Owner, OwnerLayout);
+	ArrayPropertiesForReplication = FindPropertiesOfObjectForReplication<FArrayProperty>(true, Owner, OwnerLayout);
+
+	TArray<FPropertyReplicationInfo<FStructProperty>> StructsForReplication = FindPropertiesOfObjectForReplication<FStructProperty>(true, Owner, OwnerLayout);
+	for (FPropertyReplicationInfo<FStructProperty>& StructForReplication : StructsForReplication)
 	{
-		// Get the property value.
-		UObject* Object = ObjectProperty->GetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(GetOuter()));
+		void* StructPointer = StructForReplication.Property->ContainerPtrToValuePtr<void>(StructForReplication.Owner);
 		
+		ObjectPropertiesForReplication.Append(FindPropertiesOfObjectForReplication<FObjectProperty>(false, StructPointer, StructForReplication.Property->Struct));
+		ArrayPropertiesForReplication.Append(FindPropertiesOfObjectForReplication<FArrayProperty>(false, StructPointer, StructForReplication.Property->Struct));
+	}
+}
+
+template<typename PropertyType>
+TArray<FPropertyReplicationInfo<PropertyType>> UReplicator::FindPropertiesOfObjectForReplication(bool bCheckOnReplication, void* Owner, UStruct* OwnerLayout)
+{
+	TFieldIterator<PropertyType> Iterator(OwnerLayout);
+	TArray<FPropertyReplicationInfo<PropertyType>> OutPropertiesForReplication;
+	for(; Iterator; ++Iterator)
+	{
+		// Get the current property.
+		PropertyType* Property = *Iterator;
+
+		// If the property has the Replicated or RepNotify flags...
+		if(!bCheckOnReplication || ((Property->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (Property->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify)))
+		{
+			// than add it to the array.
+			OutPropertiesForReplication.Add(FPropertyReplicationInfo<PropertyType>(Property, Owner));
+		}
+	}
+
+	return OutPropertiesForReplication;
+}
+
+void UReplicator::ReplicateObjectProperty(const FPropertyReplicationInfo<FObjectProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
+{
+	// Get the property value.
+	UObject* Object = PropertyReplicationInfo.Property->GetObjectPropertyValue(PropertyReplicationInfo.Property->ContainerPtrToValuePtr<UObject>(PropertyReplicationInfo.Owner));
+
+	ReplicateObject(Object, Channel, Bunch, RepFlags, OutWroteSomething);
+}
+
+void UReplicator::ReplicateArrayProperty(const FPropertyReplicationInfo<FArrayProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
+{
+	// Get the property value.
+	TArray<UObject*> Array = *(PropertyReplicationInfo.Property)->ContainerPtrToValuePtr<TArray<UObject*>>(PropertyReplicationInfo.Owner);
+
+	for(UObject* Object : Array)
+	{
 		ReplicateObject(Object, Channel, Bunch, RepFlags, OutWroteSomething);
-	}
-}
-
-void UReplicator::ReplicateArrays(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
-{
-	for(FArrayProperty* ArrayProperty : ArrayProperties)
-	{
-		// Get the property value.
-		TArray<UObject*> Array = *ArrayProperty->ContainerPtrToValuePtr<TArray<UObject*>>(GetOuter());
-		
-		for(UObject* Object : Array)
-		{
-			ReplicateObject(Object, Channel, Bunch, RepFlags, OutWroteSomething);
-		}
 	}
 }
 

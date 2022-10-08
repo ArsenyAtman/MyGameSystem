@@ -7,17 +7,44 @@
 #include "Replicator.generated.h"
 
 template<typename PropertyType>
-struct FPropertyReplicationInfo
+struct FPropertyInfo
 {
 public:
 
 	PropertyType* Property;
 	void* Owner;
 
-	FPropertyReplicationInfo(PropertyType* PropertyForReplication = nullptr, void* PropertyOwner = nullptr)
+	FPropertyInfo(PropertyType* PropertyForReplication = nullptr, void* PropertyOwner = nullptr)
 	{
 		Property = PropertyForReplication;
 		Owner = PropertyOwner;
+	}
+};
+
+struct FReplicableObject
+{
+	UStruct* StructureLayout;
+
+	TArray<FPropertyInfo<FObjectProperty>> ObjectProperties;
+	TArray<FPropertyInfo<FArrayProperty>> ArrayObjectProperties;
+
+	TArray<FPropertyInfo<FObjectProperty>> StructProperties;
+	TArray<FPropertyInfo<FArrayProperty>> ArrayStructProperties;
+
+	//template<typename PropertyType>
+	//TArray<FPropertyInfo<PropertyType>> FindProperties(void* Owner, UStruct* OwnerLayout);
+
+	//template<typename PropertyType>
+	//TArray<FPropertyInfo<FArrayProperty>> FindArrayProperties(void* Owner, UStruct* OwnerLayout);
+
+	//void ReplicateObjectProperty(const FPropertyInfo<FObjectProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+	//void ReplicateArrayProperty(const FPropertyInfo<FArrayProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+
+	//void ReplicateObject(class UObject* Object, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+
+	FReplicableObject(UStruct* Layout)
+	{
+		StructureLayout = Layout;
 	}
 };
 
@@ -44,17 +71,19 @@ protected:
 
 	virtual void FindPropertiesForReplication();
 
-	template<typename PropertyType>
-	TArray<FPropertyReplicationInfo<PropertyType>> FindPropertiesOfObjectForReplication(bool bCheckOnReplication, void* Owner, UStruct* OwnerLayout);
+	void FindStructProperties(void* Owner, class UStruct* OwnerLayout);
 
-	void ReplicateObjectProperty(const FPropertyReplicationInfo<FObjectProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
-	void ReplicateArrayProperty(const FPropertyReplicationInfo<FArrayProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+	template<typename PropertyType>
+	TArray<FPropertyInfo<PropertyType>> FindProperties(void* Owner, UStruct* OwnerLayout);
+
+	void ReplicateObjectProperty(const FPropertyInfo<FObjectProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+	void ReplicateArrayProperty(const FPropertyInfo<FArrayProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
 
 	void ReplicateObject(class UObject* Object, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
 
 private:
 
-	TArray<FPropertyReplicationInfo<FObjectProperty>> ObjectPropertiesForReplication;
-	TArray<FPropertyReplicationInfo<FArrayProperty>> ArrayPropertiesForReplication;
+	TArray<FPropertyInfo<FObjectProperty>> ObjectProperties;
+	TArray<FPropertyInfo<FArrayProperty>> ArrayProperties;
 
 };

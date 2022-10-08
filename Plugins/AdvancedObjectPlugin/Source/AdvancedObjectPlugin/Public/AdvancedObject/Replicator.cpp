@@ -16,14 +16,14 @@ void UReplicator::PostInitProperties()
 
 void UReplicator::ReplicateSubobjectsOfOwner(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
 {
-	for (const FPropertyReplicationInfo<FObjectProperty>& ObjectPropertyForReplication : ObjectPropertiesForReplication)
+	for (const FPropertyInfo<FObjectProperty>& ObjectProperty : ObjectProperties)
 	{
-		ReplicateObjectProperty(ObjectPropertyForReplication, Channel, Bunch, RepFlags, OutWroteSomething);
+		ReplicateObjectProperty(ObjectProperty, Channel, Bunch, RepFlags, OutWroteSomething);
 	}
 
-	for (const FPropertyReplicationInfo<FArrayProperty>& ArrayPropertyForReplication : ArrayPropertiesForReplication)
+	for (const FPropertyInfo<FArrayProperty>& ArrayProperty : ArrayProperties)
 	{
-		ReplicateArrayProperty(ArrayPropertyForReplication, Channel, Bunch, RepFlags, OutWroteSomething);
+		ReplicateArrayProperty(ArrayProperty, Channel, Bunch, RepFlags, OutWroteSomething);
 	}
 }
 
@@ -32,41 +32,53 @@ void UReplicator::FindPropertiesForReplication()
 	void* Owner = GetOuter();
 	UStruct* OwnerLayout = GetOuter()->GetClass();
 
-	ObjectPropertiesForReplication = FindPropertiesOfObjectForReplication<FObjectProperty>(true, Owner, OwnerLayout);
-	ArrayPropertiesForReplication = FindPropertiesOfObjectForReplication<FArrayProperty>(true, Owner, OwnerLayout);
+	ObjectProperties = FindProperties<FObjectProperty>(Owner, OwnerLayout);
+	ArrayProperties = FindProperties<FArrayProperty>(Owner, OwnerLayout);
 
-	TArray<FPropertyReplicationInfo<FStructProperty>> StructsForReplication = FindPropertiesOfObjectForReplication<FStructProperty>(true, Owner, OwnerLayout);
-	for (FPropertyReplicationInfo<FStructProperty>& StructForReplication : StructsForReplication)
+	FindStructProperties(Owner, OwnerLayout);
+	// FindArraysOfStructs
+}
+
+void UReplicator::FindStructProperties(void* Owner, UStruct* OwnerLayout)
+{
+	TArray<FPropertyInfo<FStructProperty>> Structs = FindProperties<FStructProperty>(Owner, OwnerLayout);
+	for (FPropertyInfo<FStructProperty>& Struct : Structs)
 	{
-		void* StructPointer = StructForReplication.Property->ContainerPtrToValuePtr<void>(StructForReplication.Owner);
+		void* StructPointer = Struct.Property->ContainerPtrToValuePtr<void>(Struct.Owner);
 		
-		ObjectPropertiesForReplication.Append(FindPropertiesOfObjectForReplication<FObjectProperty>(false, StructPointer, StructForReplication.Property->Struct));
-		ArrayPropertiesForReplication.Append(FindPropertiesOfObjectForReplication<FArrayProperty>(false, StructPointer, StructForReplication.Property->Struct));
+		ObjectProperties.Append(FindProperties<FObjectProperty>(StructPointer, Struct.Property->Struct));
+		ArrayProperties.Append(FindProperties<FArrayProperty>(StructPointer, Struct.Property->Struct));
+
+		FindStructProperties(StructPointer, Struct.Property->Struct);
 	}
 }
 
 template<typename PropertyType>
-TArray<FPropertyReplicationInfo<PropertyType>> UReplicator::FindPropertiesOfObjectForReplication(bool bCheckOnReplication, void* Owner, UStruct* OwnerLayout)
+TArray<FPropertyInfo<PropertyType>> UReplicator::FindProperties(void* Owner, UStruct* OwnerLayout)
 {
 	TFieldIterator<PropertyType> Iterator(OwnerLayout);
-	TArray<FPropertyReplicationInfo<PropertyType>> OutPropertiesForReplication;
+	TArray<FPropertyInfo<PropertyType>> OutProperties;
 	for(; Iterator; ++Iterator)
 	{
 		// Get the current property.
 		PropertyType* Property = *Iterator;
 
+		const bool bCheckReplicationFlags = (Property->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (Property->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify);
+		const bool bCheckReplicableTypes = CastField<FObjectProperty>(Property) || CastField<FStructProperty>(Property) || (CastField<FArrayProperty>(Property) && CastField<FObjectProperty>(CastField<FArrayProperty>(Property)->Inner));
+		const bool bCheckReplication = (OwnerLayout->IsA(UObject::StaticClass()));
+		
 		// If the property has the Replicated or RepNotify flags...
-		if(!bCheckOnReplication || ((Property->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (Property->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify)))
+		if(bCheckReplicableTypes && (!bCheckReplication || bCheckReplicationFlags))
 		{
 			// than add it to the array.
-			OutPropertiesForReplication.Add(FPropertyReplicationInfo<PropertyType>(Property, Owner));
+			OutProperties.Add(FPropertyInfo<PropertyType>(Property, Owner));
 		}
 	}
 
-	return OutPropertiesForReplication;
+	return OutProperties;
 }
 
-void UReplicator::ReplicateObjectProperty(const FPropertyReplicationInfo<FObjectProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
+void UReplicator::ReplicateObjectProperty(const FPropertyInfo<FObjectProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
 {
 	// Get the property value.
 	UObject* Object = PropertyReplicationInfo.Property->GetObjectPropertyValue(PropertyReplicationInfo.Property->ContainerPtrToValuePtr<UObject>(PropertyReplicationInfo.Owner));
@@ -74,7 +86,7 @@ void UReplicator::ReplicateObjectProperty(const FPropertyReplicationInfo<FObject
 	ReplicateObject(Object, Channel, Bunch, RepFlags, OutWroteSomething);
 }
 
-void UReplicator::ReplicateArrayProperty(const FPropertyReplicationInfo<FArrayProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
+void UReplicator::ReplicateArrayProperty(const FPropertyInfo<FArrayProperty>& PropertyReplicationInfo, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething)
 {
 	// Get the property value.
 	TArray<UObject*> Array = *(PropertyReplicationInfo.Property)->ContainerPtrToValuePtr<TArray<UObject*>>(PropertyReplicationInfo.Owner);

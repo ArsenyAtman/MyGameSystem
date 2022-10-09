@@ -24,7 +24,7 @@ FReplicableProperty::FReplicableProperty(FProperty* OwnerProperty, UStruct* Inne
 	TArray<FArrayProperty*> FoundArrayStructProperties = FindArrayProperties<FStructProperty>(InnerLayout);
 	for (FArrayProperty* FoundArrayStructProperty : FoundArrayStructProperties)
 	{
-		//ArrayStructProperties.Add(TUniquePtr<FReplicableProperty>(new FReplicableProperty(FoundArrayStructProperty, CastField<FStructProperty>(FoundArrayStructProperty->Inner)->Struct)));
+		ArrayStructProperties.Add(TUniquePtr<FReplicableProperty>(new FReplicableProperty(FoundArrayStructProperty, CastField<FStructProperty>(FoundArrayStructProperty->Inner)->Struct)));
 	}
 }
 
@@ -48,7 +48,7 @@ void FReplicableProperty::Replicate(void* OwnerPointer, class UActorChannel* Cha
 
 	for (const TUniquePtr<FReplicableProperty>& ArrayStructProperty : ArrayStructProperties)
 	{
-		FScriptArrayHelper ArrayHelper = FScriptArrayHelper(CastField<FArrayProperty>(ArrayStructProperty->OwnerProperty), OwnerPointer);
+		FScriptArrayHelper_InContainer ArrayHelper = FScriptArrayHelper_InContainer(CastField<FArrayProperty>(ArrayStructProperty->OwnerProperty), OwnerPointer);
 		for (int32 ArrayIndex = 0; ArrayIndex < ArrayHelper.Num(); ++ArrayIndex)
 		{
 			void* InnerPointer = ArrayHelper.GetRawPtr(ArrayIndex);

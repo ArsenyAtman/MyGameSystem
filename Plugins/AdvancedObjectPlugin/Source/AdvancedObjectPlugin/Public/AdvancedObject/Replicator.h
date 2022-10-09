@@ -31,8 +31,8 @@ protected:
 
 	void ReplicateObject(UObject* Object, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
 
-	FProperty* OwnerProperty;
-	UStruct* InnerLayout;
+	FProperty* OwnerProperty; // Property, that stores this
+	UStruct* InnerLayout; // Layout of this
 
 	TArray<FObjectProperty*> ObjectProperties;
 	TArray<FArrayProperty*> ArrayObjectProperties;

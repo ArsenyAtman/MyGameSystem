@@ -6,13 +6,17 @@
 #include "UObject/NoExportTypes.h"
 #include "Replicator.generated.h"
 
+class UActorChannel;
+class FOutBunch;
+class UObject;
+
 struct FReplicableProperty
 {
 public:
 
 	FReplicableProperty(FProperty* OwnerProperty, UStruct* InnerLayout);
 
-	void Replicate(void* ContentPointer, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
+	void Replicate(void* ContentPointer, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
 
 protected:
 
@@ -22,10 +26,10 @@ protected:
 	template<typename PropertyType>
 	TArray<FArrayProperty*> FindArrayProperties(UStruct* Layout);
 
-	void ReplicateObjectProperty(void* Owner, const FObjectProperty* ObjectProperty, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
-	void ReplicateArrayObjectProperty(void* Owner, const FArrayProperty* ArrayObjectProperty, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
+	void ReplicateObjectProperty(void* Owner, const FObjectProperty* ObjectProperty, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
+	void ReplicateArrayObjectProperty(void* Owner, const FArrayProperty* ArrayObjectProperty, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
 
-	void ReplicateObject(class UObject* Object, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
+	void ReplicateObject(UObject* Object, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const;
 
 	FProperty* OwnerProperty;
 	UStruct* InnerLayout;
@@ -54,7 +58,7 @@ public:
 	/**
 	 * Replicate subobjects of the owner.
 	 */
-	virtual void ReplicateSubobjectsOfOwner(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
+	virtual void ReplicateSubobjectsOfOwner(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething);
 
 protected:
 

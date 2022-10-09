@@ -100,22 +100,22 @@ TArray<FArrayProperty*> FReplicableProperty::FindArrayProperties(UStruct* Layout
 	return OutProperties;
 }
 
-void FReplicableProperty::ReplicateObjectProperty(void* Owner, const FObjectProperty* ObjectProperty, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const
+void FReplicableProperty::ReplicateObjectProperty(void* Owner, const FObjectProperty* ObjectProperty, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const
 {
-	UObject* Object = *(ObjectProperty)->ContainerPtrToValuePtr<UObject*>(Owner);
+	UObject* Object = *ObjectProperty->ContainerPtrToValuePtr<UObject*>(Owner);
 	ReplicateObject(Object, Channel, Bunch, RepFlags, OutWroteSomething);
 }
 
-void FReplicableProperty::ReplicateArrayObjectProperty(void* Owner, const FArrayProperty* ArrayObjectProperty, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const
+void FReplicableProperty::ReplicateArrayObjectProperty(void* Owner, const FArrayProperty* ArrayObjectProperty, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const
 {
-	TArray<UObject*> Array = *(ArrayObjectProperty)->ContainerPtrToValuePtr<TArray<UObject*>>(Owner);
+	TArray<UObject*> Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Owner);
 	for(UObject* Object : Array)
 	{
 		ReplicateObject(Object, Channel, Bunch, RepFlags, OutWroteSomething);
 	}
 }
 
-void FReplicableProperty::ReplicateObject(class UObject* Object, class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const
+void FReplicableProperty::ReplicateObject(UObject* Object, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const
 {
 	UReplicableObject* ReplicableObject = Cast<UReplicableObject>(Object);
 	if(IsValid(ReplicableObject) && !ReplicableObject->GetIsReplicatingNow())

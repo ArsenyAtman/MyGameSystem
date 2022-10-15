@@ -59,6 +59,12 @@ protected:
 
 private:
 
+	template<typename PropertyType>
+	TArray<PropertyType*> FindProperties(UStruct* Layout);
+
+	template<typename ElementType>
+	TArray<FArrayProperty*> FindArrayProperties(UStruct* Layout);
+
 	TArray<FObjectProperty*> FindObjectPropertiesWithSaveGame(TFieldIterator<FObjectProperty> ObjectsIterator);
 
 	TArray<UObject*> OutersForSaving;

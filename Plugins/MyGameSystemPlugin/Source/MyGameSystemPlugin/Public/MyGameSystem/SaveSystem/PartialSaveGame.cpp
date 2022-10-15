@@ -71,6 +71,13 @@ void UPartialSaveGame::SaveObject(UObject* Object)
         FObjectRecord ObjectRecord = FObjectRecord(Object, Object->GetName(), Object->GetClass(), Object->GetOuter(), ObjectData);
         ObjectRecord.Type = EObjectType::Object;
 
+        TArray<FArrayProperty*> ArrayObjectProperties = FindArrayProperties<FObjectProperty>(Object->GetClass());
+        for (FArrayProperty* ArrayObjectProperty : ArrayObjectProperties)
+        {
+            TArray<UObject*> Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
+            ObjectRecord.SizesOfArrays.Add(Array.Num());
+        }
+
         AActor* Actor = Cast<AActor>(Object);
         if (IsValid(Actor))
         {
@@ -109,7 +116,7 @@ void UPartialSaveGame::SaveObject(UObject* Object)
 }
 
 void UPartialSaveGame::SaveSubobjects(UObject* Object)
-{
+{    
     AActor* Actor = Cast<AActor>(Object);
     if (IsValid(Actor))
     {
@@ -132,13 +139,24 @@ void UPartialSaveGame::SaveSubobjects(UObject* Object)
     }
 
     UClass* Class = Object->GetClass();
-	TFieldIterator<FObjectProperty> ObjectsIterator(Class);
-	TArray<FObjectProperty*> ObjectProperties = FindObjectPropertiesWithSaveGame(ObjectsIterator);
+
+	TArray<FObjectProperty*> ObjectProperties = FindProperties<FObjectProperty>(Class);
     for (FObjectProperty* ObjectProperty : ObjectProperties)
 	{
 		UObject* Subobject = ObjectProperty->GetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object));
         SaveObject(Subobject);
 	}
+
+    TArray<FArrayProperty*> ArrayObjectProperties = FindArrayProperties<FObjectProperty>(Class);
+    for (FArrayProperty* ArrayObjectProperty : ArrayObjectProperties)
+    {
+        TArray<UObject*> Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
+        for (UObject* Subobject : Array)
+		{
+            SaveObject(Subobject);
+        }
+    }
+
 }
 
 TArray<uint8> UPartialSaveGame::SerializeObject(UObject* Object)
@@ -263,14 +281,29 @@ void UPartialSaveGame::LoadSubobjects(UObject* Object, int64& ObjectIndex)
     }
 
     UClass* Class = Object->GetClass();
-	TFieldIterator<FObjectProperty> ObjectsIterator(Class);
-	TArray<FObjectProperty*> ObjectProperties = FindObjectPropertiesWithSaveGame(ObjectsIterator);
+
+	TArray<FObjectProperty*> ObjectProperties = FindProperties<FObjectProperty>(Class);
     for (FObjectProperty* ObjectProperty : ObjectProperties)
 	{
         ++ObjectIndex;
         UObject* Subobject = LoadObject(Object->GetWorld(), ObjectIndex);
 		ObjectProperty->SetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object), Subobject);
 	}
+
+    TArray<FArrayProperty*> ArrayObjectProperties = FindArrayProperties<FObjectProperty>(Class);
+    for (int32 Index = 0; Index < ArrayObjectProperties.Num(); ++Index)
+    {
+        int32 SizeOfArray = ObjectRecord.SizesOfArrays[Index];
+        FArrayProperty* ArrayObjectProperty = ArrayObjectProperties[Index];
+        TArray<UObject*>& Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
+        Array.Empty();
+        for (int32 ArrayIndex = 0; ArrayIndex < SizeOfArray; ++ArrayIndex)
+		{
+            ++ObjectIndex;
+			UObject* Subobject = LoadObject(Object->GetWorld(), ObjectIndex);
+            Array.Add(Subobject);
+        }
+    }
 }
 
 void UPartialSaveGame::DeserializeObject(UObject* Object, const TArray<uint8>& Data)
@@ -280,15 +313,34 @@ void UPartialSaveGame::DeserializeObject(UObject* Object, const TArray<uint8>& D
     Object->Serialize(SaveGameArchive);
 }
 
-TArray<FObjectProperty*> UPartialSaveGame::FindObjectPropertiesWithSaveGame(TFieldIterator<FObjectProperty> ObjectsIterator)
+template<typename PropertyType>
+TArray<PropertyType*> UPartialSaveGame::FindProperties(UStruct* Layout)
 {
-    TArray<FObjectProperty*> OutProperties;
-	for(; ObjectsIterator; ++ObjectsIterator)
+	TFieldIterator<PropertyType> Iterator(Layout);
+	TArray<PropertyType*> OutProperties;
+	for(; Iterator; ++Iterator)
 	{
-		FObjectProperty* ObjectProperty = *ObjectsIterator;
-		if(ObjectProperty->GetPropertyFlags() & EPropertyFlags::CPF_SaveGame)
+		PropertyType* Property = *Iterator;
+		if(Property->GetPropertyFlags() & EPropertyFlags::CPF_SaveGame)
 		{
-			OutProperties.Add(ObjectProperty);
+			OutProperties.Add(Property);
+		}
+	}
+
+	return OutProperties;
+}
+
+template<typename ElementType>
+TArray<FArrayProperty*> UPartialSaveGame::FindArrayProperties(UStruct* Layout)
+{
+	TFieldIterator<FArrayProperty> Iterator(Layout);
+	TArray<FArrayProperty*> OutProperties;
+	for(; Iterator; ++Iterator)
+	{
+		FArrayProperty* Property = *Iterator;
+		if((CastField<ElementType>(Property->Inner) != nullptr) && (Property->GetPropertyFlags() & EPropertyFlags::CPF_SaveGame))
+		{
+			OutProperties.Add(Property);
 		}
 	}
 

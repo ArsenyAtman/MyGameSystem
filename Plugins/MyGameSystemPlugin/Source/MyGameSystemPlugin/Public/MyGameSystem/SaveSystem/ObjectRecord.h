@@ -35,6 +35,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<uint8> Data;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<int32> SizesOfArrays;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EObjectType Type;
@@ -57,6 +60,7 @@ public:
         UClass* ObjectClass = nullptr, 
         UObject* ObjectOuter = nullptr, 
         const TArray<uint8>& ObjectData = TArray<uint8>(),
+        const TArray<int32>& ObjectSizesOfArrays = TArray<int32>(),
         EObjectType ObjectType = EObjectType::None, 
         int64 ObjectCountOfComponents = 0, 
         const FTransform& ObjectTransform = FTransform(), 
@@ -69,6 +73,7 @@ public:
         Class = ObjectClass;
         OuterID = reinterpret_cast<int64>(ObjectOuter);
         Data = ObjectData;
+        SizesOfArrays = ObjectSizesOfArrays;
         Type = ObjectType;
         CountOfComponents = ObjectCountOfComponents;
         Transform = ObjectTransform;

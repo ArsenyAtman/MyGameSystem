@@ -108,7 +108,7 @@ void FObjectForReplication::ReplicateObjectProperty(void* Object, const FObjectP
 
 void FObjectForReplication::ReplicateArrayObjectProperty(void* Object, const FArrayProperty* ArrayObjectProperty, UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags, bool& OutWroteSomething) const
 {
-	TArray<UObject*> ArrayOfSubobjects = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
+	TArray<UObject*>& ArrayOfSubobjects = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
 	for(UObject* Subobject : ArrayOfSubobjects)
 	{
 		ReplicateObject(Subobject, Channel, Bunch, RepFlags, OutWroteSomething);

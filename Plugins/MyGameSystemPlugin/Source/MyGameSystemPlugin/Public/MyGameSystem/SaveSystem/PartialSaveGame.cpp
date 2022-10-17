@@ -75,7 +75,7 @@ void UPartialSaveGame::SaveObject(UObject* Object)
         for (FArrayProperty* ArrayObjectProperty : ArrayObjectProperties)
         {
             TArray<UObject*> Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
-            ObjectRecord.SizesOfArrays.Add(Array.Num());
+            
         }
 
         AActor* Actor = Cast<AActor>(Object);
@@ -107,7 +107,7 @@ void UPartialSaveGame::SaveObject(UObject* Object)
         SavedObjects.Add(Object);
         ObjectRecords.Add(ObjectRecord);
         AddOuterForSaving(Object);
-        SaveSubobjects(Object);
+        SaveSubobjects(Object, ObjectRecords.Num() - 1);
     }
     else
     {
@@ -115,7 +115,7 @@ void UPartialSaveGame::SaveObject(UObject* Object)
     }
 }
 
-void UPartialSaveGame::SaveSubobjects(UObject* Object)
+void UPartialSaveGame::SaveSubobjects(UObject* Object, int64 ObjectIndex)
 {    
     AActor* Actor = Cast<AActor>(Object);
     if (IsValid(Actor))
@@ -139,24 +139,7 @@ void UPartialSaveGame::SaveSubobjects(UObject* Object)
     }
 
     UClass* Class = Object->GetClass();
-
-	TArray<FObjectProperty*> ObjectProperties = FindProperties<FObjectProperty>(Class);
-    for (FObjectProperty* ObjectProperty : ObjectProperties)
-	{
-		UObject* Subobject = ObjectProperty->GetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object));
-        SaveObject(Subobject);
-	}
-
-    TArray<FArrayProperty*> ArrayObjectProperties = FindArrayProperties<FObjectProperty>(Class);
-    for (FArrayProperty* ArrayObjectProperty : ArrayObjectProperties)
-    {
-        TArray<UObject*> Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
-        for (UObject* Subobject : Array)
-		{
-            SaveObject(Subobject);
-        }
-    }
-
+	SaveStructures(Object, Class, ObjectIndex);
 }
 
 TArray<uint8> UPartialSaveGame::SerializeObject(UObject* Object)
@@ -281,29 +264,8 @@ void UPartialSaveGame::LoadSubobjects(UObject* Object, int64& ObjectIndex)
     }
 
     UClass* Class = Object->GetClass();
-
-	TArray<FObjectProperty*> ObjectProperties = FindProperties<FObjectProperty>(Class);
-    for (FObjectProperty* ObjectProperty : ObjectProperties)
-	{
-        ++ObjectIndex;
-        UObject* Subobject = LoadObject(Object->GetWorld(), ObjectIndex);
-		ObjectProperty->SetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object), Subobject);
-	}
-
-    TArray<FArrayProperty*> ArrayObjectProperties = FindArrayProperties<FObjectProperty>(Class);
-    for (int32 Index = 0; Index < ArrayObjectProperties.Num(); ++Index)
-    {
-        int32 SizeOfArray = ObjectRecord.SizesOfArrays[Index];
-        FArrayProperty* ArrayObjectProperty = ArrayObjectProperties[Index];
-        TArray<UObject*>& Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
-        Array.Empty();
-        for (int32 ArrayIndex = 0; ArrayIndex < SizeOfArray; ++ArrayIndex)
-		{
-            ++ObjectIndex;
-			UObject* Subobject = LoadObject(Object->GetWorld(), ObjectIndex);
-            Array.Add(Subobject);
-        }
-    }
+    int64 ArrayIndex = -1;
+    LoadStructures(Object->GetWorld(), Object, Class, ObjectIndex, ArrayIndex, ObjectRecord);
 }
 
 void UPartialSaveGame::DeserializeObject(UObject* Object, const TArray<uint8>& Data)
@@ -311,6 +273,91 @@ void UPartialSaveGame::DeserializeObject(UObject* Object, const TArray<uint8>& D
     FMemoryReader MemoryReader(Data, true);
     FSaveGameArchive SaveGameArchive = FSaveGameArchive(MemoryReader);
     Object->Serialize(SaveGameArchive);
+}
+
+void UPartialSaveGame::SaveStructures(void* Object, UStruct* Layout, int64 ObjectIndex)
+{
+    TArray<FObjectProperty*> ObjectProperties = FindProperties<FObjectProperty>(Layout);
+    for (FObjectProperty* ObjectProperty : ObjectProperties)
+	{
+		UObject* Subobject = ObjectProperty->GetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object));
+        SaveObject(Subobject);
+	}
+
+    TArray<FArrayProperty*> ArrayObjectProperties = FindArrayProperties<FObjectProperty>(Layout);
+    for (FArrayProperty* ArrayObjectProperty : ArrayObjectProperties)
+    {
+        TArray<UObject*> Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
+        ObjectRecords[ObjectIndex].SizesOfArrays.Add(Array.Num());
+        for (UObject* Subobject : Array)
+		{
+            SaveObject(Subobject);
+        }
+    }
+
+	TArray<FStructProperty*> FoundStructProperties = FindProperties<FStructProperty>(Layout);
+	for (FStructProperty* FoundStructProperty : FoundStructProperties)
+	{
+		void* Subobject = FoundStructProperty->ContainerPtrToValuePtr<void*>(Object);
+		SaveStructures(Subobject, FoundStructProperty->Struct, ObjectIndex);
+    }
+
+	TArray<FArrayProperty*> FoundArrayStructProperties = FindArrayProperties<FStructProperty>(Layout);
+	for (FArrayProperty* FoundArrayStructProperty : FoundArrayStructProperties)
+	{
+		FScriptArrayHelper_InContainer ArrayHelper = FScriptArrayHelper_InContainer(FoundArrayStructProperty, Object);
+        //ObjectRecord.SizesOfArrays.Add(ArrayHelper.Num());
+		for (int32 ArrayIndex = 0; ArrayIndex < ArrayHelper.Num(); ++ArrayIndex)
+		{
+			void* Subobject = ArrayHelper.GetRawPtr(ArrayIndex);
+            SaveStructures(Subobject, CastField<FStructProperty>(FoundArrayStructProperty->Inner)->Struct, ObjectIndex);
+		}
+    }
+}
+
+void UPartialSaveGame::LoadStructures(UWorld* World, void* Object, UStruct* Layout, int64& ObjectIndex, int64& ArrayIndex, FObjectRecord& ObjectRecord)
+{
+    TArray<FObjectProperty*> ObjectProperties = FindProperties<FObjectProperty>(Layout);
+    for (FObjectProperty* ObjectProperty : ObjectProperties)
+	{
+        ++ObjectIndex;
+        UObject* Subobject = LoadObject(World, ObjectIndex);
+		ObjectProperty->SetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object), Subobject);
+	}
+
+    TArray<FArrayProperty*> ArrayObjectProperties = FindArrayProperties<FObjectProperty>(Layout);
+    for (int32 Index = 0; Index < ArrayObjectProperties.Num(); ++Index)
+    {
+        ++ArrayIndex;
+        int32 SizeOfArray = ObjectRecord.SizesOfArrays[ArrayIndex];
+        FArrayProperty* ArrayObjectProperty = ArrayObjectProperties[Index];
+        TArray<UObject*>& Array = *ArrayObjectProperty->ContainerPtrToValuePtr<TArray<UObject*>>(Object);
+        Array.Empty();
+        for (int32 IndexInArray = 0; IndexInArray < SizeOfArray; ++IndexInArray)
+		{
+            ++ObjectIndex;
+			UObject* Subobject = LoadObject(World, ObjectIndex);
+            Array.Add(Subobject);
+        }
+    }
+
+    TArray<FStructProperty*> FoundStructProperties = FindProperties<FStructProperty>(Layout);
+	for (FStructProperty* FoundStructProperty : FoundStructProperties)
+	{
+        void* Subobject = FoundStructProperty->ContainerPtrToValuePtr<void*>(Object);
+		LoadStructures(World, Subobject, FoundStructProperty->Struct, ObjectIndex, ArrayIndex, ObjectRecord);
+    }
+
+	TArray<FArrayProperty*> FoundArrayStructProperties = FindArrayProperties<FStructProperty>(Layout);
+	for (FArrayProperty* FoundArrayStructProperty : FoundArrayStructProperties)
+	{
+		FScriptArrayHelper_InContainer ArrayHelper = FScriptArrayHelper_InContainer(FoundArrayStructProperty, Object);
+		for (int32 IndexInArray = 0; IndexInArray < ArrayHelper.Num(); ++IndexInArray)
+		{
+			void* Subobject = ArrayHelper.GetRawPtr(IndexInArray);
+            LoadStructures(World, Subobject, CastField<FStructProperty>(FoundArrayStructProperty->Inner)->Struct, ObjectIndex, ArrayIndex, ObjectRecord);
+		}
+    }
 }
 
 template<typename PropertyType>

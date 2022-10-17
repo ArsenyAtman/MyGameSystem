@@ -43,7 +43,7 @@ protected:
 	void SaveObject(UObject* Object);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void SaveSubobjects(UObject* Object);
+	void SaveSubobjects(UObject* Object, int64 ObjectIndex);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	TArray<uint8> SerializeObject(UObject* Object);
@@ -58,6 +58,9 @@ protected:
 	void DeserializeObject(UObject* Object, const TArray<uint8>& Data);
 
 private:
+
+	void SaveStructures(void* Object, UStruct* Layout, int64 ObjectIndex);
+	void LoadStructures(UWorld* World, void* Object, UStruct* Layout, int64& ObjectIndex, int64& ArrayIndex, FObjectRecord& ObjectRecord);
 
 	template<typename PropertyType>
 	TArray<PropertyType*> FindProperties(UStruct* Layout);

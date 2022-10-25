@@ -29,46 +29,46 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 	void Load(const UObject* WorldContextObject);
 
-protected:
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void AddOuterForSaving(UObject* Outer);
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void AddOuterForLoading(UObject* Outer);
-	
-	// void AddRewritable(UObject)
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void SaveObject(UObject* Object);
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void SaveSubobjects(UObject* Object, int64 ObjectIndex);
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	TArray<uint8> SerializeObject(UObject* Object);
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	UObject* LoadObject(UWorld* World, int64& ObjectIndex);
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void LoadSubobjects(UObject* Object, int64& ObjectIndex);
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void DeserializeObject(UObject* Object, const TArray<uint8>& Data);
-
 private:
 
-	void SaveStructures(void* Object, UStruct* Layout, int64 ObjectIndex);
-	void LoadStructures(UWorld* World, void* Object, UStruct* Layout, int64& ObjectIndex, int64& ArrayIndex, FObjectRecord& ObjectRecord);
+	// TODO: Support saveable interface.
+	// TODO: Make protected interface (?)
+
+	void AddOuterForSaving(UObject* Outer);
+	void AddOuterForLoading(UObject* Outer);
+
+	void SaveObject(UObject* Object);
+	void SaveObjectPart(UObject* Object, FObjectRecord& ObjectRecord);
+	void SaveActorPart(AActor* Actor, FObjectRecord& ObjectRecord);
+	void SaveComponentPart(UActorComponent* Component, FObjectRecord& ObjectRecord);
+
+	void SaveSubobjects(UObject* Object, const int64 ObjectRecordIndex);
+	void SaveSubobjectsOfObject(UObject* Object, const int64 ObjectRecordIndex);
+	void SaveSubobjectsOfActor(AActor* Actor, const int64 ObjectRecordIndex);
+	void SaveSubobjectsOfSceneComponent(USceneComponent* Component, const int64 ObjectRecordIndex);
+
+	// TODO: pass the index of parent and increment it,
+	UObject* LoadRecord(UWorld* World, int64& ObjectRecordIndex);
+	UObject* LoadObject(UWorld* World, const FObjectRecord& ObjectRecord);
+	AActor* LoadActor(UWorld* World, const FObjectRecord& ObjectRecord);
+	UActorComponent* LoadComponent(UWorld* World, const FObjectRecord& ObjectRecord);
+
+	void LoadSubobjects(UObject* Object, int64& ObjectIndex);
+	void LoadSubobjectsOfObject(UObject* Object, int64& ObjectIndex, const FObjectRecord& ObjectRecord);
+	void LoadSubobjectsOfActor(AActor* Actor, int64& ObjectIndex, const FObjectRecord& ObjectRecord);
+	void LoadSubobjectsOfComponent(USceneComponent* Component, int64& ObjectIndex, const FObjectRecord& ObjectRecord);
+
+	TArray<uint8> SerializeObject(UObject* Object);
+	void DeserializeObject(UObject* Object, const TArray<uint8>& Data);
+
+	void SaveProperties(void* Object, UStruct* Layout, const int64 ObjectRecordIndex);
+	void LoadProperties(UWorld* World, void* Object, UStruct* Layout, int64& ObjectIndex, int64& ArrayIndex, const FObjectRecord& ObjectRecord);
 
 	template<typename PropertyType>
 	TArray<PropertyType*> FindProperties(UStruct* Layout);
 
 	template<typename ElementType>
 	TArray<FArrayProperty*> FindArrayProperties(UStruct* Layout);
-
-	TArray<FObjectProperty*> FindObjectPropertiesWithSaveGame(TFieldIterator<FObjectProperty> ObjectsIterator);
 
 	TArray<UObject*> OutersForSaving;
 	TMap<int64, UObject*> OutersForLoading;
@@ -81,8 +81,5 @@ private:
 
 	UPROPERTY()
 	TArray<FObjectRecord> ObjectRecords;
-
-	UPROPERTY()
-	TArray<FObjectRecord> ObjectRecordsForRewriting;
 	
 };

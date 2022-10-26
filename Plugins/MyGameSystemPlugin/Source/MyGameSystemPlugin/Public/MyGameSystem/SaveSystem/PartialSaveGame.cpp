@@ -47,7 +47,6 @@ void UPartialSaveGame::Load(const UObject* WorldContextObject)
         const int64 MaxObjectIndex = ObjectRecords.Num() - 1;
         while (ObjectIndex < MaxObjectIndex)
         {
-            ++ObjectIndex;
             LoadRecord(World, ObjectIndex);
         }
     }
@@ -71,11 +70,13 @@ void UPartialSaveGame::SaveObject(UObject* Object)
         return;
     }
 
+    //        |   |   |   |   |
+    // TODO: \|/ \|/ \|/ \|/ \|/
     if (SavedObjects.Find(Object) == INDEX_NONE)// && (!IsValid(Object->GetOuter()) || OutersForSaving.Find(Object->GetOuter()) != INDEX_NONE))
     {
         FObjectRecord ObjectRecord = FObjectRecord();
 
-        // TODO: Save type selection (delegate common part to exact implementations)
+        // TODO: Do something with checks (???)
         SaveObjectPart(Object, ObjectRecord);
 
         AActor* Actor = Cast<AActor>(Object);
@@ -148,8 +149,11 @@ void UPartialSaveGame::SaveSubobjects(UObject* Object, const int64 ObjectRecordI
 
 void UPartialSaveGame::SaveSubobjectsOfObject(UObject* Object, const int64 ObjectRecordIndex)
 {
-    UClass* Class = Object->GetClass();
-	SaveProperties(Object, Class, ObjectRecordIndex);
+    if (IsValid(Object))
+    {
+        UClass* Class = Object->GetClass();
+	    SaveProperties(Object, Class, ObjectRecordIndex);
+    }
 }
 
 void UPartialSaveGame::SaveSubobjectsOfActor(AActor* Actor, const int64 ObjectRecordIndex)
@@ -192,6 +196,7 @@ TArray<uint8> UPartialSaveGame::SerializeObject(UObject* Object)
 
 UObject* UPartialSaveGame::LoadRecord(UWorld* World, int64& ObjectIndex)
 {
+    ++ObjectIndex;
     FObjectRecord ObjectRecord = ObjectRecords[ObjectIndex];
 
     if (ObjectRecord.Type == EObjectType::Pointer && LoadedObjects.Find(ObjectRecord.SelfID))
@@ -227,7 +232,6 @@ UObject* UPartialSaveGame::LoadRecord(UWorld* World, int64& ObjectIndex)
         break;
     }
 
-    // TODO: Delegate the commont part to exact implementations.
     DeserializeObject(Object, ObjectRecord.Data);
 
     LoadedObjects.Add(ObjectRecord.SelfID, Object);
@@ -289,13 +293,13 @@ void UPartialSaveGame::LoadSubobjects(UObject* Object, int64& ObjectIndex)
 {
     const FObjectRecord& ObjectRecord = ObjectRecords[ObjectIndex];
 
+    // TODO: Do something with checks (???)
     AActor* Actor = Cast<AActor>(Object);
     if (IsValid(Actor))
     {
         LoadSubobjectsOfActor(Actor, ObjectIndex, ObjectRecord);
     }
 
-    // TODO: Move casts in exact implementations. (Rename in try Save/Load)
     USceneComponent* SceneComponent = Cast<USceneComponent>(Object);
     if (IsValid(SceneComponent))
     {
@@ -318,7 +322,6 @@ void UPartialSaveGame::LoadSubobjectsOfActor(AActor* Actor, int64& ObjectIndex, 
     {
         for (int64 CountOfLoadedComponents = 0; CountOfLoadedComponents < ObjectRecord.CountOfComponents; ++CountOfLoadedComponents)
         {
-            ++ObjectIndex;
             LoadRecord(Actor->GetWorld(), ObjectIndex);
         }
     }
@@ -330,7 +333,6 @@ void UPartialSaveGame::LoadSubobjectsOfComponent(USceneComponent* SceneComponent
     {
         for (int64 CountOfLoadedComponents = 0; CountOfLoadedComponents < ObjectRecord.CountOfComponents; ++CountOfLoadedComponents)
         {
-            ++ObjectIndex;
             LoadRecord(SceneComponent->GetWorld(), ObjectIndex);
         }
     }
@@ -387,7 +389,6 @@ void UPartialSaveGame::LoadProperties(UWorld* World, void* Object, UStruct* Layo
     TArray<FObjectProperty*> ObjectProperties = FindProperties<FObjectProperty>(Layout);
     for (FObjectProperty* ObjectProperty : ObjectProperties)
 	{
-        ++ObjectIndex;
         UObject* Subobject = LoadRecord(World, ObjectIndex);
 		ObjectProperty->SetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object), Subobject);
 	}
@@ -402,7 +403,6 @@ void UPartialSaveGame::LoadProperties(UWorld* World, void* Object, UStruct* Layo
         Array.Empty();
         for (int32 IndexInArray = 0; IndexInArray < SizeOfArray; ++IndexInArray)
 		{
-            ++ObjectIndex;
 			UObject* Subobject = LoadRecord(World, ObjectIndex);
             Array.Add(Subobject);
         }

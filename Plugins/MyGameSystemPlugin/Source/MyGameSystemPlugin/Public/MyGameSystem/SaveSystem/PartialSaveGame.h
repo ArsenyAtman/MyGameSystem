@@ -32,7 +32,6 @@ public:
 private:
 
 	// TODO: Support saveable interface.
-	// TODO: Make protected interface (?)
 
 	void AddOuterForSaving(UObject* Outer);
 	void AddOuterForLoading(UObject* Outer);
@@ -47,8 +46,11 @@ private:
 	void SaveSubobjectsOfActor(AActor* Actor, const int64 ObjectRecordIndex);
 	void SaveSubobjectsOfSceneComponent(USceneComponent* Component, const int64 ObjectRecordIndex);
 
-	// TODO: pass the index of parent and increment it,
-	UObject* LoadRecord(UWorld* World, int64& ObjectRecordIndex);
+	TArray<uint8> SerializeObject(UObject* Object);
+
+	void SaveProperties(void* Object, UStruct* Layout, const int64 ObjectRecordIndex);
+
+	UObject* LoadRecord(UWorld* World, int64& ParentObjectRecordIndex);
 	UObject* LoadObject(UWorld* World, const FObjectRecord& ObjectRecord);
 	AActor* LoadActor(UWorld* World, const FObjectRecord& ObjectRecord);
 	UActorComponent* LoadComponent(UWorld* World, const FObjectRecord& ObjectRecord);
@@ -58,10 +60,8 @@ private:
 	void LoadSubobjectsOfActor(AActor* Actor, int64& ObjectIndex, const FObjectRecord& ObjectRecord);
 	void LoadSubobjectsOfComponent(USceneComponent* Component, int64& ObjectIndex, const FObjectRecord& ObjectRecord);
 
-	TArray<uint8> SerializeObject(UObject* Object);
 	void DeserializeObject(UObject* Object, const TArray<uint8>& Data);
-
-	void SaveProperties(void* Object, UStruct* Layout, const int64 ObjectRecordIndex);
+	
 	void LoadProperties(UWorld* World, void* Object, UStruct* Layout, int64& ObjectIndex, int64& ArrayIndex, const FObjectRecord& ObjectRecord);
 
 	template<typename PropertyType>

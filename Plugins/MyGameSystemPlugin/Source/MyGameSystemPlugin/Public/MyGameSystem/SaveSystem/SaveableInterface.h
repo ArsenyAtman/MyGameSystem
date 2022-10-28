@@ -22,38 +22,30 @@ class MYGAMESYSTEMPLUGIN_API ISaveableInterface
 public:
 
 	/**
-	 * Should this object be saved.
-	 * @return Should be saved.
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool ShouldBeSaved();
-	bool ShouldBeSaved_Implementation() { return false; }
-
-	/**
 	 * Called before the saving process.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveableInterface")
 	void BeforeSave();
 	void BeforeSave_Implementation() { return; }
 
 	/**
-	 * Called after the saving process.
+	 * Called after the saving process (and saving of all subobjects).
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveableInterface")
 	void AfterSave();
 	void AfterSave_Implementation() { return; }
 
 	/**
 	 * Called before the loading process.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveableInterface")
 	void BeforeLoad();
 	void BeforeLoad_Implementation() { return; }
 
 	/**
-	 * Called after the loading process.
+	 * Called after the loading process (and loading of all subobjects).
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveableInterface")
 	void AfterLoad();
 	void AfterLoad_Implementation() { return; }
 

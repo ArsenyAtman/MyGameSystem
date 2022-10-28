@@ -31,8 +31,6 @@ public:
 
 private:
 
-	// TODO: Support saveable interface.
-
 	void AddOuterForSaving(UObject* Outer);
 	void AddOuterForLoading(UObject* Outer);
 

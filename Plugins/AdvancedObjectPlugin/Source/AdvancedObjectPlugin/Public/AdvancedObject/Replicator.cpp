@@ -66,10 +66,10 @@ TArray<PropertyType*> FObjectForReplication::FindProperties(UStruct* Layout)
 	{
 		PropertyType* Property = *Iterator;
 
-		const bool bCheckReplicationFlags = (Property->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (Property->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify);
-		const bool bCheckReplication = (Cast<UClass>(Layout) != nullptr);
+		const bool bCheckReplicationFlags = ((Property->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (Property->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify)) && !(Property->GetPropertyFlags() & EPropertyFlags::CPF_RepSkip);
+		const bool bIsClass = (Cast<UClass>(Layout) != nullptr);
 		
-		if(!bCheckReplication || bCheckReplicationFlags)
+		if(!bIsClass || bCheckReplicationFlags)
 		{
 			OutProperties.Add(Property);
 		}
@@ -87,11 +87,11 @@ TArray<FArrayProperty*> FObjectForReplication::FindArrayProperties(UStruct* Layo
 	{
 		FArrayProperty* Property = *Iterator;
 
-		const bool bCheckReplicationFlags = (Property->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (Property->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify);
+		const bool bCheckReplicationFlags = ((Property->GetPropertyFlags() & EPropertyFlags::CPF_Net) || (Property->GetPropertyFlags() & EPropertyFlags::CPF_RepNotify)) && !(Property->GetPropertyFlags() & EPropertyFlags::CPF_RepSkip);
 		const bool bCheckInnerType = (CastField<ElementType>(Property->Inner) != nullptr);
-		const bool bCheckReplication = (Cast<UClass>(Layout) != nullptr);
+		const bool bIsClass = (Cast<UClass>(Layout) != nullptr);
 		
-		if(bCheckInnerType && (!bCheckReplication || bCheckReplicationFlags))
+		if(bCheckInnerType && (!bIsClass || bCheckReplicationFlags))
 		{
 			OutProperties.Add(Property);
 		}

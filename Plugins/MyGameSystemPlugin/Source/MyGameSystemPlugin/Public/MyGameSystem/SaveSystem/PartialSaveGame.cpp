@@ -27,7 +27,6 @@ void UPartialSaveGame::Save(const TArray<UObject*> Objects)
     {
         SaveObject(Object);
     }
-    int a = 0;
 }
 
 void UPartialSaveGame::SetOutersForLoading(const TArray<UObject*>& Outers)
@@ -119,9 +118,14 @@ void UPartialSaveGame::SaveActorPart(AActor* Actor, FObjectRecord& ObjectRecord)
 {
     if (IsValid(Actor))
     {
-        // TODO: Save attached actors.
         ObjectRecord.Type = EObjectType::Actor;
         ObjectRecord.Transform = Actor->GetActorTransform();
+
+        if (IsValid(Actor->GetRootComponent()->GetAttachParent()))
+        {
+            ObjectRecord.ParentID = reinterpret_cast<int64>(Actor->GetRootComponent()->GetAttachParent());
+            ObjectRecord.Socket = Actor->GetRootComponent()->GetAttachSocketName();
+        }
     }
 }
 
@@ -131,6 +135,14 @@ void UPartialSaveGame::SaveComponentPart(UActorComponent* ActorComponent, FObjec
     {
         ObjectRecord.Type = EObjectType::ActorComponent;
         ObjectRecord.OwnerID = reinterpret_cast<int64>(ActorComponent->GetOwner());
+
+        USceneComponent* SceneComponent = Cast<USceneComponent>(ActorComponent);
+        if (IsValid(SceneComponent))
+        {
+            ObjectRecord.ParentID = reinterpret_cast<int64>(SceneComponent->GetAttachParent());
+            ObjectRecord.Transform = SceneComponent->GetComponentTransform();
+            ObjectRecord.Socket = SceneComponent->GetAttachSocketName();
+        }
     }
 }
 
@@ -173,15 +185,22 @@ void UPartialSaveGame::SaveSubobjectsOfSceneComponent(USceneComponent* SceneComp
     if (IsValid(SceneComponent))
     {
         TArray<USceneComponent*> Components = SceneComponent->GetAttachChildren();
-        ObjectRecords[ObjectRecordIndex].ParentID = reinterpret_cast<int64>(SceneComponent->GetAttachParent());
-        ObjectRecords[ObjectRecordIndex].Transform = SceneComponent->GetComponentTransform();
-        ObjectRecords[ObjectRecordIndex].CountOfComponents = Components.Num();
-        for (USceneComponent* Component : Components)
+
+        // Save attached components.
+        TArray<USceneComponent*> AttachedComponents = Components.FilterByPredicate([SceneComponent](USceneComponent* const& ChildComponent){ return (SceneComponent->GetOwner() == ChildComponent->GetOwner()); });
+        ObjectRecords[ObjectRecordIndex].CountOfComponents = AttachedComponents.Num();
+        for (USceneComponent* Component : AttachedComponents)
         {
             SaveObject(Component);
         }
 
-        // TODO: Save attached actors.
+        // Save attached actors.
+        TArray<USceneComponent*> AttachedRootComponents = Components.FilterByPredicate([SceneComponent](USceneComponent* const& ChildComponent){ return (SceneComponent->GetOwner() != ChildComponent->GetOwner()); });
+        ObjectRecords[ObjectRecordIndex].CountOfAttachedActors = AttachedRootComponents.Num();
+        for (USceneComponent* RootComponent : AttachedRootComponents)
+        {
+            SaveObject(RootComponent->GetOwner());
+        }
     }
 }
 
@@ -302,7 +321,6 @@ AActor* UPartialSaveGame::LoadActor(UWorld* World, const FObjectRecord& ObjectRe
     FActorSpawnParameters SpawnParams;
     SpawnParams.Name = ObjectRecord.Name;
     // TODO: Find the outer.
-    // TODO: Load attached actors.
     AActor* Actor = World->SpawnActorDeferred<AActor>(ObjectRecord.Class, ObjectRecord.Transform, nullptr);
 
     if (Actor->Implements<USaveableInterface>())
@@ -311,6 +329,17 @@ AActor* UPartialSaveGame::LoadActor(UWorld* World, const FObjectRecord& ObjectRe
     }
 
     Actor->FinishSpawning(ObjectRecord.Transform);
+
+    if (ObjectRecord.ParentID != reinterpret_cast<int64>(nullptr))
+    {
+        USceneComponent* SceneComponent = Cast<USceneComponent>(LoadedObjects[ObjectRecord.ParentID]);
+        if (IsValid(SceneComponent))
+        {
+            FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
+            Actor->AttachToComponent(SceneComponent, AttachmentRules, ObjectRecord.Socket);
+        }
+    }
+    
     return Actor;
 }
 
@@ -321,7 +350,6 @@ UActorComponent* UPartialSaveGame::LoadComponent(UWorld* World, const FObjectRec
     Owner->GetComponents(Components, true);
 
     UActorComponent* ActorComponent = nullptr;
-    // TODO: Check if it will not breake with changed names.
     UActorComponent** FoundComponent = Components.FindByPredicate([ObjectRecord](UActorComponent*& ActorComponent){ return (FName(ActorComponent->GetName()) == ObjectRecord.Name);});
     if (FoundComponent != nullptr)
     {
@@ -335,8 +363,8 @@ UActorComponent* UPartialSaveGame::LoadComponent(UWorld* World, const FObjectRec
         USceneComponent* SceneComponent = Cast<USceneComponent>(ActorComponent);
         if (IsValid(SceneComponent))
         {
-            USceneComponent* ParentComponent = Cast<USceneComponent>(OutersForLoading[ObjectRecord.ParentID]);
-            SceneComponent->SetupAttachment(ParentComponent);
+            USceneComponent* ParentComponent = Cast<USceneComponent>(LoadedObjects[ObjectRecord.ParentID]);
+            SceneComponent->SetupAttachment(ParentComponent, ObjectRecord.Socket);
         }
 
         ActorComponent->RegisterComponent();
@@ -387,7 +415,11 @@ void UPartialSaveGame::LoadSubobjectsOfComponent(USceneComponent* SceneComponent
     {
         for (int64 CountOfLoadedComponents = 0; CountOfLoadedComponents < ObjectRecord.CountOfComponents; ++CountOfLoadedComponents)
         {
-            // TODO: Load attached actors.
+            LoadRecord(SceneComponent->GetWorld(), ObjectIndex);
+        }
+
+        for (int64 CountOfLoadedActors = 0; CountOfLoadedActors < ObjectRecord.CountOfAttachedActors; ++CountOfLoadedActors)
+        {
             LoadRecord(SceneComponent->GetWorld(), ObjectIndex);
         }
     }

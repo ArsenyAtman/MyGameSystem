@@ -46,7 +46,13 @@ public:
     int64 CountOfComponents = 0;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int64 CountOfAttachedActors = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FTransform Transform = FTransform();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FName Socket = "None";
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int64 OwnerID = reinterpret_cast<int64>(nullptr);

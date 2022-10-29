@@ -11,7 +11,7 @@ AReplicatingActor::AReplicatingActor()
 	PrimaryActorTick.bCanEverTick = false;
 
 	// This actor is replicated by default.
-	SetReplicates(true);
+	bReplicates = true;
 
 	// Create a replicator subobject.
 	Replicator = CreateDefaultSubobject<UReplicator>(TEXT("Replicator"), false);

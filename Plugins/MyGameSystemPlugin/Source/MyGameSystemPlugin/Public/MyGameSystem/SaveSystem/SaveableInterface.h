@@ -43,7 +43,7 @@ public:
 	void BeforeLoad_Implementation() { return; }
 
 	/**
-	 * Called after the loading process (and loading of all subobjects).
+	 * Called after the loading process (and loading of all subobjects, but before the reattachment (of attached actors)!).
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SaveableInterface")
 	void AfterLoad();

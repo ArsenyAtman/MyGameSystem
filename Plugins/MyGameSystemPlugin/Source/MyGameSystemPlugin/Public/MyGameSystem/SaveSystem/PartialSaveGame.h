@@ -10,6 +10,9 @@
 class FObjectProperty;
 class FArrayProperty;
 
+/**
+ * A SaveGame that saves provided UObjects (all properties for saving in this objects (and their subbojects and substructs) need to be marked as SaveGame).
+ */
 UCLASS(BlueprintType, Blueprintable)
 class MYGAMESYSTEMPLUGIN_API UPartialSaveGame : public USaveGame
 {
@@ -17,15 +20,31 @@ class MYGAMESYSTEMPLUGIN_API UPartialSaveGame : public USaveGame
 
 public:
 
+	/**
+	 * Set array of outers for saving objects.
+	 * @param Outers - A set of outers.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void SetOutersForSaving(const TArray<UObject*>& Outers);
 
+	/**
+	 * Save objects.
+	 * @param Objects - Objects to save.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void Save(const TArray<UObject*> Objects);
 
+	/**
+	 * Set array of outers for loading objects.
+	 * @param Outers - A set of outers.
+	 */
 	UFUNCTION(BlueprintCallable)
 	void SetOutersForLoading(const TArray<UObject*>& Outers);
 
+	/**
+	 * Load saved objects.
+	 * @param WorldContextObject - An object in a world.
+	 */
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContextObject"))
 	void Load(const UObject* WorldContextObject);
 

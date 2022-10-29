@@ -3,7 +3,7 @@
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 /**
- * 
+ * An archive for object data serialization/deserialization during a saving/loading process.
  */
 struct FSaveGameArchive : public FObjectAndNameAsStringProxyArchive
 {

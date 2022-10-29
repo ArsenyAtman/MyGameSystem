@@ -69,33 +69,34 @@ void UPartialSaveGame::SaveObject(UObject* Object)
         return;
     }
 
-    //        |   |   |   |   |
-    // TODO: \|/ \|/ \|/ \|/ \|/
-    if (SavedObjects.Find(Object) == INDEX_NONE)// && (!IsValid(Object->GetOuter()) || OutersForSaving.Find(Object->GetOuter()) != INDEX_NONE))
+    if (SavedObjects.Find(Object) == INDEX_NONE)
     {
-        if (Object->Implements<USaveableInterface>())
+        if (IsValid(Cast<AActor>(Object)) || OutersForSaving.Find(Object->GetOuter()) != INDEX_NONE)
         {
-            ISaveableInterface::Execute_BeforeSave(Object);
-        }
+            if (Object->Implements<USaveableInterface>())
+            {
+                ISaveableInterface::Execute_BeforeSave(Object);
+            }
 
-        FObjectRecord ObjectRecord = FObjectRecord();
+            FObjectRecord ObjectRecord = FObjectRecord();
 
-        SaveObjectPart(Object, ObjectRecord);
+            SaveObjectPart(Object, ObjectRecord);
 
-        AActor* Actor = Cast<AActor>(Object);
-        SaveActorPart(Actor, ObjectRecord);
-        
-        UActorComponent* ActorComponent = Cast<UActorComponent>(Object);
-        SaveComponentPart(ActorComponent, ObjectRecord);
+            AActor* Actor = Cast<AActor>(Object);
+            SaveActorPart(Actor, ObjectRecord);
+            
+            UActorComponent* ActorComponent = Cast<UActorComponent>(Object);
+            SaveComponentPart(ActorComponent, ObjectRecord);
 
-        SavedObjects.Add(Object);
-        ObjectRecords.Add(ObjectRecord);
-        AddOuterForSaving(Object);
-        SaveSubobjects(Object, ObjectRecords.Num() - 1);
+            SavedObjects.Add(Object);
+            ObjectRecords.Add(ObjectRecord);
+            AddOuterForSaving(Object);
+            SaveSubobjects(Object, ObjectRecords.Num() - 1);
 
-        if (Object->Implements<USaveableInterface>())
-        {
-            ISaveableInterface::Execute_AfterSave(Object);
+            if (Object->Implements<USaveableInterface>())
+            {
+                ISaveableInterface::Execute_AfterSave(Object);
+            }
         }
     }
     else
@@ -120,6 +121,7 @@ void UPartialSaveGame::SaveActorPart(AActor* Actor, FObjectRecord& ObjectRecord)
     {
         ObjectRecord.Type = EObjectType::Actor;
         ObjectRecord.Transform = Actor->GetActorTransform();
+        ObjectRecord.OwnerID = reinterpret_cast<int64>(Actor->GetOwner());
 
         if (IsValid(Actor->GetRootComponent()->GetAttachParent()))
         {
@@ -320,8 +322,12 @@ AActor* UPartialSaveGame::LoadActor(UWorld* World, const FObjectRecord& ObjectRe
 {
     FActorSpawnParameters SpawnParams;
     SpawnParams.Name = ObjectRecord.Name;
-    // TODO: Find the outer.
-    AActor* Actor = World->SpawnActorDeferred<AActor>(ObjectRecord.Class, ObjectRecord.Transform, nullptr);
+    AActor* Owner = nullptr;
+    if (ObjectRecord.OwnerID != reinterpret_cast<int64>(nullptr))
+    {
+        Owner = Cast<AActor>(LoadedObjects[ObjectRecord.OwnerID]);
+    }
+    AActor* Actor = World->SpawnActorDeferred<AActor>(ObjectRecord.Class, ObjectRecord.Transform, Owner);
 
     if (Actor->Implements<USaveableInterface>())
     {

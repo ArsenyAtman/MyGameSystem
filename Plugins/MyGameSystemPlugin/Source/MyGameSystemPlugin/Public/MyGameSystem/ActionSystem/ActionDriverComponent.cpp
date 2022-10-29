@@ -22,7 +22,7 @@ void UActionDriverComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//...
+	DOREPLIFETIME(UActionDriverComponent, CurrentAction);
 }
 
 void UActionDriverComponent::StartAction(UActorAction* Action)

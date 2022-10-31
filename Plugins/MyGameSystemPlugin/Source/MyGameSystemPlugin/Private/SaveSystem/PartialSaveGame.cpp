@@ -46,7 +46,8 @@ void UPartialSaveGame::Load(const UObject* WorldContextObject)
         const int64 MaxObjectIndex = ObjectRecords.Num() - 1;
         while (ObjectIndex < MaxObjectIndex)
         {
-            LoadRecord(World, ObjectIndex);
+            bool IsValid = false;
+            LoadRecord(World, ObjectIndex, IsValid);
         }
     }
 }
@@ -64,12 +65,8 @@ void UPartialSaveGame::AddOuterForLoading(UObject* Outer)
 
 void UPartialSaveGame::SaveObject(UObject* Object)
 {
-    if (!IsValid(Object))
-    {
-        return;
-    }
-
-    if (SavedObjects.Find(Object) == INDEX_NONE)
+    // TODO: Refactor this place.
+    if (IsValid(Object) && SavedObjects.Find(Object) == INDEX_NONE && (IsValid(Cast<AActor>(Object)) || IsValid(Cast<UActorComponent>(Object)) || Object->Implements<USaveableInterface>()))
     {
         if (IsValid(Cast<AActor>(Object)) || OutersForSaving.Find(Object->GetOuter()) != INDEX_NONE)
         {
@@ -254,19 +251,33 @@ void UPartialSaveGame::SaveProperties(void* Object, UStruct* Layout, const int64
     }
 }
 
-UObject* UPartialSaveGame::LoadRecord(UWorld* World, int64& ObjectIndex)
+UObject* UPartialSaveGame::LoadRecord(UWorld* World, int64& ObjectIndex, bool& IsValid)
 {
     ++ObjectIndex;
     FObjectRecord ObjectRecord = ObjectRecords[ObjectIndex];
 
-    if (ObjectRecord.Type == EObjectType::Pointer && LoadedObjects.Find(ObjectRecord.SelfID))
-    {
-        return LoadedObjects[ObjectRecord.SelfID];
-    }
-
+    IsValid = true;
     UObject* Object = nullptr;
     switch (ObjectRecord.Type)
     {
+        case EObjectType::Pointer:
+        {
+            if (LoadedObjects.Find(ObjectRecord.SelfID))
+            {
+                return LoadedObjects[ObjectRecord.SelfID];
+            }
+            
+            IsValid = false;
+            return nullptr;
+        }
+        break;
+
+        case EObjectType::Object:
+        {
+            Object = LoadObject(World, ObjectRecord);
+        }
+        break;
+
         case EObjectType::Actor:
         {
             Object = LoadActor(World, ObjectRecord);
@@ -278,15 +289,10 @@ UObject* UPartialSaveGame::LoadRecord(UWorld* World, int64& ObjectIndex)
             Object = LoadComponent(World, ObjectRecord);
         }
         break;
-
-        case EObjectType::Object:
-        {
-            Object = LoadObject(World, ObjectRecord);
-        }
-        break;
         
         default:
         {
+            IsValid = false;
             return nullptr;
         }
         break;
@@ -410,7 +416,8 @@ void UPartialSaveGame::LoadSubobjectsOfActor(AActor* Actor, int64& ObjectIndex, 
     {
         for (int64 CountOfLoadedComponents = 0; CountOfLoadedComponents < ObjectRecord.CountOfComponents; ++CountOfLoadedComponents)
         {
-            LoadRecord(Actor->GetWorld(), ObjectIndex);
+            bool IsValid = false;
+            LoadRecord(Actor->GetWorld(), ObjectIndex, IsValid);
         }
     }
 }
@@ -421,12 +428,14 @@ void UPartialSaveGame::LoadSubobjectsOfComponent(USceneComponent* SceneComponent
     {
         for (int64 CountOfLoadedComponents = 0; CountOfLoadedComponents < ObjectRecord.CountOfComponents; ++CountOfLoadedComponents)
         {
-            LoadRecord(SceneComponent->GetWorld(), ObjectIndex);
+            bool IsValid = false;
+            LoadRecord(SceneComponent->GetWorld(), ObjectIndex, IsValid);
         }
 
         for (int64 CountOfLoadedActors = 0; CountOfLoadedActors < ObjectRecord.CountOfAttachedActors; ++CountOfLoadedActors)
         {
-            LoadRecord(SceneComponent->GetWorld(), ObjectIndex);
+            bool IsValid = false;
+            LoadRecord(SceneComponent->GetWorld(), ObjectIndex, IsValid);
         }
     }
 }
@@ -443,8 +452,12 @@ void UPartialSaveGame::LoadProperties(UWorld* World, void* Object, UStruct* Layo
     TArray<FObjectProperty*> ObjectProperties = FindProperties<FObjectProperty>(Layout);
     for (FObjectProperty* ObjectProperty : ObjectProperties)
 	{
-        UObject* Subobject = LoadRecord(World, ObjectIndex);
-		ObjectProperty->SetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object), Subobject);
+        bool IsValid = false;
+        UObject* Subobject = LoadRecord(World, ObjectIndex, IsValid);
+        if (IsValid)
+        {
+		    ObjectProperty->SetObjectPropertyValue(ObjectProperty->ContainerPtrToValuePtr<UObject>(Object), Subobject);
+        }
 	}
 
     TArray<FArrayProperty*> ArrayObjectProperties = FindArrayProperties<FObjectProperty>(Layout);
@@ -457,8 +470,12 @@ void UPartialSaveGame::LoadProperties(UWorld* World, void* Object, UStruct* Layo
         Array.Empty();
         for (int32 IndexInArray = 0; IndexInArray < SizeOfArray; ++IndexInArray)
 		{
-			UObject* Subobject = LoadRecord(World, ObjectIndex);
-            Array.Add(Subobject);
+            bool IsValid = false;
+			UObject* Subobject = LoadRecord(World, ObjectIndex, IsValid);
+            if (IsValid)
+            {
+                Array.Add(Subobject);
+            }
         }
     }
 

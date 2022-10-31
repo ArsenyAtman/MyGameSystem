@@ -67,7 +67,7 @@ private:
 
 	void SaveProperties(void* Object, UStruct* Layout, const int64 ObjectRecordIndex);
 
-	UObject* LoadRecord(UWorld* World, int64& ParentObjectRecordIndex);
+	UObject* LoadRecord(UWorld* World, int64& ParentObjectRecordIndex, bool& IsValid);
 	UObject* LoadObject(UWorld* World, const FObjectRecord& ObjectRecord);
 	AActor* LoadActor(UWorld* World, const FObjectRecord& ObjectRecord);
 	UActorComponent* LoadComponent(UWorld* World, const FObjectRecord& ObjectRecord);

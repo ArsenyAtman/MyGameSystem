@@ -15,7 +15,7 @@ class USaveableInterface : public UInterface
 /**
  * Interface for saveable objects.
  */
-class MYSAVESYSTEM_API ISaveableInterface
+class MYSAVESYSTEMPLUGIN_API ISaveableInterface
 {
 	GENERATED_BODY()
 

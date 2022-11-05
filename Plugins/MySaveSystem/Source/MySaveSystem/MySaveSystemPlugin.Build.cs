@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class MySaveSystem : ModuleRules
+public class MySaveSystemPlugin : ModuleRules
 {
-	public MySaveSystem(ReadOnlyTargetRules Target) : base(Target)
+	public MySaveSystemPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		

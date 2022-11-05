@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "MySaveSystem",
+	"FriendlyName": "MySaveSystemPlugin",
 	"Description": "Save-Load system.",
 	"Category": "System",
 	"CreatedBy": "Arseny Atman",
@@ -16,7 +16,7 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "MySaveSystem",
+			"Name": "MySaveSystemPlugin",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

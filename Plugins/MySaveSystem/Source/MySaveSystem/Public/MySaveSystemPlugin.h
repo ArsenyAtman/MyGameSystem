@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FMySaveSystemModule : public IModuleInterface
+class FMySaveSystemPluginModule : public IModuleInterface
 {
 public:
 

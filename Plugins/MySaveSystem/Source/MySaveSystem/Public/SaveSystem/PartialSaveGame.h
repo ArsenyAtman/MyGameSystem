@@ -14,7 +14,7 @@ class FArrayProperty;
  * A SaveGame that saves provided UObjects (all properties for saving in this objects (and their subbojects and substructs) need to be marked as SaveGame).
  */
 UCLASS(BlueprintType, Blueprintable)
-class MYGAMESYSTEMPLUGIN_API UPartialSaveGame : public USaveGame
+class MYSAVESYSTEM_API UPartialSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 
